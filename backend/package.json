@@ -1,0 +1,22 @@
+{
+  "name": "incanto-backend",
+  "version": "2.0.0",
+  "description": "AI-powered gift recommendation API",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "uuid": "^10.0.0"
+  }
+}

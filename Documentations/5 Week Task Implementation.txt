@@ -1,0 +1,152 @@
+Week 1 – Setup & Alignment 
+
+Sulav (Backend)
+
+Set up backend structure (Express)
+Define API routes (auth, data fetch, AI endpoints)
+Environment setup (.env, configs)
+
+Diptamshu (Database + Data Cleaning)
+
+Finalize database schema (tables, relations)
+Start cleaning raw dataset (remove duplicates, normalize fields)
+Decide storage format (SQL / Supabase tables)
+
+Prajana (AI Integration)
+
+Decide AI model/API (OpenAI, local, etc.)
+Define input/output format for recommendations
+Create basic prototype (even if ugly)
+
+Success (Dataset)
+
+Collect & organize dataset (products, categories, metadata)
+Ensure consistency (prices, links, images)
+Deliver first usable dataset to Diptamshu
+
+Devashish (Frontend + Auth)
+
+Finish core UI layout (since it’s “almost ending”)
+Implement authentication UI (login/signup)
+Connect UI to dummy backend endpoints
+Week 2 – Core Development (where reality hits)
+
+Sulav
+
+Implement core APIs (user, products, recommendations)
+Connect backend with database
+Basic error handling
+
+Diptamshu
+
+Complete data cleaning
+Upload clean dataset into database
+Optimize queries
+
+Prajana
+
+Integrate AI with backend (API calls)
+Test recommendation logic with sample inputs
+Improve prompt/logic quality
+
+Success
+
+Expand dataset (more items, better variety)
+Fix missing fields (images, categories, pricing)
+Validate dataset quality
+
+Devashish
+
+Connect frontend to real backend APIs
+Implement auth logic (JWT / Supabase Auth)
+Basic UI for displaying products
+Week 3 – Integration Phase (aka “why is nothing working”)
+
+Sulav
+
+Integrate AI endpoints with main backend flow
+Handle request pipelines (user → AI → DB → response)
+Optimize API performance
+
+Diptamshu
+
+Fix data inconsistencies found during integration
+Add indexing for faster queries
+Support backend with data fixes
+
+Prajana
+
+Refine AI responses (accuracy, relevance)
+Handle edge cases (empty inputs, weird prompts)
+Improve latency if possible
+
+Success
+
+Add edge-case data (rare categories, variations)
+Help test dataset with AI outputs
+Fix gaps found in recommendations
+
+Devashish
+
+Build UI for AI results (recommendation page)
+Improve UX (loading states, error messages)
+Connect auth flow fully
+Week 4 – Testing & Optimization (panic, but organized)
+
+Sulav
+
+Debug backend issues
+Add logging & validation
+Secure APIs
+
+Diptamshu
+
+Final data validation
+Backup & consistency checks
+Optimize DB performance
+
+Prajana
+
+Fine-tune AI responses
+Reduce hallucination / bad outputs
+Improve prompt engineering
+
+Success
+
+Final dataset polish
+Ensure real-world usability
+Document dataset structure
+
+Devashish
+
+UI polish (styling, responsiveness)
+Fix frontend bugs
+Improve overall UX
+
+Week 5 – Finalization & Deployment (the “please just work” phase)
+
+Sulav
+
+Deploy backend (server/cloud)
+Final API testing
+
+Diptamshu
+
+Deploy database (Supabase / cloud DB)
+Monitor queries
+
+Prajana
+
+Final AI testing in production
+Ensure stable outputs
+
+Success
+
+Final dataset verification
+Documentation
+
+Devashish
+
+Deploy frontend
+Final UI fixes
+Ensure auth works in production
