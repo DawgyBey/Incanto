@@ -1,3 +1,37 @@
 {
-  "users": []
+  "users": [
+    {
+      "id": "796a867f-1d0e-4a52-a255-8d4e687be629",
+      "username": "testuser",
+      "email": "test@example.com",
+      "password_hash": "1b75681db40bf504a0aae4e31d30dcb9:aa3f722aa4f9d604e0ea01e5d614289bf5f3537c3cd3189ab1fc2a72800b0b44f45d1def2a8645142a0e1b5bea3736e3e193bf2dee145a9093b50ed122bd0f7c",
+      "verified": false,
+      "provider": "password",
+      "personal_info": {},
+      "created_at": "2026-05-05T16:06:04.574Z",
+      "updated_at": "2026-05-05T16:06:04.574Z"
+    },
+    {
+      "id": "f1afb7d6-1f92-4904-ae3c-d4e19390a562",
+      "username": "Dawgybey",
+      "email": "sulaynepal@gmail.com",
+      "password_hash": "bd0e70cd309eed5f2ba494ef0fcd1cf4:ebab8309d7a11d8ecfeffecbe1258db71754e7eccd8b6c2bea6308473691979fd93d58bf31ec596dc34a18a267c464cb2649f9299cf291152c58385d545fd212",
+      "verified": false,
+      "provider": "password",
+      "personal_info": {},
+      "created_at": "2026-05-05T16:07:12.822Z",
+      "updated_at": "2026-05-05T16:07:12.822Z"
+    },
+    {
+      "id": "ac2cc0e4-89db-431f-952b-0592a230378b",
+      "username": "Dawgybey",
+      "email": "sulavnepal@gmail.com",
+      "password_hash": "4c2f268ebe3dfd8c81548d54fbcff35f:b8af8d9bcaf0fe34ba512c71da382e1f9ca0547d24bc59cf45b74bdbad94981fa41c3c824eaa433c3a6a66ca38b5af8d2f8efb5ed05d4b942568b212d015b1e3",
+      "verified": false,
+      "provider": "password",
+      "personal_info": {},
+      "created_at": "2026-05-05T16:08:43.003Z",
+      "updated_at": "2026-05-05T16:08:43.003Z"
+    }
+  ]
 }

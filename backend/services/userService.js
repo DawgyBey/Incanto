@@ -6,11 +6,39 @@
  */
 
 import crypto from "crypto";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { v4 as uuidv4 } from "uuid";
 import { createError } from "../middleware/errorHandler.js";
+
+// ── Path Setup ──────────────────────────────────────────────────────────────
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const DATA_DIR = join(__dirname, "../data");
+
+const USERS_PATH = join(DATA_DIR, "users.json");
+const PREFERENCES_PATH = join(DATA_DIR, "preferences.json");
+const CART_PATH = join(DATA_DIR, "cart.json");
+const RECENTLY_VIEWED_PATH = join(DATA_DIR, "recently-viewed.json");
+
+// Ensure data directory exists
+mkdirSync(DATA_DIR, { recursive: true });
+
+// Initialize JSON files if they don't exist
+const initializeJsonFile = (path, initialStructure) => {
+  try {
+    readFileSync(path, "utf-8");
+  } catch {
+    writeFileSync(path, JSON.stringify(initialStructure, null, 2));
+  }
+};
+
+initializeJsonFile(USERS_PATH, { users: [] });
+initializeJsonFile(PREFERENCES_PATH, { preferences: [] });
+initializeJsonFile(CART_PATH, { cart: [] });
+initializeJsonFile(RECENTLY_VIEWED_PATH, { recentlyViewed: [] });
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 
