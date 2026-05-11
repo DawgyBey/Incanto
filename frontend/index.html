@@ -17,14 +17,18 @@
   <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
     <div class="nav-inner">
-      <a href="#" class="logo">
-        <span class="logo-icon">✦</span>
-        INCANTO
+      <a href="#hero" class="logo" aria-label="INCANTO home">
+        <span class="logo-icon" aria-hidden="true">
+          <span></span>
+        </span>
+        <span class="logo-text">INCANTO</span>
       </a>
       <ul class="nav-links">
         <li><a href="#hero">Home</a></li>
         <li><a href="#finder">Finder</a></li>
         <li><a href="#trending">Trending</a></li>
+        <li><a href="#cart">Cart</a></li>
+        <li><a href="#orders">Orders</a></li>
         <li><a href="#about">About</a></li>
       </ul>
       <div class="nav-actions">
@@ -33,7 +37,7 @@
         <button class="nav-auth-btn" id="logoutBtn" type="button" style="display:none;">Log out</button>
         <a href="#finder" class="nav-cta" id="navCta">Find a Gift</a>
       </div>
-      <button class="hamburger" id="hamburger" aria-label="Menu">
+      <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -44,6 +48,8 @@
     <a href="#hero" class="mobile-link">Home</a>
     <a href="#finder" class="mobile-link">Finder</a>
     <a href="#trending" class="mobile-link">Trending</a>
+    <a href="#cart" class="mobile-link">Cart</a>
+    <a href="#orders" class="mobile-link">Orders</a>
     <a href="#about" class="mobile-link">About</a>
     <button class="mobile-link mobile-auth-link" id="mobileLoginBtn" type="button">Log in</button>
     <a href="#profile" class="mobile-link" id="mobileProfileBtn" style="display:none;">Profile</a>
@@ -157,18 +163,18 @@
             <h3 class="step-q">What's the occasion? 🎉</h3>
             <p class="step-hint">Select the event you're gifting for</p>
             <div class="choice-grid">
-              <button class="choice-btn" data-value="birthday">🎂 Birthday</button>
-              <button class="choice-btn" data-value="anniversary">💍 Anniversary</button>
-              <button class="choice-btn" data-value="wedding">💒 Wedding</button>
-              <button class="choice-btn" data-value="festival">🪔 Festival</button>
-              <button class="choice-btn" data-value="graduation">🎓 Graduation</button>
-              <button class="choice-btn" data-value="babyshower">👶 Baby Shower</button>
-              <button class="choice-btn" data-value="valentine">❤️ Valentine's</button>
-              <button class="choice-btn" data-value="justbecause">✨ Just Because</button>
+              <button class="choice-btn" type="button" data-value="birthday">🎂 Birthday</button>
+              <button class="choice-btn" type="button" data-value="anniversary">💍 Anniversary</button>
+              <button class="choice-btn" type="button" data-value="wedding">💒 Wedding</button>
+              <button class="choice-btn" type="button" data-value="festival">🪔 Festival</button>
+              <button class="choice-btn" type="button" data-value="graduation">🎓 Graduation</button>
+              <button class="choice-btn" type="button" data-value="babyshower">👶 Baby Shower</button>
+              <button class="choice-btn" type="button" data-value="valentine">❤️ Valentine's</button>
+              <button class="choice-btn" type="button" data-value="justbecause">✨ Just Because</button>
             </div>
             <div class="step-nav">
               <span></span>
-              <button class="btn-next" id="next1" disabled>Continue →</button>
+              <button class="btn-next" id="next1" type="button" disabled>Continue →</button>
             </div>
           </div>
 
@@ -177,18 +183,18 @@
             <h3 class="step-q">Who are you gifting? 💝</h3>
             <p class="step-hint">Tell us about your recipient</p>
             <div class="choice-grid">
-              <button class="choice-btn" data-value="partner">💑 Partner</button>
-              <button class="choice-btn" data-value="friend">👫 Friend</button>
-              <button class="choice-btn" data-value="mom">👩 Mom</button>
-              <button class="choice-btn" data-value="dad">👨 Dad</button>
-              <button class="choice-btn" data-value="sibling">🧑 Sibling</button>
-              <button class="choice-btn" data-value="colleague">💼 Colleague</button>
-              <button class="choice-btn" data-value="child">🧒 Child</button>
-              <button class="choice-btn" data-value="grandparent">👴 Grandparent</button>
+              <button class="choice-btn" type="button" data-value="partner">💑 Partner</button>
+              <button class="choice-btn" type="button" data-value="friend">👫 Friend</button>
+              <button class="choice-btn" type="button" data-value="mom">👩 Mom</button>
+              <button class="choice-btn" type="button" data-value="dad">👨 Dad</button>
+              <button class="choice-btn" type="button" data-value="sibling">🧑 Sibling</button>
+              <button class="choice-btn" type="button" data-value="colleague">💼 Colleague</button>
+              <button class="choice-btn" type="button" data-value="child">🧒 Child</button>
+              <button class="choice-btn" type="button" data-value="grandparent">👴 Grandparent</button>
             </div>
             <div class="step-nav">
-              <button class="btn-back">← Back</button>
-              <button class="btn-next" id="next2" disabled>Continue →</button>
+              <button class="btn-back" type="button">← Back</button>
+              <button class="btn-next" id="next2" type="button" disabled>Continue →</button>
             </div>
           </div>
 
@@ -208,15 +214,15 @@
                 <span>Rs. 20,000</span>
               </div>
               <div class="budget-presets">
-                <button class="preset-btn" data-val="1000">Under Rs. 1K</button>
-                <button class="preset-btn" data-val="3000">Rs. 1–3K</button>
-                <button class="preset-btn" data-val="7000">Rs. 3–7K</button>
-                <button class="preset-btn" data-val="15000">Rs. 7K+</button>
+                <button class="preset-btn" type="button" data-val="1000">Under Rs. 1K</button>
+                <button class="preset-btn" type="button" data-val="3000">Rs. 1–3K</button>
+                <button class="preset-btn" type="button" data-val="7000">Rs. 3–7K</button>
+                <button class="preset-btn" type="button" data-val="15000">Rs. 7K+</button>
               </div>
             </div>
             <div class="step-nav">
-              <button class="btn-back">← Back</button>
-              <button class="btn-next" id="next3">Continue →</button>
+              <button class="btn-back" type="button">← Back</button>
+              <button class="btn-next" id="next3" type="button">Continue →</button>
             </div>
           </div>
 
@@ -225,22 +231,22 @@
             <h3 class="step-q">What are they into? 🎯</h3>
             <p class="step-hint">Select all that apply</p>
             <div class="tags-wrap">
-              <button class="tag-btn" data-value="music">🎵 Music</button>
-              <button class="tag-btn" data-value="travel">✈️ Travel</button>
-              <button class="tag-btn" data-value="fitness">💪 Fitness</button>
-              <button class="tag-btn" data-value="cooking">🍳 Cooking</button>
-              <button class="tag-btn" data-value="art">🎨 Art</button>
-              <button class="tag-btn" data-value="books">📚 Books</button>
-              <button class="tag-btn" data-value="gaming">🎮 Gaming</button>
-              <button class="tag-btn" data-value="fashion">👗 Fashion</button>
-              <button class="tag-btn" data-value="tech">💻 Tech</button>
-              <button class="tag-btn" data-value="nature">🌿 Nature</button>
-              <button class="tag-btn" data-value="skincare">✨ Skincare</button>
-              <button class="tag-btn" data-value="photography">📷 Photography</button>
+              <button class="tag-btn" type="button" data-value="music">🎵 Music</button>
+              <button class="tag-btn" type="button" data-value="travel">✈️ Travel</button>
+              <button class="tag-btn" type="button" data-value="fitness">💪 Fitness</button>
+              <button class="tag-btn" type="button" data-value="cooking">🍳 Cooking</button>
+              <button class="tag-btn" type="button" data-value="art">🎨 Art</button>
+              <button class="tag-btn" type="button" data-value="books">📚 Books</button>
+              <button class="tag-btn" type="button" data-value="gaming">🎮 Gaming</button>
+              <button class="tag-btn" type="button" data-value="fashion">👗 Fashion</button>
+              <button class="tag-btn" type="button" data-value="tech">💻 Tech</button>
+              <button class="tag-btn" type="button" data-value="nature">🌿 Nature</button>
+              <button class="tag-btn" type="button" data-value="skincare">✨ Skincare</button>
+              <button class="tag-btn" type="button" data-value="photography">📷 Photography</button>
             </div>
             <div class="step-nav">
-              <button class="btn-back">← Back</button>
-              <button class="btn-next" id="next4">Continue →</button>
+              <button class="btn-back" type="button">← Back</button>
+              <button class="btn-next" id="next4" type="button">Continue →</button>
             </div>
           </div>
 
@@ -249,40 +255,40 @@
             <h3 class="step-q">How would you describe them? 🌟</h3>
             <p class="step-hint">Pick the vibe that fits best</p>
             <div class="personality-grid">
-              <button class="pers-btn" data-value="funny">
+              <button class="pers-btn" type="button" data-value="funny">
                 <span class="pers-emoji">😂</span>
                 <strong>Funny & Playful</strong>
                 <span>Loves to laugh, quirky taste</span>
               </button>
-              <button class="pers-btn" data-value="romantic">
+              <button class="pers-btn" type="button" data-value="romantic">
                 <span class="pers-emoji">🌹</span>
                 <strong>Romantic & Emotional</strong>
                 <span>Sentimental, loves meaning</span>
               </button>
-              <button class="pers-btn" data-value="practical">
+              <button class="pers-btn" type="button" data-value="practical">
                 <span class="pers-emoji">⚡</span>
                 <strong>Practical & Efficient</strong>
                 <span>Values usefulness over aesthetics</span>
               </button>
-              <button class="pers-btn" data-value="adventurous">
+              <button class="pers-btn" type="button" data-value="adventurous">
                 <span class="pers-emoji">🗺️</span>
                 <strong>Adventurous & Bold</strong>
                 <span>Always up for something new</span>
               </button>
-              <button class="pers-btn" data-value="artistic">
+              <button class="pers-btn" type="button" data-value="artistic">
                 <span class="pers-emoji">🎭</span>
                 <strong>Artistic & Creative</strong>
                 <span>Has an eye for beauty</span>
               </button>
-              <button class="pers-btn" data-value="intellectual">
+              <button class="pers-btn" type="button" data-value="intellectual">
                 <span class="pers-emoji">🧠</span>
                 <strong>Intellectual & Curious</strong>
                 <span>Always learning, loves depth</span>
               </button>
             </div>
             <div class="step-nav">
-              <button class="btn-back">← Back</button>
-              <button class="btn-find" id="findGifts">✨ Find Perfect Gifts</button>
+              <button class="btn-back" type="button">← Back</button>
+              <button class="btn-find" id="findGifts" type="button" onclick="event.preventDefault(); window.IncantoFindGifts?.(event); return false;">✨ Find Perfect Gifts</button>
             </div>
           </div>
         </div>
@@ -309,17 +315,17 @@
             <h2 class="section-title" id="resultsTitle">Perfect gifts, just for them ✨</h2>
           </div>
           <div class="results-actions">
-            <button class="btn-filter active" data-filter="all">All</button>
-            <button class="btn-filter" data-filter="under2k">Under Rs. 2K</button>
-            <button class="btn-filter" data-filter="2kto5k">Rs. 2–5K</button>
-            <button class="btn-filter" data-filter="above5k">Rs. 5K+</button>
+            <button class="btn-filter active" type="button" data-filter="all">All</button>
+            <button class="btn-filter" type="button" data-filter="under2k">Under Rs. 2K</button>
+            <button class="btn-filter" type="button" data-filter="2kto5k">Rs. 2–5K</button>
+            <button class="btn-filter" type="button" data-filter="above5k">Rs. 5K+</button>
           </div>
         </div>
 
         <!-- Favorites bar -->
         <div class="favorites-bar" id="favoritesBar" style="display:none;">
           <div class="fav-label">❤️ Saved Gifts (<span id="favCount">0</span>)</div>
-          <button class="view-fav-btn" id="viewFavsBtn">View Saved</button>
+          <button class="view-fav-btn" id="viewFavsBtn" type="button">View Saved</button>
         </div>
 
         <div class="cart-section" id="cartSection" style="display:none;">
@@ -330,13 +336,13 @@
           <div class="cart-grid" id="cartGrid"></div>
         </div>
 
-        <div class="gifts-grid" id="giftsGrid">
+        <div class="gifts-grid" id="recommendationsGrid">
           <!-- Cards injected by JS -->
         </div>
 
         <div class="results-footer">
-          <button class="btn-more" id="loadMoreBtn">Show More Like These</button>
-          <button class="btn-restart" id="restartBtn">↩ Start Over</button>
+          <button class="btn-more" id="loadMoreBtn" type="button">Show More Like These</button>
+          <button class="btn-restart" id="restartBtn" type="button">↩ Start Over</button>
         </div>
 
         <!-- Recently Viewed -->
@@ -560,7 +566,7 @@
         <p class="section-sub">See what everyone is loving right now.</p>
       </div>
 
-      <div class="gifts-grid" id="giftsGrid">
+      <div class="gifts-grid" id="trendingGiftsGrid">
         <div class="gift-card" style="animation-delay: 0s;">
           <div class="gift-img-wrap">
             <span style="position:relative;z-index:1">🎧</span>
@@ -680,7 +686,7 @@
         <div class="purchase-header">
           <span class="purchase-emoji" id="purchaseGiftEmoji">🎁</span>
           <h1 class="purchase-title">Confirm Your Purchase</h1>
-          <p class="purchase-subtitle">You're about to leave INCANTO and proceed to checkout on a trusted partner site.</p>
+          <p class="purchase-subtitle">Review your selected gift before continuing to payment.</p>
         </div>
         <div class="purchase-details">
           <div class="purchase-item">
@@ -693,9 +699,95 @@
           </div>
         </div>
         <div class="purchase-actions">
-          <button class="btn-secondary" id="cancelPurchaseBtn">Cancel</button>
-          <button class="btn-primary" id="confirmPurchaseBtn">Confirm & Buy Now</button>
+          <button class="btn-secondary" id="cancelPurchaseBtn" type="button">Cancel</button>
+          <button class="btn-primary" id="confirmPurchaseBtn" type="button">Continue to Payment</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAYMENT -->
+  <section id="payment" class="page-section view-section" style="padding: 150px 0 100px; min-height: 80vh;">
+    <div class="container">
+      <div class="payment-checkout">
+        <div class="payment-main">
+          <p class="section-eyebrow">Secure Checkout</p>
+          <h1 class="purchase-title">Payment Details</h1>
+          <p class="purchase-subtitle">Complete your order without leaving INCANTO.</p>
+
+          <form class="payment-form" id="paymentForm" onsubmit="event.preventDefault(); window.IncantoSubmitPayment?.(event); return false;">
+            <div class="payment-methods" role="radiogroup" aria-label="Payment method">
+              <label class="payment-method active">
+                <input type="radio" name="paymentMethod" value="card" checked>
+                <span>Card</span>
+              </label>
+              <label class="payment-method">
+                <input type="radio" name="paymentMethod" value="wallet">
+                <span>Wallet</span>
+              </label>
+              <label class="payment-method">
+                <input type="radio" name="paymentMethod" value="cod">
+                <span>Cash on Delivery</span>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                Name on card
+                <input type="text" id="cardName" autocomplete="cc-name" placeholder="Your name">
+              </label>
+              <label>
+                Card number
+                <input type="text" id="cardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456">
+              </label>
+              <label>
+                Expiry
+                <input type="text" id="cardExpiry" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/YY">
+              </label>
+              <label>
+                CVC
+                <input type="text" id="cardCvc" inputmode="numeric" autocomplete="cc-csc" placeholder="123">
+              </label>
+            </div>
+
+            <label>
+              Delivery address
+              <textarea id="deliveryAddress" rows="3" placeholder="Street, city, landmark"></textarea>
+            </label>
+
+            <div class="purchase-actions">
+              <button class="btn-secondary" id="backToPurchaseBtn" type="button">Back</button>
+              <button class="btn-primary" type="submit">Pay & Place Order</button>
+            </div>
+          </form>
+        </div>
+
+        <aside class="payment-summary">
+          <span class="purchase-emoji" id="paymentGiftEmoji">🎁</span>
+          <h3 id="paymentGiftName">Gift Name</h3>
+          <p id="paymentGiftReason">Order summary</p>
+          <div class="purchase-price" id="paymentGiftPrice">Price</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- CART PAGE -->
+  <section id="cart" class="page-section view-section" style="padding: 150px 0 100px; min-height: 80vh;">
+    <div class="container">
+      <div class="shop-page-head">
+        <p class="section-eyebrow">Saved to Buy</p>
+        <h1 class="section-title">Your Cart</h1>
+        <p class="section-sub">Keep the gifts you like here and checkout when you are ready.</p>
+      </div>
+      <div class="shop-layout">
+        <div class="shop-list" id="cartPageList"></div>
+        <aside class="shop-summary">
+          <h3>Cart Summary</h3>
+          <p><span id="cartPageCount">0</span> items saved</p>
+          <div class="shop-total" id="cartPageTotal">Rs. 0</div>
+          <button class="btn-primary" id="checkoutCartBtn" type="button">Checkout Cart</button>
+        </aside>
       </div>
     </div>
   </section>
@@ -739,6 +831,18 @@
     </div>
   </section>
 
+  <!-- ORDERS PAGE -->
+  <section id="orders" class="page-section view-section" style="padding: 150px 0 100px; min-height: 80vh;">
+    <div class="container">
+      <div class="shop-page-head">
+        <p class="section-eyebrow">Purchase History</p>
+        <h1 class="section-title">Bought Items</h1>
+        <p class="section-sub">Review the gifts you have purchased through INCANTO checkout.</p>
+      </div>
+      <div class="orders-list" id="ordersList"></div>
+    </div>
+  </section>
+
   <!--  FOOTER -->
   <footer class="footer">
     <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
@@ -750,6 +854,8 @@
           <a href="#hero">Home</a>
           <a href="#finder">Finder</a>
           <a href="#trending">Trending</a>
+          <a href="#cart">Cart</a>
+          <a href="#orders">Orders</a>
         </div>
         <div style="font-size: 0.8rem; color: var(--text-muted);">
           © 2026 INCANTO. All rights reserved.
@@ -827,7 +933,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="user.js"></script>
-  <script src="script.js"></script>
+  <script src="user.js?v=20260511e"></script>
+  <script src="script.js?v=20260511e"></script>
 </body>
 </html>

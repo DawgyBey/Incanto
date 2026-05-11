@@ -23,7 +23,8 @@ app.use(
   cors({
     origin(origin, callback) {
       const localDevOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin || "");
-      if (!origin || allowedOrigins.includes("*") || allowedOrigins.includes(origin) || localDevOrigin) {
+      const localFileOrigin = process.env.NODE_ENV !== "production" && origin === "null";
+      if (!origin || allowedOrigins.includes("*") || allowedOrigins.includes(origin) || localDevOrigin || localFileOrigin) {
         return callback(null, true);
       }
       return callback(new Error("Not allowed by CORS"));
