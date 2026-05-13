@@ -13,14 +13,16 @@ export const searchDaraz = async (keyword) => {
         const $ = cheerio.load(data);
         const products = [];
 
-        // Finding the data hidden in Daraz's script tag
-        const script = $('script').filter((i, el) => $(el).html().includes('window.pageData=')).html();
+        const script = $('script').filter((i, el) =>
+            $(el).html().includes('window.pageData=')
+        ).html();
+
         if (script) {
-            const jsonStr = script.split('window.pageData=').split(';</script>');
+            const jsonStr = script.split('window.pageData=')[1].split(';</script>')[0];
             const result = JSON.parse(jsonStr);
             const items = result.mods?.listItems || [];
 
-            items.slice(0, 5).map(item => {
+            items.slice(0, 5).forEach(item => {
                 products.push({
                     name: item.name,
                     price: item.priceShow,
@@ -29,10 +31,10 @@ export const searchDaraz = async (keyword) => {
                 });
             });
         }
+
         return products;
     } catch (error) {
-        console.error("Scraping error:", error);
+        console.error("Daraz scraping error:", error.message);
         return [];
     }
 };
-
