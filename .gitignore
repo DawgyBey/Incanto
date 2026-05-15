@@ -1,2 +1,7 @@
 backend/.env
 backend/data/users.json
+<<<<<<< HEAD
+=======
+node_modules/
+.env
+>>>>>>> origin/devashish

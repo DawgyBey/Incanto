@@ -7,7 +7,11 @@ import { createError } from "../middleware/errorHandler.js";
 
 const router = Router();
 const TOKEN_SECRET = process.env.AUTH_TOKEN_SECRET || "incanto-dev-secret-change-me";
+<<<<<<< HEAD
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
+=======
+const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || "").trim();
+>>>>>>> origin/devashish
 const TOKEN_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

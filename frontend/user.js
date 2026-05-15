@@ -33,8 +33,19 @@ const IncantoAuth = (() => {
     const token = getToken();
     if (token) headers.Authorization = `Bearer ${token}`;
 
+<<<<<<< HEAD
     const res = await fetch(`${AUTH_API_BASE}${path}`, { ...options, headers });
     const data = await res.json();
+=======
+    let res;
+    try {
+      res = await fetch(`${AUTH_API_BASE}${path}`, { ...options, headers });
+    } catch (_err) {
+      throw new Error('Could not reach the Incanto API. Start the backend server on port 5000, then try again.');
+    }
+
+    const data = await res.json().catch(() => ({}));
+>>>>>>> origin/devashish
     if (!res.ok || data.success === false) {
       throw new Error(data.message || 'Authentication request failed.');
     }

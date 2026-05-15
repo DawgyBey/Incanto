@@ -25,8 +25,11 @@ const state = {
   favorites: JSON.parse(localStorage.getItem('incanto_favorites') || '[]'),
   recentlyViewed: JSON.parse(localStorage.getItem('incanto_recent') || '[]'),
   cart: JSON.parse(localStorage.getItem('incanto_cart') || '[]'),
+  orders: JSON.parse(localStorage.getItem('incanto_orders') || '[]'),
   currentResults: [],
+  isFindingGifts: false,
   pendingPurchaseGift: null,
+  pendingCheckoutItems: [],
   isAuthenticated: window.IncantoAuth?.isAuthenticated() || false,
   user: window.IncantoAuth?.getUser() || null
 };
@@ -82,14 +85,22 @@ async function apiFetch(path, options = {}) {
   const token = window.IncantoAuth?.getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, data };
 }
 
 /* ─── GENERATE RESULTS ───────────────────── */
 async function generateResults() {
+  if (state.isFindingGifts) return;
+  state.isFindingGifts = true;
   const overlay = $('#loadingOverlay');
-  overlay.classList.add('active');
+  const findBtn = $('#findGifts');
+  const originalFindText = findBtn?.textContent;
+  if (findBtn) {
+    findBtn.disabled = true;
+    findBtn.textContent = 'Finding gifts...';
+  }
+  overlay?.classList.add('active');
 
   const messages = [
     'Analysing your preferences...',
@@ -101,12 +112,17 @@ async function generateResults() {
   const loaderText = $('#loaderText');
   const msgInterval = setInterval(() => {
     msgIndex = (msgIndex + 1) % messages.length;
-    loaderText.textContent = messages[msgIndex];
+    if (loaderText) loaderText.textContent = messages[msgIndex];
   }, 900);
 
   const done = () => {
     clearInterval(msgInterval);
-    overlay.classList.remove('active');
+    overlay?.classList.remove('active');
+    if (findBtn) {
+      findBtn.disabled = false;
+      findBtn.textContent = originalFindText || 'Find Perfect Gifts';
+    }
+    state.isFindingGifts = false;
   };
 
   // Map local recipient names to backend-accepted values
@@ -118,20 +134,6 @@ async function generateResults() {
   const recipient = recipientMap[state.inputs.recipient] || null;
 
   try {
-    // Save preferences first (best-effort — don't block on failure)
-    if (state.isAuthenticated) {
-      await apiFetch('/users/preferences', {
-        method: 'POST',
-        body: JSON.stringify({
-          recipient,
-          budget: state.inputs.budget,
-          interests: state.inputs.interests,
-          personality: state.inputs.personality,
-          occasion: state.inputs.occasion
-        })
-      }).catch(() => {});
-    }
-
     // Fetch recommendations
     const params = new URLSearchParams();
     if (recipient) params.set('recipient', recipient);
@@ -145,9 +147,11 @@ async function generateResults() {
 
     done();
 
-    if (ok && data.success && data.data.results.length > 0) {
+    const apiResults = data?.data?.results || [];
+
+    if (ok && data.success && apiResults.length > 0) {
       // Normalise backend gift shape to match frontend card format
-      const gifts = data.data.results.map(g => ({
+      const gifts = apiResults.map(g => ({
         id: g.id,
         name: g.name,
         description: g.description,
@@ -168,7 +172,6 @@ async function generateResults() {
     }
 
   } catch (err) {
-    console.error('API fetch failed:', err.message);
     done();
     console.warn('API recommendations failed, using local fallback:', err.message);
 
@@ -188,11 +191,30 @@ async function generateResults() {
   }
 }
 
+window.IncantoFindGifts = (event) => {
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+  generateResults().catch((err) => {
+    console.error('Gift finder failed:', err);
+    showToast('Something went wrong while finding gifts. Please try again.');
+  });
+  return false;
+};
+
+document.addEventListener('click', (event) => {
+  const btn = event.target.closest?.('#findGifts');
+  if (!btn) return;
+  event.preventDefault();
+  event.stopPropagation();
+  window.IncantoFindGifts(event);
+}, true);
+
 /* ─── DISPLAY ────────────────────────────── */
 function displayResults(gifts) {
   const section = $('#results');
-  const grid = $('#giftsGrid');
+  const grid = $('#recommendationsGrid');
   const title = $('#resultsTitle');
+  if (!section || !grid || !title) return;
 
   const recipientNames = {
     partner: 'your partner', friend: 'your friend', mom: 'mom',
@@ -205,13 +227,17 @@ function displayResults(gifts) {
   }
 
   grid.innerHTML = '';
+  if (!Array.isArray(gifts) || gifts.length === 0) {
+    grid.innerHTML = '<div class="results-empty">No matching gifts found. Try a higher budget or fewer filters.</div>';
+  }
+
   gifts.forEach((gift, idx) => {
     const card = createGiftCard(gift, idx);
     grid.appendChild(card);
   });
 
   section.style.display = 'block';
-  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  requestAnimationFrame(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   $$('.gift-card').forEach((card, idx) => { card.style.animationDelay = `${idx * 0.1}s`; });
   renderCart();
   renderRecentlyViewed();
@@ -223,23 +249,30 @@ function createGiftCard(gift) {
   div.className = 'gift-card';
   div.dataset.id = gift.id;
   div.dataset.price = gift.price;
+  const safeName = escapeHtml(gift.name || 'Gift item');
+  const safeDescription = escapeHtml(gift.description || 'A thoughtful recommendation based on your choices.');
+  const safeReason = escapeHtml(gift.reason || 'It matches the preferences you selected.');
+  const safePriceLabel = escapeHtml(gift.priceLabel || 'Price unavailable');
+  const safeBadge = gift.badge ? escapeHtml(gift.badge) : '';
+  const safeLink = escapeHtml(gift.link || '#');
+  const safeEmoji = escapeHtml(gift.emoji || '🎁');
 
   div.innerHTML = `
     <div class="gift-img-wrap">
-      ${gift.imageUrl ? `<img src="${gift.imageUrl}" alt="${gift.name}" class="gift-image" />` : `<span style="position:relative;z-index:1">${gift.emoji || '🎁'}</span>`}
-      ${gift.badge ? `<div class="gift-badge">${gift.badge}</div>` : ''}
+      ${gift.imageUrl ? `<img src="${escapeHtml(gift.imageUrl)}" alt="${safeName}" class="gift-image" />` : `<span style="position:relative;z-index:1">${safeEmoji}</span>`}
+      ${safeBadge ? `<div class="gift-badge">${safeBadge}</div>` : ''}
       <button class="fav-btn ${isFaved ? 'saved' : ''}" data-id="${gift.id}" title="Save to favorites">
         ${isFaved ? '❤️' : '🤍'}
       </button>
     </div>
     <div class="gift-body">
-      <h3 class="gift-name">${gift.name}</h3>
-      <p class="gift-desc">${gift.description}</p>
-      <div class="gift-ai-reason"><strong>✦ Why it's perfect</strong> ${gift.reason}</div>
+      <h3 class="gift-name">${safeName}</h3>
+      <p class="gift-desc">${safeDescription}</p>
+      <div class="gift-ai-reason"><strong>✦ Why it's perfect</strong> ${safeReason}</div>
       <div class="gift-footer">
-        <div class="gift-price">${gift.priceLabel} <span>onwards</span></div>
+        <div class="gift-price">${safePriceLabel} <span>onwards</span></div>
         <button class="btn-cart" type="button" data-gift-id="${gift.id}">Add to Cart</button>
-        <a href="#" class="btn-buy" data-gift-id="${gift.id}" data-link="${gift.link}">Buy Now →</a>
+        <a href="#" class="btn-buy" data-gift-id="${gift.id}" data-link="${safeLink}">Buy Now →</a>
       </div>
     </div>
   `;
@@ -265,6 +298,7 @@ function createGiftCard(gift) {
 
 function showPurchaseConfirmation(gift) {
   state.pendingPurchaseGift = gift;
+  state.pendingCheckoutItems = [normalizeGiftForStorage(gift)];
   const emoji = $('#purchaseGiftEmoji');
   const name = $('#purchaseGiftName');
   const price = $('#purchaseGiftPrice');
@@ -274,26 +308,53 @@ function showPurchaseConfirmation(gift) {
   if (emoji) emoji.textContent = gift.emoji || '🎁';
   if (name) name.textContent = gift.name;
   if (price) price.textContent = gift.priceLabel || 'Price unavailable';
-  if (reason) reason.textContent = gift.reason || 'You are about to leave INCANTO to complete this purchase on a trusted partner site.';
-  if (details) details.textContent = `Confirm purchase and proceed to checkout for ${gift.name}. This will open the seller page in a new tab.`;
+  if (reason) reason.textContent = gift.reason || 'This gift matches the preferences you selected.';
+  if (details) details.textContent = `Confirm ${gift.name} and continue to the INCANTO payment page.`;
 
+  window.location.hash = '#purchase';
+}
+
+function getCartTotal() {
+  return state.cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 1)), 0);
+}
+
+function showCartPurchaseConfirmation() {
+  if (state.cart.length === 0) {
+    showToast('Your cart is empty.');
+    return;
+  }
+  const total = getCartTotal();
+  const gift = {
+    id: `cart-${Date.now()}`,
+    name: `${state.cart.length} cart item${state.cart.length === 1 ? '' : 's'}`,
+    emoji: '🛒',
+    priceLabel: total ? `Rs. ${total.toLocaleString('en-IN')}` : 'Cart total',
+    reason: 'Checkout all selected cart items together.',
+    link: '#',
+  };
+  state.pendingPurchaseGift = gift;
+  state.pendingCheckoutItems = state.cart.map(normalizeGiftForStorage);
+  $('#purchaseGiftEmoji').textContent = gift.emoji;
+  $('#purchaseGiftName').textContent = gift.name;
+  $('#purchaseGiftPrice').textContent = gift.priceLabel;
+  $('#purchaseGiftReason').textContent = gift.reason;
+  $('#purchaseGiftDetails').textContent = 'Confirm your cart and continue to the INCANTO payment page.';
   window.location.hash = '#purchase';
 }
 
 function confirmPurchase() {
   const gift = state.pendingPurchaseGift;
   if (!gift) return;
-  const targetLink = gift.link?.trim();
-  if (!targetLink || targetLink === '#') {
-    showToast('Sorry, this item does not have a checkout link yet. Please choose another gift.');
-    return;
-  }
+  showPaymentPage(gift);
+}
 
-  addToRecentlyViewed(gift);
-  window.open(targetLink, '_blank', 'noopener');
-  showToast(`Redirecting to checkout for ${gift.name}`);
-  state.pendingPurchaseGift = null;
-  window.location.hash = '#home';
+function showPaymentPage(gift) {
+  state.pendingPurchaseGift = gift;
+  $('#paymentGiftEmoji').textContent = gift.emoji || '🎁';
+  $('#paymentGiftName').textContent = gift.name || 'Gift item';
+  $('#paymentGiftReason').textContent = gift.reason || 'Ready for checkout.';
+  $('#paymentGiftPrice').textContent = gift.priceLabel || 'Price unavailable';
+  window.location.hash = '#payment';
 }
 
 function getGiftFromCard(card, btn) {
@@ -320,12 +381,6 @@ function initBuyButtons() {
     if (!card) return;
     event.preventDefault();
 
-    if (!state.isAuthenticated) {
-      showToast('Please sign in to purchase gifts.');
-      showAuthModal('login');
-      return;
-    }
-
     const gift = getGiftFromCard(card, btn);
     showPurchaseConfirmation(gift);
   });
@@ -333,7 +388,106 @@ function initBuyButtons() {
 
 function cancelPurchase() {
   state.pendingPurchaseGift = null;
+  state.pendingCheckoutItems = [];
   window.location.hash = '#home';
+}
+
+function backToPurchase() {
+  if (state.pendingPurchaseGift) {
+    showPurchaseConfirmation(state.pendingPurchaseGift);
+  } else {
+    window.location.hash = '#home';
+  }
+}
+
+function handlePaymentSubmit(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const gift = state.pendingPurchaseGift;
+  if (!gift) {
+    showToast('Choose a gift before payment.');
+    window.location.hash = '#home';
+    return;
+  }
+
+  const method = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card';
+  const needsCard = method === 'card';
+  const address = $('#deliveryAddress')?.value.trim();
+
+  if (needsCard) {
+    const cardName = $('#cardName')?.value.trim();
+    const cardNumber = $('#cardNumber')?.value.replace(/\s+/g, '');
+    const cardExpiry = $('#cardExpiry')?.value.trim();
+    const cardCvc = $('#cardCvc')?.value.trim();
+    if (!cardName || cardNumber.length < 12 || !cardExpiry || cardCvc.length < 3) {
+      showToast('Please enter complete card details.');
+      return;
+    }
+  }
+
+  if (!address) {
+    showToast('Please enter a delivery address.');
+    return;
+  }
+
+  addToRecentlyViewed(gift, { sync: false });
+  saveOrder(gift);
+  showToast(`Order placed for ${gift.name}.`);
+  state.pendingPurchaseGift = null;
+  state.pendingCheckoutItems = [];
+  $('#paymentForm')?.reset();
+  setPaymentMethod('card');
+  window.location.hash = '#orders';
+}
+
+function saveOrder(gift) {
+  const items = state.pendingCheckoutItems.length
+    ? state.pendingCheckoutItems
+    : [normalizeGiftForStorage(gift)];
+  const order = {
+    id: `INC-${Date.now()}`,
+    placedAt: new Date().toISOString(),
+    status: 'Confirmed',
+    paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card',
+    items,
+    total: items.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 1)), 0),
+  };
+
+  state.orders.unshift(order);
+  localStorage.setItem('incanto_orders', JSON.stringify(state.orders));
+
+  const orderedIds = new Set(items.map(item => String(item.id)));
+  state.cart = state.cart.filter(item => !orderedIds.has(String(item.id)));
+  localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
+  renderCart();
+  renderCartPage();
+  renderOrdersPage();
+}
+
+window.IncantoSubmitPayment = (event) => {
+  handlePaymentSubmit(event);
+  return false;
+};
+
+document.addEventListener('submit', (event) => {
+  if (event.target?.id !== 'paymentForm') return;
+  event.preventDefault();
+  event.stopPropagation();
+  window.IncantoSubmitPayment(event);
+}, true);
+
+function setPaymentMethod(method) {
+  $$('.payment-method').forEach(label => {
+    const input = label.querySelector('input');
+    const isActive = input?.value === method;
+    label.classList.toggle('active', isActive);
+    if (input) input.checked = isActive;
+  });
+  const cardFields = ['#cardName', '#cardNumber', '#cardExpiry', '#cardCvc'];
+  cardFields.forEach(selector => {
+    const field = $(selector);
+    if (field) field.disabled = method !== 'card';
+  });
 }
 
 /* ─── FAVORITES ──────────────────────────── */
@@ -377,8 +531,19 @@ function openFavoritesModal() {
       item.innerHTML = `
         <div class="modal-gift-emoji">${fav.emoji}</div>
         <div class="modal-gift-info"><strong>${fav.name}</strong><span>${fav.priceLabel}</span></div>
-        <button class="btn-buy" onclick="window.open('#','_blank')" style="font-size:.78rem;padding:8px 14px;">Buy →</button>
+        <button class="btn-buy modal-buy" type="button" style="font-size:.78rem;padding:8px 14px;">Buy →</button>
       `;
+      item.querySelector('.modal-buy')?.addEventListener('click', () => {
+        $('#favsModal').classList.remove('open');
+        showPurchaseConfirmation({
+          id: fav.id,
+          name: fav.name,
+          emoji: fav.emoji,
+          priceLabel: fav.priceLabel,
+          reason: 'Saved from your favorite gifts.',
+          link: '#',
+        });
+      });
       body.appendChild(item);
     });
   }
@@ -395,6 +560,7 @@ function normalizeGiftForStorage(gift) {
     emoji: gift.emoji || 'ðŸŽ',
     price: gift.price || null,
     priceLabel: gift.priceLabel || 'Price unavailable',
+    quantity: gift.quantity || 1,
     reason: gift.reason || '',
     link: gift.link || '#',
   };
@@ -408,23 +574,25 @@ function addToCart(gift) {
     state.cart.unshift({ ...normalizeGiftForStorage(gift), quantity: 1, addedAt: new Date().toISOString() });
   }
   localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
-  if (state.isAuthenticated) {
-    apiFetch('/users/cart', {
-      method: 'POST',
-      body: JSON.stringify({ gift: normalizeGiftForStorage(gift) }),
-    }).catch(() => {});
-  }
   renderCart();
+  renderCartPage();
   showToast(`Added "${gift.name}" to cart`);
 }
 
 function removeFromCart(giftId) {
   state.cart = state.cart.filter(item => String(item.id) !== String(giftId));
   localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
-  if (state.isAuthenticated) {
-    apiFetch(`/users/cart/${encodeURIComponent(giftId)}`, { method: 'DELETE' }).catch(() => {});
-  }
   renderCart();
+  renderCartPage();
+}
+
+function changeCartQuantity(giftId, delta) {
+  const item = state.cart.find(cartItem => String(cartItem.id) === String(giftId));
+  if (!item) return;
+  item.quantity = Math.max(1, (item.quantity || 1) + delta);
+  localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
+  renderCart();
+  renderCartPage();
 }
 
 function renderCart() {
@@ -460,8 +628,94 @@ function renderCart() {
   section.style.display = 'block';
 }
 
+function renderCartPage() {
+  const list = $('#cartPageList');
+  const count = $('#cartPageCount');
+  const total = $('#cartPageTotal');
+  const checkoutBtn = $('#checkoutCartBtn');
+  if (!list || !count || !total || !checkoutBtn) return;
+
+  const totalItems = state.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  const cartTotal = getCartTotal();
+  count.textContent = totalItems;
+  total.textContent = cartTotal ? `Rs. ${cartTotal.toLocaleString('en-IN')}` : 'Rs. 0';
+  checkoutBtn.disabled = state.cart.length === 0;
+
+  if (state.cart.length === 0) {
+    list.innerHTML = '<div class="shop-empty">Your cart is empty. Add gifts from recommendations or trending items.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  state.cart.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'shop-row';
+    row.innerHTML = `
+      <div class="shop-emoji">${escapeHtml(item.emoji || '🎁')}</div>
+      <div class="shop-info">
+        <h3>${escapeHtml(item.name || 'Gift item')}</h3>
+        <p>${escapeHtml(item.description || item.reason || 'Saved for checkout.')}</p>
+        <strong>${escapeHtml(item.priceLabel || 'Price unavailable')}</strong>
+      </div>
+      <div class="shop-controls">
+        <div class="qty-control">
+          <button type="button" data-action="decrease">-</button>
+          <span>${item.quantity || 1}</span>
+          <button type="button" data-action="increase">+</button>
+        </div>
+        <button class="btn-secondary" type="button" data-action="buy">Buy</button>
+        <button class="cart-remove" type="button" data-action="remove">Remove</button>
+      </div>
+    `;
+    row.querySelector('[data-action="decrease"]')?.addEventListener('click', () => changeCartQuantity(item.id, -1));
+    row.querySelector('[data-action="increase"]')?.addEventListener('click', () => changeCartQuantity(item.id, 1));
+    row.querySelector('[data-action="remove"]')?.addEventListener('click', () => removeFromCart(item.id));
+    row.querySelector('[data-action="buy"]')?.addEventListener('click', () => showPurchaseConfirmation(item));
+    list.appendChild(row);
+  });
+}
+
+function renderOrdersPage() {
+  const list = $('#ordersList');
+  if (!list) return;
+
+  if (state.orders.length === 0) {
+    list.innerHTML = '<div class="shop-empty">No purchases yet. Completed checkouts will appear here.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  state.orders.forEach(order => {
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    const date = new Date(order.placedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    const items = order.items || [];
+    card.innerHTML = `
+      <div class="order-head">
+        <div>
+          <span>${escapeHtml(order.id)}</span>
+          <h3>${items.length} item${items.length === 1 ? '' : 's'} bought</h3>
+        </div>
+        <strong>${escapeHtml(order.status || 'Confirmed')}</strong>
+      </div>
+      <div class="order-meta">${escapeHtml(date)} · ${escapeHtml(order.paymentMethod || 'payment')}</div>
+      <div class="order-items">
+        ${items.map(item => `
+          <div class="order-item">
+            <span>${escapeHtml(item.emoji || '🎁')}</span>
+            <div><strong>${escapeHtml(item.name || 'Gift item')}</strong><small>${escapeHtml(item.priceLabel || 'Price unavailable')} · Qty ${item.quantity || 1}</small></div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="shop-total">${order.total ? `Rs. ${Number(order.total).toLocaleString('en-IN')}` : 'Total unavailable'}</div>
+    `;
+    list.appendChild(card);
+  });
+}
+
 /* ─── FINDER ─────────────────────────────── */
-function addToRecentlyViewed(gift) {
+function addToRecentlyViewed(gift, options = {}) {
+  const { sync = true } = options;
   state.recentlyViewed = state.recentlyViewed.filter(item => item.id !== gift.id);
   state.recentlyViewed.unshift({
     ...normalizeGiftForStorage(gift),
@@ -469,7 +723,7 @@ function addToRecentlyViewed(gift) {
   });
   state.recentlyViewed = state.recentlyViewed.slice(0, 6);
   localStorage.setItem('incanto_recent', JSON.stringify(state.recentlyViewed));
-  if (state.isAuthenticated) {
+  if (sync && state.isAuthenticated) {
     apiFetch('/users/recently-viewed', {
       method: 'POST',
       body: JSON.stringify({ gift: normalizeGiftForStorage(gift) }),
@@ -513,7 +767,8 @@ function renderRecentlyViewed() {
 
 function initFinder() {
   $$('#step-1 .choice-btn, #step-2 .choice-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
+    btn.addEventListener('click', function (event) {
+      event.preventDefault();
       const stepId = this.closest('.finder-step').id;
       $$(`#${stepId} .choice-btn`).forEach(b => b.classList.remove('selected'));
       this.classList.add('selected');
@@ -529,7 +784,8 @@ function initFinder() {
   });
 
   $$('.tag-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
+    btn.addEventListener('click', function (event) {
+      event.preventDefault();
       this.classList.toggle('selected');
       const val = this.dataset.value;
       if (this.classList.contains('selected')) state.inputs.interests.push(val);
@@ -538,7 +794,8 @@ function initFinder() {
   });
 
   $$('.pers-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
+    btn.addEventListener('click', function (event) {
+      event.preventDefault();
       $$('.pers-btn').forEach(b => b.classList.remove('selected'));
       this.classList.add('selected');
       state.inputs.personality = this.dataset.value;
@@ -546,20 +803,20 @@ function initFinder() {
   });
 
   $$('.btn-next').forEach(btn => {
-    btn.addEventListener('click', function () {
+    btn.addEventListener('click', function (event) {
+      event.preventDefault();
       goToStep(parseInt(this.id.replace('next', '')) + 1);
     });
   });
 
   $$('.btn-back').forEach(btn => {
-    btn.addEventListener('click', function () {
+    btn.addEventListener('click', function (event) {
+      event.preventDefault();
       goToStep(parseInt(this.closest('.finder-step').id.split('-')[1]) - 1);
     });
   });
 
-  $('#findGifts').addEventListener('click', () => {
-    generateResults();
-  });
+  $('#findGifts')?.addEventListener('click', window.IncantoFindGifts);
 
   $('#restartBtn').addEventListener('click', restartFinder);
   $('#loadMoreBtn').addEventListener('click', loadMoreGifts);
@@ -595,7 +852,8 @@ function initBudgetSlider() {
     updateSliderBackground(this);
   });
   $$('.preset-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
+    btn.addEventListener('click', function (event) {
+      event.preventDefault();
       $$('.preset-btn').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       const v = parseInt(this.dataset.val);
@@ -640,7 +898,7 @@ function loadMoreGifts() {
     const currentIds = state.currentResults.map(g => g.id);
     const more = GIFT_DATABASE.filter(g => !currentIds.includes(g.id)).slice(0, 3);
     if (more.length > 0) {
-      const grid = $('#giftsGrid');
+      const grid = $('#recommendationsGrid');
       more.forEach((gift, idx) => {
         const card = createGiftCard(gift, idx);
         card.style.animationDelay = `${idx * 0.1}s`;
@@ -683,8 +941,14 @@ function initNavbar() {
   window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40));
   const ham = $('#hamburger');
   const mobileMenu = $('#mobileMenu');
-  ham.addEventListener('click', () => mobileMenu.classList.toggle('open'));
-  $$('.mobile-link').forEach(link => link.addEventListener('click', () => mobileMenu.classList.remove('open')));
+  const setMenuOpen = (isOpen) => {
+    mobileMenu.classList.toggle('open', isOpen);
+    ham.setAttribute('aria-expanded', String(isOpen));
+    ham.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+  };
+
+  ham.addEventListener('click', () => setMenuOpen(!mobileMenu.classList.contains('open')));
+  $$('.mobile-link').forEach(link => link.addEventListener('click', () => setMenuOpen(false)));
 }
 
 /* ─── SCROLL REVEAL ──────────────────────── */
@@ -918,12 +1182,16 @@ function handleRouting() {
   const isHomeView = ['home','hero','how','finder','results','about'].includes(targetId);
   $$('.view-section').forEach(sec => sec.classList.toggle('active', sec.id === (isHomeView ? 'home' : targetId)));
   if (!document.querySelector('.view-section.active')) $('#home')?.classList.add('active');
+  if (targetId === 'cart') renderCartPage();
+  if (targetId === 'orders') renderOrdersPage();
   if (isHomeView && targetId !== 'home') {
     setTimeout(() => document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 10);
   } else {
     window.scrollTo({ top: 0 });
   }
   $('#mobileMenu')?.classList.remove('open');
+  $('#hamburger')?.setAttribute('aria-expanded', 'false');
+  $('#hamburger')?.setAttribute('aria-label', 'Open menu');
 }
 
 window.addEventListener('hashchange', handleRouting);
@@ -931,7 +1199,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     $('#favsModal').classList.remove('open');
     hideAuthModal();
-    if (window.location.hash === '#purchase') cancelPurchase();
+    if (window.location.hash === '#purchase' || window.location.hash === '#payment') cancelPurchase();
   }
 });
 
@@ -945,9 +1213,18 @@ document.addEventListener('DOMContentLoaded', () => {
   initAuth();
   updateFavoritesUI();
   renderCart();
+  renderCartPage();
+  renderOrdersPage();
   renderRecentlyViewed();
   initBuyButtons();
   $('#confirmPurchaseBtn')?.addEventListener('click', confirmPurchase);
   $('#cancelPurchaseBtn')?.addEventListener('click', cancelPurchase);
+  $('#backToPurchaseBtn')?.addEventListener('click', backToPurchase);
+  $('#paymentForm')?.addEventListener('submit', handlePaymentSubmit);
+  $('#checkoutCartBtn')?.addEventListener('click', showCartPurchaseConfirmation);
+  $$('.payment-method input').forEach(input => {
+    input.addEventListener('change', () => setPaymentMethod(input.value));
+  });
+  setPaymentMethod('card');
   handleRouting();
 });
