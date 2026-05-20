@@ -46,9 +46,14 @@ router.get("/recommendations", async (req, res, next) => {
       { limit: parsedLimit, page: parsedPage }
     );
 
+    const responseMessage =
+      recommendations.total > 0
+        ? 'Recommendations retrieved successfully.'
+        : 'No gifts match your exact preferences and budget.';
+
     res.json({
       success: true,
-      message: "Recommendations retrieved successfully.",
+      message: responseMessage,
       data: {
         appliedFilters: {
           budget: resolvedBudget,

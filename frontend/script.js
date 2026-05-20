@@ -30,6 +30,7 @@ const state = {
   isFindingGifts: false,
   pendingPurchaseGift: null,
   pendingCheckoutItems: [],
+  voucher: { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' },
   isAuthenticated: window.IncantoAuth?.isAuthenticated() || false,
   user: window.IncantoAuth?.getUser() || null
 };
@@ -79,6 +80,12 @@ const escapeHtml = (value) =>
     '"': '&quot;',
     "'": '&#039;',
   }[char]));
+
+function parsePriceLabel(priceLabel) {
+  if (!priceLabel) return null;
+  const cleaned = String(priceLabel).replace(/[^0-9]+/g, '');
+  return cleaned ? Number(cleaned) : null;
+}
 
 async function apiFetch(path, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...options.headers };
@@ -149,8 +156,7 @@ async function generateResults() {
 
     const apiResults = data?.data?.results || [];
 
-    if (ok && data.success && apiResults.length > 0) {
-      // Normalise backend gift shape to match frontend card format
+    if (ok && data.success) {
       const gifts = apiResults.map(g => ({
         id: g.id,
         name: g.name,
@@ -166,28 +172,24 @@ async function generateResults() {
       }));
       state.currentResults = gifts;
       displayResults(gifts);
-      showToast(`Found ${gifts.length} perfect gift ideas! 🎁`);
-    } else {
-      throw new Error('No results from API');
+
+      if (gifts.length > 0) {
+        showToast(`Found ${gifts.length} perfect gift ideas! 🎁`);
+      } else {
+        showToast('No gifts match your exact preferences and budget. Adjust your filters to see results.');
+      }
+      done();
+      return;
     }
+
+    throw new Error(data.message || 'No results from API');
 
   } catch (err) {
     done();
-    console.warn('API recommendations failed, using local fallback:', err.message);
-
-    // Local fallback: filter by budget + interests
-    const filtered = GIFT_DATABASE.filter(g => {
-      const withinBudget = g.price <= state.inputs.budget + 2000;
-      const recipientMatch = !state.inputs.recipient || g.recipients.includes(state.inputs.recipient) || g.recipients.includes(recipient);
-      const interestMatch = state.inputs.interests.length === 0 ||
-        state.inputs.interests.some(i => g.tags.includes(i));
-      return withinBudget && (recipientMatch || interestMatch);
-    });
-
-    const results = (filtered.length > 0 ? filtered : GIFT_DATABASE).slice(0, 6);
-    state.currentResults = results;
-    displayResults(results);
-    showToast('Showing curated recommendations ✨');
+    console.warn('API recommendations failed:', err.message);
+    state.currentResults = [];
+    displayResults([]);
+    showToast('Could not load strict recommendations. Please try again.');
   }
 }
 
@@ -312,6 +314,7 @@ function showPurchaseConfirmation(gift) {
   if (details) details.textContent = `Confirm ${gift.name} and continue to the INCANTO payment page.`;
 
   window.location.hash = '#purchase';
+  handleRouting();
 }
 
 function getCartTotal() {
@@ -340,37 +343,93 @@ function showCartPurchaseConfirmation() {
   $('#purchaseGiftReason').textContent = gift.reason;
   $('#purchaseGiftDetails').textContent = 'Confirm your cart and continue to the INCANTO payment page.';
   window.location.hash = '#purchase';
+  handleRouting();
 }
 
-function confirmPurchase() {
+async function confirmPurchase() {
   const gift = state.pendingPurchaseGift;
   if (!gift) return;
   showPaymentPage(gift);
 }
 
+const DEMO_VOUCHERS = {
+  INCANTO10: { discount: 0.10, label: '10% off' },
+  GIFT50: { discount: 0.50, maxAmount: 2500, label: '50% off up to Rs. 2,500' },
+};
+
+function getPendingTotal() {
+  return state.pendingCheckoutItems.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 1)), 0);
+}
+
+function updatePaymentTotal() {
+  const raw = getPendingTotal();
+  const discount = state.voucher.amount || 0;
+  const total = Math.max(0, raw - discount);
+  const paymentTotal = $('#paymentTotal');
+  const voucherMessage = $('#voucherMessage');
+  if (paymentTotal) paymentTotal.textContent = `Rs. ${total.toLocaleString('en-IN')}`;
+  if (voucherMessage) voucherMessage.textContent = state.voucher.message || 'Try INCANTO10 for 10% off.';
+}
+
+function applyVoucher(code) {
+  const normalized = String(code || '').trim().toUpperCase();
+  const raw = getPendingTotal();
+  if (!normalized) {
+    state.voucher = { code: '', amount: 0, message: 'No voucher applied.' };
+    updatePaymentTotal();
+    return state.voucher;
+  }
+
+  const promo = DEMO_VOUCHERS[normalized];
+  if (!promo) {
+    state.voucher = { code: normalized, amount: 0, message: 'Invalid voucher. Try INCANTO10 or GIFT50.' };
+  } else {
+    const amount = promo.maxAmount ? Math.min(raw * promo.discount, promo.maxAmount) : raw * promo.discount;
+    state.voucher = {
+      code: normalized,
+      amount: Math.round(amount),
+      message: `Voucher applied: ${promo.label} (-Rs. ${Math.round(amount).toLocaleString('en-IN')})`,
+    };
+  }
+
+  updatePaymentTotal();
+  return state.voucher;
+}
+
 function showPaymentPage(gift) {
   state.pendingPurchaseGift = gift;
+  const isCartCheckout = String(gift.id).startsWith('cart-');
+  if (!isCartCheckout) {
+    state.pendingCheckoutItems = [normalizeGiftForStorage(gift)];
+  }
+  state.voucher = { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' };
+  $('#voucherCode').value = '';
   $('#paymentGiftEmoji').textContent = gift.emoji || '🎁';
   $('#paymentGiftName').textContent = gift.name || 'Gift item';
   $('#paymentGiftReason').textContent = gift.reason || 'Ready for checkout.';
   $('#paymentGiftPrice').textContent = gift.priceLabel || 'Price unavailable';
+  updatePaymentTotal();
   window.location.hash = '#payment';
+  handleRouting();
 }
 
 function getGiftFromCard(card, btn) {
-  const id = btn.dataset.giftId ? parseInt(btn.dataset.giftId, 10) : null;
-  if (id && state.currentResults.length) {
-    const existing = state.currentResults.find(g => g.id === id);
+  const rawId = btn.dataset.giftId || card.dataset.id || null;
+  const id = rawId ? (Number(rawId) || rawId) : Date.now();
+  if (Number(rawId) && state.currentResults.length) {
+    const existing = state.currentResults.find(g => Number(g.id) === Number(rawId));
     if (existing) return existing;
   }
 
   const name = card.querySelector('.gift-name')?.textContent?.trim() || 'Gift item';
+  const description = card.querySelector('.gift-desc')?.textContent?.trim() || '';
   const priceLabel = card.querySelector('.gift-price')?.textContent?.trim() || 'Price unavailable';
-  const emoji = card.querySelector('.gift-img-wrap span')?.textContent?.trim() || '🎁';
-  const reason = card.querySelector('.gift-ai-reason')?.textContent?.trim() || '';
+  const price = Number(card.dataset.price) || parsePriceLabel(priceLabel) || null;
+  const emoji = card.querySelector('.gift-img-wrap span')?.textContent?.trim() || card.querySelector('.gift-img-wrap img')?.alt?.trim() || '🎁';
+  const reason = card.querySelector('.gift-ai-reason')?.textContent?.trim() || description || '';
   const link = btn.dataset.link || btn.href || '#';
 
-  return { id: id || Date.now(), name, priceLabel, emoji, reason, link };
+  return { id, name, description, price, priceLabel, emoji, reason, link, quantity: 1 };
 }
 
 function initBuyButtons() {
@@ -383,6 +442,42 @@ function initBuyButtons() {
 
     const gift = getGiftFromCard(card, btn);
     showPurchaseConfirmation(gift);
+  });
+}
+
+function initStaticTrendingCards() {
+  const cards = document.querySelectorAll('#trendingGrid .gift-card');
+  cards.forEach(card => {
+    const buyBtn = card.querySelector('.btn-buy');
+    const cartBtn = card.querySelector('.btn-cart');
+    const favBtn = card.querySelector('.fav-btn');
+
+    if (buyBtn) {
+      buyBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const gift = getGiftFromCard(card, buyBtn);
+        showPurchaseConfirmation(gift);
+      });
+    }
+
+    if (cartBtn) {
+      cartBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const gift = getGiftFromCard(card, cartBtn);
+        addToCart(gift);
+      });
+    }
+
+    if (favBtn) {
+      favBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const gift = getGiftFromCard(card, favBtn);
+        toggleFavorite(gift, favBtn);
+      });
+    }
   });
 }
 
@@ -400,7 +495,7 @@ function backToPurchase() {
   }
 }
 
-function handlePaymentSubmit(event) {
+async function handlePaymentSubmit(event) {
   event.preventDefault();
   event.stopPropagation();
   const gift = state.pendingPurchaseGift;
@@ -413,6 +508,11 @@ function handlePaymentSubmit(event) {
   const method = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card';
   const needsCard = method === 'card';
   const address = $('#deliveryAddress')?.value.trim();
+  const voucherCode = $('#voucherCode')?.value.trim();
+
+  if (voucherCode) {
+    applyVoucher(voucherCode);
+  }
 
   if (needsCard) {
     const cardName = $('#cardName')?.value.trim();
@@ -431,7 +531,7 @@ function handlePaymentSubmit(event) {
   }
 
   addToRecentlyViewed(gift, { sync: false });
-  saveOrder(gift);
+  await saveOrder(gift);
   showToast(`Order placed for ${gift.name}.`);
   state.pendingPurchaseGift = null;
   state.pendingCheckoutItems = [];
@@ -440,27 +540,45 @@ function handlePaymentSubmit(event) {
   window.location.hash = '#orders';
 }
 
-function saveOrder(gift) {
+async function saveOrder(gift) {
   const items = state.pendingCheckoutItems.length
     ? state.pendingCheckoutItems
     : [normalizeGiftForStorage(gift)];
+  const subTotal = items.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 1)), 0);
+  const discount = state.voucher?.amount || 0;
+  const total = Math.max(0, subTotal - discount);
   const order = {
     id: `INC-${Date.now()}`,
     placedAt: new Date().toISOString(),
     status: 'Confirmed',
     paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card',
+    voucher: state.voucher?.code || null,
+    discount,
     items,
-    total: items.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 1)), 0),
+    total,
+    shippingAddress: $('#deliveryAddress')?.value.trim() || '',
   };
 
   state.orders.unshift(order);
   localStorage.setItem('incanto_orders', JSON.stringify(state.orders));
 
+  if (state.isAuthenticated) {
+    const { ok, data } = await apiFetch('/users/orders', {
+      method: 'POST',
+      body: JSON.stringify({ order }),
+    });
+    if (ok && data?.data?.order) {
+      state.orders[0] = data.data.order;
+      localStorage.setItem('incanto_orders', JSON.stringify(state.orders));
+      state.user = data.data.user;
+      localStorage.setItem('incanto_user', JSON.stringify(state.user));
+    }
+  }
+
   const orderedIds = new Set(items.map(item => String(item.id)));
   state.cart = state.cart.filter(item => !orderedIds.has(String(item.id)));
   localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
-  renderCart();
-  renderCartPage();
+  updateCartUI();
   renderOrdersPage();
 }
 
@@ -552,13 +670,14 @@ function openFavoritesModal() {
 
 /* ─── RECENTLY VIEWED ────────────────────── */
 function normalizeGiftForStorage(gift) {
+  const price = gift.price != null ? Number(gift.price) : parsePriceLabel(gift.priceLabel);
   return {
     id: gift.id,
     name: gift.name,
     description: gift.description || '',
     category: gift.category || 'Gift',
-    emoji: gift.emoji || 'ðŸŽ',
-    price: gift.price || null,
+    emoji: gift.emoji || '🎁',
+    price: Number.isFinite(price) ? price : null,
     priceLabel: gift.priceLabel || 'Price unavailable',
     quantity: gift.quantity || 1,
     reason: gift.reason || '',
@@ -574,16 +693,14 @@ function addToCart(gift) {
     state.cart.unshift({ ...normalizeGiftForStorage(gift), quantity: 1, addedAt: new Date().toISOString() });
   }
   localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
-  renderCart();
-  renderCartPage();
+  updateCartUI();
   showToast(`Added "${gift.name}" to cart`);
 }
 
 function removeFromCart(giftId) {
   state.cart = state.cart.filter(item => String(item.id) !== String(giftId));
   localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
-  renderCart();
-  renderCartPage();
+  updateCartUI();
 }
 
 function changeCartQuantity(giftId, delta) {
@@ -591,8 +708,36 @@ function changeCartQuantity(giftId, delta) {
   if (!item) return;
   item.quantity = Math.max(1, (item.quantity || 1) + delta);
   localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
+  updateCartUI();
+}
+
+function updateCartUI() {
   renderCart();
   renderCartPage();
+  updateCartBadge();
+  updateQuickCartBanner();
+}
+
+function updateCartBadge() {
+  const badge = $('#navCartCount');
+  const totalItems = state.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  if (badge) badge.textContent = totalItems;
+  return totalItems;
+}
+
+function updateQuickCartBanner() {
+  const banner = $('#quickCartBanner');
+  const countLabel = $('#quickCartItemsCount');
+  const totalItems = state.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  if (!banner || !countLabel) return;
+  banner.style.display = totalItems > 0 ? 'flex' : 'none';
+  countLabel.textContent = totalItems;
+}
+
+function showCartPage() {
+  renderCartPage();
+  window.location.hash = '#cart';
+  handleRouting();
 }
 
 function renderCart() {
@@ -603,6 +748,7 @@ function renderCart() {
 
   const totalItems = state.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
   count.textContent = totalItems;
+  updateCartBadge();
 
   if (state.cart.length === 0) {
     section.style.display = 'none';
@@ -640,6 +786,7 @@ function renderCartPage() {
   count.textContent = totalItems;
   total.textContent = cartTotal ? `Rs. ${cartTotal.toLocaleString('en-IN')}` : 'Rs. 0';
   checkoutBtn.disabled = state.cart.length === 0;
+  updateCartBadge();
 
   if (state.cart.length === 0) {
     list.innerHTML = '<div class="shop-empty">Your cart is empty. Add gifts from recommendations or trending items.</div>';
@@ -1009,13 +1156,31 @@ function updateProfileUI(user = state.user) {
 function updateAuthUI() {
   state.isAuthenticated = window.IncantoAuth?.isAuthenticated() || false;
   state.user = window.IncantoAuth?.getUser() || null;
+
   if (state.user?.cart) {
-    state.cart = state.user.cart;
+    const serverCart = Array.isArray(state.user.cart) ? state.user.cart : [];
+    const localCart = Array.isArray(state.cart) ? state.cart : [];
+    const mergedCart = [...serverCart];
+    localCart.forEach((item) => {
+      const existing = mergedCart.find((cartItem) => String(cartItem.id) === String(item.id));
+      if (existing) {
+        existing.quantity = Math.max(existing.quantity || 1, item.quantity || 1);
+      } else {
+        mergedCart.unshift(item);
+      }
+    });
+    state.cart = mergedCart;
     localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
   }
+
   if (state.user?.recentlyViewed) {
     state.recentlyViewed = state.user.recentlyViewed;
     localStorage.setItem('incanto_recent', JSON.stringify(state.recentlyViewed));
+  }
+
+  if (state.user?.orders) {
+    state.orders = Array.isArray(state.user.orders) ? state.user.orders : state.orders;
+    localStorage.setItem('incanto_orders', JSON.stringify(state.orders));
   }
 
   $('#loginBtn').style.display = state.isAuthenticated ? 'none' : 'inline-flex';
@@ -1024,6 +1189,8 @@ function updateAuthUI() {
   $('#mobileProfileBtn').style.display = state.isAuthenticated ? 'block' : 'none';
   $('#logoutBtn').style.display = state.isAuthenticated ? 'inline-flex' : 'none';
   updateProfileUI();
+  updateCartUI();
+  renderOrdersPage();
 }
 
 async function handleAuthSubmit(formType, event) {
@@ -1212,16 +1379,19 @@ document.addEventListener('DOMContentLoaded', () => {
   initFilters();
   initAuth();
   updateFavoritesUI();
-  renderCart();
-  renderCartPage();
+  updateCartUI();
   renderOrdersPage();
   renderRecentlyViewed();
   initBuyButtons();
+  initStaticTrendingCards();
   $('#confirmPurchaseBtn')?.addEventListener('click', confirmPurchase);
+  $('#quickViewCartBtn')?.addEventListener('click', showCartPage);
+  $('#quickCheckoutNowBtn')?.addEventListener('click', showCartPurchaseConfirmation);
   $('#cancelPurchaseBtn')?.addEventListener('click', cancelPurchase);
   $('#backToPurchaseBtn')?.addEventListener('click', backToPurchase);
   $('#paymentForm')?.addEventListener('submit', handlePaymentSubmit);
   $('#checkoutCartBtn')?.addEventListener('click', showCartPurchaseConfirmation);
+  $('#applyVoucherBtn')?.addEventListener('click', () => applyVoucher($('#voucherCode')?.value));
   $$('.payment-method input').forEach(input => {
     input.addEventListener('change', () => setPaymentMethod(input.value));
   });

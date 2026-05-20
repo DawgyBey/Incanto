@@ -25,6 +25,8 @@
           <li><a href="#hero">Home</a></li>
           <li><a href="#finder">Finder</a></li>
           <li><a href="#trending">Trending</a></li>
+          <li><a href="#cart" class="nav-link nav-cart-link">Cart <span class="nav-badge" id="navCartCount">0</span></a></li>
+          <li><a href="#orders">My Purchases</a></li>
           <li><a href="#about">About</a></li>
         </ul>
         <div class="nav-actions">
@@ -59,6 +61,8 @@
       <a href="#hero" class="mobile-link">Home</a>
       <a href="#finder" class="mobile-link">Finder</a>
       <a href="#trending" class="mobile-link">Trending</a>
+      <a href="#cart" class="mobile-link">Cart</a>
+      <a href="#orders" class="mobile-link">My Purchases</a>
       <a href="#about" class="mobile-link">About</a>
       <button
         class="mobile-link mobile-auth-link"
@@ -95,7 +99,11 @@
             gifts that genuinely move people — curated for every personality and
             moment.
           </p>
-          <div class="hero-actions reveal reveal-delay-3">
+          <blockquote class="hero-quote reveal reveal-delay-3">
+            “A great gift is less about the object and more about showing you
+            noticed who they are.”
+          </blockquote>
+          <div class="hero-actions reveal reveal-delay-4">
             <a href="#finder" class="btn-primary" id="heroStartBtn"
               >Start Finding →</a
             >
@@ -114,6 +122,60 @@
             </div>
           </div>
         </div>
+
+        <div class="hero-float reveal reveal-delay-5">
+          <div class="hero-float-chip">Thoughtful gift cues</div>
+          <div class="hero-float-card hero-float-card--wide">
+            <div class="hero-float-icon">✨</div>
+            <div>
+              <strong>Meaningful matches</strong>
+              <span>AI surfaces ideas that feel personal.</span>
+            </div>
+          </div>
+          <div class="hero-float-card hero-float-card--stacked">
+            <div>
+              <strong>For every mood</strong>
+              <span>Cozy, creative, luxe, playful.</span>
+            </div>
+            <div class="hero-float-badge">Quick inspiration</div>
+          </div>
+        </div>
+
+        <aside class="hero-panel reveal reveal-delay-6">
+          <div class="panel-card panel-card--featured">
+            <span class="panel-tag">AI-curated preview</span>
+            <h3>Handpicked gifts for the moment.</h3>
+            <p>Real ideas, minimal fuss — this is the thoughtful inspiration your search will unlock.</p>
+            <div class="panel-chip-row">
+              <span>Cozy</span>
+              <span>Personal</span>
+              <span>Timeless</span>
+            </div>
+          </div>
+          <div class="panel-card panel-card--list">
+            <div class="panel-item">
+              <div class="panel-icon">☕</div>
+              <div>
+                <strong>Artisan coffee set</strong>
+                <span>Perfect for creative mornings</span>
+              </div>
+            </div>
+            <div class="panel-item">
+              <div class="panel-icon">🪴</div>
+              <div>
+                <strong>Living desk planter</strong>
+                <span>Fresh ideas for home spaces</span>
+              </div>
+            </div>
+            <div class="panel-item">
+              <div class="panel-icon">🕯️</div>
+              <div>
+                <strong>Scented ritual candle</strong>
+                <span>Small luxury that feels personal</span>
+              </div>
+            </div>
+          </div>
+        </aside>
       </section>
 
       <!-- HOW IT WORKS -->
@@ -409,6 +471,16 @@
             </div>
           </div>
 
+          <div class="quick-cart-banner" id="quickCartBanner" style="display:none">
+            <div class="quick-cart-text">
+              🛒 <strong id="quickCartItemsCount">0</strong> gift(s) added to your cart.
+            </div>
+            <div class="quick-cart-actions">
+              <button class="btn-secondary" id="quickViewCartBtn" type="button">View Cart</button>
+              <button class="btn-primary" id="quickCheckoutNowBtn" type="button">Checkout Now</button>
+            </div>
+          </div>
+
           <!-- Favorites bar -->
           <div class="favorites-bar" id="favoritesBar" style="display: none">
             <div class="fav-label">
@@ -427,7 +499,7 @@
             <div class="cart-grid" id="cartGrid"></div>
           </div>
 
-          <div class="gifts-grid" id="giftsGrid">
+          <div class="gifts-grid" id="recommendationsGrid">
             <!-- Cards injected by JS -->
           </div>
 
@@ -443,6 +515,131 @@
             <h3 class="recent-title">Recently Viewed</h3>
             <div class="recent-grid" id="recentGrid"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ CART -->
+      <section id="cart" class="page-section view-section">
+        <div class="container">
+          <div class="section-header reveal">
+            <p class="section-eyebrow">Your Cart</p>
+            <h2 class="section-title">Items ready for checkout</h2>
+            <p class="section-sub">
+              Review all selected gifts before you confirm your purchase.
+            </p>
+          </div>
+
+          <div class="cart-page-summary">
+            <div class="cart-summary">
+              <strong id="cartPageCount">0</strong> item(s) in your cart
+            </div>
+            <div class="cart-total" id="cartPageTotal">Rs. 0</div>
+          </div>
+
+          <div class="cart-page-list" id="cartPageList"></div>
+
+          <div class="results-footer">
+            <button class="btn-primary" id="checkoutCartBtn" type="button">
+              Checkout Cart
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ PAYMENT -->
+      <section id="payment" class="page-section view-section">
+        <div class="container">
+          <div class="section-header reveal">
+            <p class="section-eyebrow">Payment</p>
+            <h2 class="section-title">Complete your purchase</h2>
+            <p class="section-sub">
+              Use our demo card and voucher to test the checkout experience.
+            </p>
+          </div>
+
+          <div class="payment-panel">
+            <div class="payment-summary">
+              <div class="payment-summary-top">
+                <span class="payment-emoji" id="paymentGiftEmoji">🎁</span>
+                <div>
+                  <h3 id="paymentGiftName">Gift item</h3>
+                  <p id="paymentGiftReason">Ready for checkout.</p>
+                </div>
+              </div>
+              <div class="payment-price" id="paymentGiftPrice">Rs. 0</div>
+            </div>
+
+            <form id="paymentForm" class="payment-form">
+              <div class="payment-group">
+                <label for="deliveryAddress">Delivery address</label>
+                <input id="deliveryAddress" placeholder="Enter shipping address" required />
+              </div>
+
+              <div class="payment-group voucher-row">
+                <div>
+                  <label for="voucherCode">Voucher code</label>
+                  <input id="voucherCode" placeholder="INCANTO10 or GIFT50" />
+                </div>
+                <button type="button" class="btn-secondary" id="applyVoucherBtn">
+                  Apply
+                </button>
+              </div>
+              <div class="voucher-message" id="voucherMessage">
+                Try voucher <strong>INCANTO10</strong> for 10% off.
+              </div>
+
+              <div class="payment-group">
+                <label for="cardName">Cardholder name</label>
+                <input id="cardName" autocomplete="cc-name" placeholder="Demo cardholder" required />
+              </div>
+
+              <div class="payment-row">
+                <div class="payment-group">
+                  <label for="cardNumber">Card number</label>
+                  <input id="cardNumber" autocomplete="cc-number" placeholder="4242 4242 4242 4242" required />
+                </div>
+                <div class="payment-group">
+                  <label for="cardExpiry">Expiry</label>
+                  <input id="cardExpiry" autocomplete="cc-exp" placeholder="MM/YY" required />
+                </div>
+                <div class="payment-group">
+                  <label for="cardCvc">CVC</label>
+                  <input id="cardCvc" autocomplete="cc-csc" placeholder="123" required />
+                </div>
+              </div>
+
+              <div class="demo-note">
+                Demo card: <strong>4242 4242 4242 4242</strong>. Voucher codes: <strong>INCANTO10</strong>, <strong>GIFT50</strong>.
+              </div>
+
+              <div class="payment-footer">
+                <div class="payment-total">Total <span id="paymentTotal">Rs. 0</span></div>
+                <div class="payment-actions">
+                  <button type="button" class="btn-secondary" id="cancelPurchaseBtn">
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn-primary">
+                    Confirm & Pay
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ ORDERS -->
+      <section id="orders" class="page-section view-section">
+        <div class="container">
+          <div class="section-header reveal">
+            <p class="section-eyebrow">My Purchases</p>
+            <h2 class="section-title">Purchase history</h2>
+            <p class="section-sub">
+              Track all completed orders and review past purchases.
+            </p>
+          </div>
+
+          <div class="orders-page" id="ordersList"></div>
         </div>
       </section>
 
@@ -980,8 +1177,8 @@
           <p class="section-sub">See what everyone is loving right now.</p>
         </div>
 
-        <div class="gifts-grid" id="giftsGrid">
-          <div class="gift-card" style="animation-delay: 0s">
+        <div class="gifts-grid" id="trendingGrid">
+          <div class="gift-card" data-id="1" data-price="8500" style="animation-delay: 0s">
             <div class="gift-img-wrap">
               <span style="position: relative; z-index: 1">🎧</span>
               <div class="gift-badge">#1 Trending</div>
@@ -998,12 +1195,13 @@
               </div>
               <div class="gift-footer">
                 <div class="gift-price">Rs. 8,500<span>onwards</span></div>
-                <a href="#" class="btn-buy">Buy Now →</a>
+                <button class="btn-cart" type="button" data-gift-id="1">Add to Cart</button>
+                <a href="#" class="btn-buy" data-gift-id="1" data-link="#">Buy Now →</a>
               </div>
             </div>
           </div>
 
-          <div class="gift-card" style="animation-delay: 0.1s">
+          <div class="gift-card" data-id="2" data-price="3200" style="animation-delay: 0.1s">
             <div class="gift-img-wrap">
               <span style="position: relative; z-index: 1">☕</span>
               <div class="gift-badge">Hot Pick</div>
@@ -1020,12 +1218,13 @@
               </div>
               <div class="gift-footer">
                 <div class="gift-price">Rs. 3,200<span>onwards</span></div>
-                <a href="#" class="btn-buy">Buy Now →</a>
+                <button class="btn-cart" type="button" data-gift-id="2">Add to Cart</button>
+                <a href="#" class="btn-buy" data-gift-id="2" data-link="#">Buy Now →</a>
               </div>
             </div>
           </div>
 
-          <div class="gift-card" style="animation-delay: 0.2s">
+          <div class="gift-card" data-id="3" data-price="4500" style="animation-delay: 0.2s">
             <div class="gift-img-wrap">
               <span style="position: relative; z-index: 1">🪴</span>
               <div class="gift-badge">Fast Seller</div>
@@ -1042,12 +1241,13 @@
               </div>
               <div class="gift-footer">
                 <div class="gift-price">Rs. 4,500<span>onwards</span></div>
-                <a href="#" class="btn-buy">Buy Now →</a>
+                <button class="btn-cart" type="button" data-gift-id="3">Add to Cart</button>
+                <a href="#" class="btn-buy" data-gift-id="3" data-link="#">Buy Now →</a>
               </div>
             </div>
           </div>
 
-          <div class="gift-card" style="animation-delay: 0.3s">
+          <div class="gift-card" data-id="4" data-price="6800" style="animation-delay: 0.3s">
             <div class="gift-img-wrap">
               <span style="position: relative; z-index: 1">🧶</span>
               <div class="gift-badge">Highly Rated</div>
@@ -1064,12 +1264,13 @@
               </div>
               <div class="gift-footer">
                 <div class="gift-price">Rs. 6,800<span>onwards</span></div>
-                <a href="#" class="btn-buy">Buy Now →</a>
+                <button class="btn-cart" type="button" data-gift-id="4">Add to Cart</button>
+                <a href="#" class="btn-buy" data-gift-id="4" data-link="#">Buy Now →</a>
               </div>
             </div>
           </div>
 
-          <div class="gift-card" style="animation-delay: 0.4s">
+          <div class="gift-card" data-id="5" data-price="12000" style="animation-delay: 0.4s">
             <div class="gift-img-wrap">
               <span style="position: relative; z-index: 1">📷</span>
               <div class="gift-badge">Nostalgia Pick</div>
@@ -1086,12 +1287,13 @@
               </div>
               <div class="gift-footer">
                 <div class="gift-price">Rs. 12,000<span>onwards</span></div>
-                <a href="#" class="btn-buy">Buy Now →</a>
+                <button class="btn-cart" type="button" data-gift-id="5">Add to Cart</button>
+                <a href="#" class="btn-buy" data-gift-id="5" data-link="#">Buy Now →</a>
               </div>
             </div>
           </div>
 
-          <div class="gift-card" style="animation-delay: 0.5s">
+          <div class="gift-card" data-id="6" data-price="1500" style="animation-delay: 0.5s">
             <div class="gift-img-wrap">
               <span style="position: relative; z-index: 1">🍫</span>
               <div class="gift-badge">Local Favorite</div>
@@ -1108,7 +1310,8 @@
               </div>
               <div class="gift-footer">
                 <div class="gift-price">Rs. 1,500<span>onwards</span></div>
-                <a href="#" class="btn-buy">Buy Now →</a>
+                <button class="btn-cart" type="button" data-gift-id="6">Add to Cart</button>
+                <a href="#" class="btn-buy" data-gift-id="6" data-link="#">Buy Now →</a>
               </div>
             </div>
           </div>

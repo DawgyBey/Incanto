@@ -16,6 +16,26 @@ const normalizeTags = (tags) =>
     .map((tag) => tag.trim().toLowerCase())
     .filter(Boolean);
 
+const normalizeText = (text) => String(text || "").trim().toLowerCase();
+
+const buildRecipientAliases = (recipients) => {
+  const aliasSet = new Set(recipients);
+
+  if (recipients.some((r) => ["mom", "dad"].includes(r))) {
+    aliasSet.add("parent");
+  }
+
+  if (recipients.some((r) => ["partner", "wife", "husband"].includes(r))) {
+    aliasSet.add("partner");
+  }
+
+  if (recipients.some((r) => ["mom", "dad", "sibling", "child", "partner", "wife", "husband", "family"].includes(r))) {
+    aliasSet.add("family");
+  }
+
+  return Array.from(aliasSet);
+};
+
 const normalizeGift = (rawGift) => {
   const recipients = Array.isArray(rawGift.Recipient)
     ? rawGift.Recipient.map(normalizeRecipient)
@@ -29,12 +49,14 @@ const normalizeGift = (rawGift) => {
     recipients.push("partner");
   }
 
+  const normalizedRecipients = buildRecipientAliases(recipients);
+
   return {
     id: rawGift.id,
     name: rawGift["Item Name"] || rawGift.name || "Gift",
     category: String(rawGift.Category || rawGift.category || "").trim(),
     occasion: occasion,
-    recipients: recipients.length > 0 ? recipients : ["other"],
+    recipients: normalizedRecipients.length > 0 ? normalizedRecipients : ["other"],
     price: Number(rawGift["Price (NPR)"] ?? rawGift.price ?? 0),
     description: String(rawGift.Description || rawGift.description || "").trim(),
     availability: String(rawGift.Availability || rawGift.availability || "").trim(),
@@ -77,49 +99,85 @@ const occasionRecipientMap = {
   "new year": ["friend", "family", "colleague"],
 };
 
+const matchesInterests = (gift, interests) => {
+  if (!interests.length) return true;
+
+  const normalizedCategory = normalizeText(gift.category);
+  const normalizedOccasion = normalizeText(gift.occasion);
+
+  return interests.some((interest) =>
+    gift.tags.includes(interest) ||
+    normalizedCategory === interest ||
+    normalizedOccasion === interest
+  );
+};
+
+const matchesPersonality = (gift, personality) => {
+  if (!personality) return true;
+  const normalizedPersonality = normalizeText(personality);
+  const personalityTags = personalityTagMap[normalizedPersonality] || [normalizedPersonality];
+  return gift.tags.some((tag) => personalityTags.includes(tag));
+};
+
 const scoreGift = (gift, { budget, recipient, interests, personality, occasion }) => {
   let score = 0;
+
+  const normalizedRecipient = normalizeRecipient(recipient);
+  const normalizedOccasion = normalizeText(occasion);
+  const normalizedInterests = (interests || []).map((i) => normalizeText(i)).filter(Boolean);
 
   if (budget !== null && budget !== undefined && gift.price > budget) {
     return -1;
   }
 
-  const normalizedRecipient = normalizeRecipient(recipient);
+  if (normalizedRecipient && !gift.recipients.includes(normalizedRecipient)) {
+    return -1;
+  }
+
+  if (normalizedOccasion && gift.occasion.toLowerCase() !== normalizedOccasion) {
+    return -1;
+  }
+
+  if (normalizedInterests.length > 0 && !matchesInterests(gift, normalizedInterests)) {
+    return -1;
+  }
+
+  if (personality && !matchesPersonality(gift, personality)) {
+    return -1;
+  }
+
   if (normalizedRecipient && gift.recipients.includes(normalizedRecipient)) {
     score += 40;
   }
 
-  const normalizedOccasion = String(occasion || "").trim().toLowerCase();
   if (normalizedOccasion && gift.occasion.toLowerCase() === normalizedOccasion) {
     score += 20;
   }
 
-  // Occasion-recipient compatibility check
   if (normalizedOccasion && occasionRecipientMap[normalizedOccasion]) {
     const allowedRecipients = occasionRecipientMap[normalizedOccasion].map(normalizeRecipient);
-    const hasCompatibleRecipient = gift.recipients.some(rec => allowedRecipients.includes(rec));
+    const hasCompatibleRecipient = gift.recipients.some((rec) => allowedRecipients.includes(rec));
     if (!hasCompatibleRecipient) {
       return -1; // Exclude gift if no compatible recipient
     }
   }
 
-  const normalizedInterests = (interests || []).map((i) => String(i).trim().toLowerCase()).filter(Boolean);
   if (normalizedInterests.length > 0) {
     const matchedTags = gift.tags.filter((tag) => normalizedInterests.includes(tag));
     score += matchedTags.length * 25;
 
-    if (normalizedInterests.includes(gift.category.toLowerCase())) {
+    if (normalizedInterests.includes(normalizeText(gift.category))) {
       score += 15;
     }
 
-    if (normalizedInterests.includes(gift.occasion.toLowerCase())) {
+    if (normalizedInterests.includes(normalizeText(gift.occasion))) {
       score += 10;
     }
   }
 
   if (personality) {
-    const normalizedPersonality = String(personality).trim().toLowerCase();
-    const personalityTags = personalityTagMap[normalizedPersonality] || [];
+    const normalizedPersonality = normalizeText(personality);
+    const personalityTags = personalityTagMap[normalizedPersonality] || [normalizedPersonality];
     const personalityMatches = gift.tags.filter((tag) => personalityTags.includes(tag));
     score += personalityMatches.length * 20;
   }
