@@ -335,24 +335,51 @@
               <div class="budget-wrap">
                 <div class="budget-display">
                   <span class="currency">Rs.</span>
+                  <span class="budget-val" id="minBudgetVal">500</span>
+                  <span class="budget-range-separator">to</span>
+                  <span class="currency">Rs.</span>
                   <span class="budget-val" id="budgetVal">2,500</span>
+                </div>
+                <div class="budget-inputs">
+                  <label>
+                    Minimum
+                    <input
+                      type="number"
+                      id="minBudgetInput"
+                      min="0"
+                      max="20000"
+                      step="100"
+                      value="500"
+                    />
+                  </label>
+                  <label>
+                    Maximum
+                    <input
+                      type="number"
+                      id="maxBudgetInput"
+                      min="0"
+                      max="20000"
+                      step="100"
+                      value="2500"
+                    />
+                  </label>
                 </div>
                 <input
                   type="range"
                   class="budget-slider"
                   id="budgetSlider"
-                  min="500"
+                  min="0"
                   max="20000"
                   step="100"
                   value="2500"
                 />
                 <div class="budget-labels">
-                  <span>Rs. 500</span>
+                  <span>Rs. 0</span>
                   <span>Rs. 20,000</span>
                 </div>
                 <div class="budget-presets">
-                  <button class="preset-btn" data-val="1000">
-                    Under Rs. 1K
+                  <button class="preset-btn" data-min="0" data-val="1000">
+                    Up to Rs. 1K
                   </button>
                   <button class="preset-btn" data-val="3000">Rs. 1–3K</button>
                   <button class="preset-btn" data-val="7000">Rs. 3–7K</button>
@@ -575,6 +602,21 @@
                 <input id="deliveryAddress" placeholder="Enter shipping address" required />
               </div>
 
+              <div class="payment-methods" aria-label="Payment method">
+                <label class="payment-method active">
+                  <input type="radio" name="paymentMethod" value="card" checked />
+                  Card
+                </label>
+                <label class="payment-method">
+                  <input type="radio" name="paymentMethod" value="wallet" />
+                  Wallet
+                </label>
+                <label class="payment-method">
+                  <input type="radio" name="paymentMethod" value="cash" />
+                  Cash
+                </label>
+              </div>
+
               <div class="payment-group voucher-row">
                 <div>
                   <label for="voucherCode">Voucher code</label>
@@ -615,6 +657,9 @@
               <div class="payment-footer">
                 <div class="payment-total">Total <span id="paymentTotal">Rs. 0</span></div>
                 <div class="payment-actions">
+                  <button type="button" class="btn-secondary" id="backToPurchaseBtn">
+                    Back
+                  </button>
                   <button type="button" class="btn-secondary" id="cancelPurchaseBtn">
                     Cancel
                   </button>
@@ -1346,7 +1391,7 @@
             </div>
           </div>
           <div class="purchase-actions">
-            <button class="btn-secondary" id="cancelPurchaseBtn">Cancel</button>
+            <button class="btn-secondary" id="purchaseCancelBtn">Cancel</button>
             <button class="btn-primary" id="confirmPurchaseBtn">
               Confirm & Buy Now
             </button>

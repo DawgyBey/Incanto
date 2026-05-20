@@ -17,11 +17,44 @@ const GIFT_DATABASE = [
   { id: 10, name: "Leather Journal Set", description: "Hand-bound leather journal with fountain pen.", emoji: "📓", price: 1900, priceLabel: "Rs. 1,900", badge: "Creative", reason: "For the writer or dreamer in your life.", tags: ["writing","creativity","stationery"], recipients: ["friend","colleague","sibling"], link: "#" }
 ];
 
+const REAL_WORLD_GIFT_DATABASE = [
+  { id: 101, name: "JBL Go 4 Portable Bluetooth Speaker", description: "Compact waterproof speaker for music at home, picnics, and travel.", emoji: "🎵", price: 6200, priceLabel: "Rs. 6,200", category: "Audio", badge: "Real-world pick", tags: ["music", "tech", "travel", "adventurous", "trendy"], recipients: ["friend", "partner", "sibling", "colleague"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=JBL%20Go%204%20speaker" },
+  { id: 102, name: "Anker 20,000mAh Power Bank", description: "Reliable backup battery for commuters, students, and frequent travelers.", emoji: "🔋", price: 4800, priceLabel: "Rs. 4,800", category: "Tech", badge: "Practical", tags: ["tech", "travel", "practical", "adventurous"], recipients: ["friend", "dad", "sibling", "colleague", "partner"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Anker%2020000mAh%20power%20bank" },
+  { id: 103, name: "Mi Smart Band Fitness Tracker", description: "Tracks steps, sleep, heart rate, and workouts without feeling bulky.", emoji: "⌚", price: 5600, priceLabel: "Rs. 5,600", category: "Fitness", badge: "Everyday useful", tags: ["fitness", "tech", "practical"], recipients: ["friend", "dad", "mom", "sibling", "partner"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Mi%20Smart%20Band" },
+  { id: 104, name: "Non-slip Yoga Mat 6mm", description: "Cushioned mat for yoga, stretching, and home workouts.", emoji: "🧘", price: 1800, priceLabel: "Rs. 1,800", category: "Fitness", badge: "Budget friendly", tags: ["fitness", "practical", "nature"], recipients: ["mom", "friend", "partner", "sibling"], occasions: ["birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=yoga%20mat%206mm" },
+  { id: 105, name: "Resistance Bands Set", description: "Five resistance levels for strength training at home or while traveling.", emoji: "💪", price: 950, priceLabel: "Rs. 950", category: "Fitness", badge: "Starter pick", tags: ["fitness", "travel", "practical"], recipients: ["friend", "sibling", "colleague"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=resistance%20bands%20set" },
+  { id: 106, name: "Ilam Tea Assortment Gift Box", description: "A real Nepali tea sampler with black, green, and masala blends.", emoji: "🍵", price: 1200, priceLabel: "Rs. 1,200", category: "Food", badge: "Local favorite", tags: ["cooking", "nature", "practical", "traditional"], recipients: ["mom", "dad", "grandparent", "colleague", "friend"], occasions: ["festival", "birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Ilam%20tea%20gift%20box" },
+  { id: 107, name: "Single Origin Nepali Coffee Beans", description: "Locally roasted coffee for people who love slow mornings.", emoji: "☕", price: 1600, priceLabel: "Rs. 1,600", category: "Food", badge: "Real-world pick", tags: ["cooking", "practical", "intellectual"], recipients: ["dad", "friend", "colleague", "partner"], occasions: ["birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Nepal%20coffee%20beans" },
+  { id: 108, name: "Borosil Glass Lunch Box Set", description: "Durable microwave-safe containers for office lunches and meal prep.", emoji: "🍱", price: 2600, priceLabel: "Rs. 2,600", category: "Kitchen", badge: "Office useful", tags: ["cooking", "practical"], recipients: ["mom", "dad", "colleague", "friend"], occasions: ["birthday", "wedding", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=glass%20lunch%20box%20set" },
+  { id: 109, name: "Prestige Electric Kettle", description: "Fast hot water for tea, coffee, noodles, and hostel rooms.", emoji: "🫖", price: 2100, priceLabel: "Rs. 2,100", category: "Kitchen", badge: "Practical", tags: ["cooking", "practical"], recipients: ["friend", "sibling", "colleague", "mom", "dad"], occasions: ["graduation", "birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Prestige%20electric%20kettle" },
+  { id: 110, name: "Lokta Paper Journal and Pen Set", description: "Handmade Nepali paper notebook for sketches, notes, and journaling.", emoji: "📓", price: 850, priceLabel: "Rs. 850", category: "Stationery", badge: "Handmade", tags: ["art", "books", "intellectual", "artistic", "sentimental"], recipients: ["friend", "sibling", "partner", "colleague"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Lokta%20paper%20journal" },
+  { id: 111, name: "Rechargeable Reading Light", description: "Clip-on light for night readers and students.", emoji: "📚", price: 1100, priceLabel: "Rs. 1,100", category: "Books", badge: "Reader pick", tags: ["books", "intellectual", "practical"], recipients: ["friend", "sibling", "child", "partner"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=rechargeable%20reading%20light" },
+  { id: 112, name: "Moleskine Classic Notebook", description: "Premium notebook for planners, writers, designers, and students.", emoji: "✍️", price: 3200, priceLabel: "Rs. 3,200", category: "Stationery", badge: "Premium", tags: ["books", "art", "intellectual", "artistic"], recipients: ["friend", "partner", "colleague", "sibling"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Moleskine%20notebook" },
+  { id: 113, name: "Mandala Art Kit", description: "Paints, pens, and guides for mindful creative evenings.", emoji: "🎨", price: 1400, priceLabel: "Rs. 1,400", category: "Art", badge: "Creative", tags: ["art", "artistic", "nature", "sentimental"], recipients: ["friend", "sibling", "child", "partner"], occasions: ["birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=mandala%20art%20kit" },
+  { id: 114, name: "Custom Sketch Portrait Voucher", description: "Commission-style portrait gift for a memorable personal surprise.", emoji: "🖼️", price: 2500, priceLabel: "Rs. 2,500", category: "Art", badge: "Personal", tags: ["art", "photography", "romantic", "sentimental", "artistic"], recipients: ["partner", "mom", "dad", "friend", "grandparent"], occasions: ["anniversary", "birthday", "valentine", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=custom%20portrait%20sketch" },
+  { id: 115, name: "Instax Mini Film Pack", description: "Instant photo film refill for memory-makers and party people.", emoji: "📷", price: 1800, priceLabel: "Rs. 1,800", category: "Photography", badge: "Memory maker", tags: ["photography", "travel", "art", "romantic", "sentimental"], recipients: ["friend", "partner", "sibling"], occasions: ["birthday", "anniversary", "valentine", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Instax%20mini%20film" },
+  { id: 116, name: "Ulanzi Phone Tripod", description: "Compact tripod for photos, reels, video calls, and travel shots.", emoji: "📱", price: 2200, priceLabel: "Rs. 2,200", category: "Photography", badge: "Creator pick", tags: ["photography", "tech", "travel", "artistic"], recipients: ["friend", "sibling", "partner", "colleague"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Ulanzi%20phone%20tripod" },
+  { id: 117, name: "Himalayan Salt Lamp", description: "Warm ambient light for bedrooms, desks, and cozy corners.", emoji: "🕯️", price: 1900, priceLabel: "Rs. 1,900", category: "Home", badge: "Cozy", tags: ["nature", "romantic", "sentimental", "practical"], recipients: ["mom", "dad", "partner", "friend", "grandparent"], occasions: ["festival", "birthday", "anniversary", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Himalayan%20salt%20lamp" },
+  { id: 118, name: "Indoor Plant Trio with Pots", description: "Low-maintenance plants for desks, windowsills, and new homes.", emoji: "🪴", price: 1800, priceLabel: "Rs. 1,800", category: "Home", badge: "Fresh", tags: ["nature", "art", "practical"], recipients: ["mom", "friend", "partner", "colleague", "grandparent"], occasions: ["birthday", "wedding", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=indoor%20plant%20trio" },
+  { id: 119, name: "Organic Skincare Starter Set", description: "Gentle cleanser, toner, and moisturizer set for everyday care.", emoji: "✨", price: 3400, priceLabel: "Rs. 3,400", category: "Skincare", badge: "Self-care", tags: ["skincare", "nature", "practical", "romantic"], recipients: ["mom", "partner", "friend", "sibling"], occasions: ["birthday", "anniversary", "valentine", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=organic%20skincare%20set" },
+  { id: 120, name: "The Ordinary Niacinamide Serum", description: "Popular skincare serum for oil control and smoother-looking skin.", emoji: "🧴", price: 2100, priceLabel: "Rs. 2,100", category: "Skincare", badge: "Trending", tags: ["skincare", "practical", "trendy"], recipients: ["friend", "partner", "sibling"], occasions: ["birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=The%20Ordinary%20Niacinamide" },
+  { id: 121, name: "Pashmina Shawl", description: "Soft classic shawl for formal wear, travel, and cool evenings.", emoji: "🧣", price: 5500, priceLabel: "Rs. 5,500", category: "Fashion", badge: "Classic", tags: ["fashion", "romantic", "traditional", "sentimental"], recipients: ["mom", "partner", "grandparent"], occasions: ["anniversary", "festival", "birthday", "valentine"], link: "https://www.daraz.com.np/catalog/?q=pashmina%20shawl" },
+  { id: 122, name: "Minimal Silver Pendant Necklace", description: "Simple everyday jewelry that works for dates and daily wear.", emoji: "💍", price: 3800, priceLabel: "Rs. 3,800", category: "Fashion", badge: "Romantic", tags: ["fashion", "romantic", "sentimental"], recipients: ["partner", "mom", "friend", "sibling"], occasions: ["anniversary", "valentine", "birthday"], link: "https://www.daraz.com.np/catalog/?q=silver%20pendant%20necklace" },
+  { id: 123, name: "Hemp Drawstring Day Bag", description: "Locally made casual bag for college, markets, and short walks.", emoji: "🎒", price: 750, priceLabel: "Rs. 750", category: "Fashion", badge: "Local", tags: ["fashion", "travel", "nature", "artistic"], recipients: ["friend", "sibling", "child", "colleague"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=hemp%20drawstring%20bag" },
+  { id: 124, name: "Logitech Wireless Mouse", description: "A dependable work and study upgrade for laptop users.", emoji: "🖱️", price: 1900, priceLabel: "Rs. 1,900", category: "Tech", badge: "Work essential", tags: ["tech", "practical", "intellectual"], recipients: ["colleague", "friend", "dad", "sibling"], occasions: ["graduation", "birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Logitech%20wireless%20mouse" },
+  { id: 125, name: "Redragon Gaming Mouse", description: "Responsive gaming mouse with programmable buttons and RGB lighting.", emoji: "🎮", price: 2300, priceLabel: "Rs. 2,300", category: "Gaming", badge: "Gaming", tags: ["gaming", "tech", "funny", "trendy"], recipients: ["friend", "sibling", "child", "partner"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=Redragon%20gaming%20mouse" },
+  { id: 126, name: "Steam Gift Card Equivalent", description: "A flexible gaming credit idea for PC gamers who know what they want.", emoji: "🕹️", price: 3000, priceLabel: "Rs. 3,000", category: "Gaming", badge: "Flexible", tags: ["gaming", "tech", "funny"], recipients: ["friend", "sibling", "child", "partner"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=gaming%20gift%20card" },
+  { id: 127, name: "Baby Milestone Blanket", description: "Photo-friendly blanket for tracking a baby's first months.", emoji: "👶", price: 1700, priceLabel: "Rs. 1,700", category: "Baby", badge: "Baby shower", tags: ["photography", "sentimental", "practical"], recipients: ["child", "partner", "mom"], occasions: ["babyshower"], link: "https://www.daraz.com.np/catalog/?q=baby%20milestone%20blanket" },
+  { id: 128, name: "Newborn Care Hamper", description: "Soft towels, baby wash, and tiny essentials for new parents.", emoji: "🧸", price: 3500, priceLabel: "Rs. 3,500", category: "Baby", badge: "Useful", tags: ["skincare", "practical", "sentimental"], recipients: ["child", "partner", "mom"], occasions: ["babyshower"], link: "https://www.daraz.com.np/catalog/?q=newborn%20care%20hamper" },
+  { id: 129, name: "Dried Fruit and Nut Hamper", description: "Premium snack hamper that works for family visits and festivals.", emoji: "🎁", price: 2600, priceLabel: "Rs. 2,600", category: "Food", badge: "Festival", tags: ["cooking", "traditional", "practical"], recipients: ["mom", "dad", "grandparent", "colleague", "friend"], occasions: ["festival", "wedding", "birthday"], link: "https://www.daraz.com.np/catalog/?q=dried%20fruit%20nut%20hamper" },
+  { id: 130, name: "Brass Singing Bowl", description: "Meditation bowl with calming tones and a timeless local feel.", emoji: "🛕", price: 2200, priceLabel: "Rs. 2,200", category: "Lifestyle", badge: "Traditional", tags: ["nature", "art", "traditional", "sentimental"], recipients: ["mom", "dad", "grandparent", "partner"], occasions: ["festival", "birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=brass%20singing%20bowl" }
+];
+
 /* ─── APP STATE ──────────────────────────── */
 const state = {
   currentStep: 1,
   totalSteps: 5,
-  inputs: { occasion: null, recipient: null, budget: 2500, interests: [], personality: null },
+  inputs: { occasion: null, recipient: null, minBudget: 500, budget: 2500, interests: [], personality: null },
   favorites: JSON.parse(localStorage.getItem('incanto_favorites') || '[]'),
   recentlyViewed: JSON.parse(localStorage.getItem('incanto_recent') || '[]'),
   cart: JSON.parse(localStorage.getItem('incanto_cart') || '[]'),
@@ -87,6 +120,19 @@ function parsePriceLabel(priceLabel) {
   return cleaned ? Number(cleaned) : null;
 }
 
+function getBudgetRange() {
+  const minBudget = Math.max(0, Number(state.inputs.minBudget) || 0);
+  const maxBudget = Math.max(minBudget, Number(state.inputs.budget) || minBudget);
+  return { minBudget, maxBudget };
+}
+
+function isWithinBudgetRange(price) {
+  const numericPrice = Number(price);
+  if (!Number.isFinite(numericPrice)) return false;
+  const { minBudget, maxBudget } = getBudgetRange();
+  return numericPrice >= minBudget && numericPrice <= maxBudget;
+}
+
 async function apiFetch(path, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   const token = window.IncantoAuth?.getToken();
@@ -139,6 +185,99 @@ async function generateResults() {
   };
 
   const recipient = recipientMap[state.inputs.recipient] || null;
+  const getBudgetFallbackGifts = (limit = 6) => {
+    const { minBudget, maxBudget } = getBudgetRange();
+    const normalize = (value) => String(value || '').toLowerCase().trim();
+    const selectedRecipient = normalize(state.inputs.recipient);
+    const selectedOccasion = normalize(state.inputs.occasion);
+    const selectedInterests = state.inputs.interests.map(normalize).filter(Boolean);
+    const selectedPersonality = normalize(state.inputs.personality);
+    const personalityTags = {
+      funny: ['funny', 'playful', 'gaming', 'trendy'],
+      romantic: ['romantic', 'sentimental', 'fashion', 'photography'],
+      practical: ['practical', 'tech', 'fitness', 'cooking'],
+      adventurous: ['adventurous', 'travel', 'fitness', 'nature'],
+      artistic: ['artistic', 'art', 'photography', 'fashion'],
+      intellectual: ['intellectual', 'books', 'tech', 'stationery'],
+    };
+
+    const scoredGifts = REAL_WORLD_GIFT_DATABASE
+      .filter(gift => isWithinBudgetRange(gift.price))
+      .map((gift) => {
+        const giftTags = (gift.tags || []).map(normalize);
+        const giftRecipients = (gift.recipients || []).map(normalize);
+        const giftOccasions = (gift.occasions || []).map(normalize);
+        let score = 0;
+        const reasons = [];
+
+        if (selectedRecipient && giftRecipients.includes(selectedRecipient)) {
+          score += 35;
+          reasons.push(`fits ${selectedRecipient}`);
+        }
+
+        if (selectedOccasion && giftOccasions.includes(selectedOccasion)) {
+          score += 25;
+          reasons.push(`works for ${selectedOccasion}`);
+        }
+
+        const matchedInterests = selectedInterests.filter((interest) =>
+          giftTags.includes(interest) || normalize(gift.category) === interest
+        );
+        if (matchedInterests.length > 0) {
+          score += matchedInterests.length * 30;
+          reasons.push(`matches ${matchedInterests.join(', ')}`);
+        }
+
+        const personalityMatches = selectedPersonality
+          ? (personalityTags[selectedPersonality] || [selectedPersonality])
+              .filter(tag => giftTags.includes(tag))
+          : [];
+        if (personalityMatches.length > 0) {
+          score += personalityMatches.length * 18;
+          reasons.push(`${selectedPersonality} personality`);
+        }
+
+        const remainingBudget = maxBudget - Number(gift.price);
+        if (remainingBudget <= 500) score += 10;
+        else if (remainingBudget <= 1500) score += 6;
+
+        return {
+          ...gift,
+          score,
+          badge: gift.badge || 'Prototype Pick',
+          reason: reasons.length
+            ? `Selected because it ${reasons.join(', ')} and stays within Rs. ${minBudget.toLocaleString('en-IN')} to Rs. ${maxBudget.toLocaleString('en-IN')}.`
+            : `Closest real-world prototype pick within Rs. ${minBudget.toLocaleString('en-IN')} to Rs. ${maxBudget.toLocaleString('en-IN')}.`,
+        };
+      })
+      .sort((a, b) => b.score - a.score || b.price - a.price || a.name.localeCompare(b.name));
+
+    const preferredGifts = scoredGifts.filter(gift => gift.score > 0);
+    const withinBudget = (preferredGifts.length ? preferredGifts : scoredGifts)
+      .slice(0, limit)
+      .map(({ score, ...gift }) => ({
+        ...gift,
+        badge: gift.badge || 'Prototype Pick',
+      }));
+
+    if (withinBudget.length > 0) return withinBudget.slice(0, limit);
+
+    const fallbackPrice = Math.max(minBudget, Math.min(maxBudget || 500, minBudget || 500));
+    return [{
+      id: `prototype-${fallbackPrice}`,
+      name: 'Thoughtful Budget Gift Box',
+      description: 'A simple curated gift idea shown for prototype testing.',
+      emoji: '🎁',
+      price: fallbackPrice,
+      priceLabel: `Rs. ${fallbackPrice.toLocaleString('en-IN')}`,
+      badge: 'Prototype Pick',
+      reason: `Shown to keep the prototype populated while staying within Rs. ${minBudget.toLocaleString('en-IN')} to Rs. ${maxBudget.toLocaleString('en-IN')}.`,
+      tags: ['prototype', selectedPersonality, ...selectedInterests].filter(Boolean),
+      recipients: [selectedRecipient || 'friend'],
+      occasions: [selectedOccasion || 'justbecause'],
+      link: '#',
+    }];
+  };
 
   try {
     // Fetch recommendations
@@ -169,14 +308,15 @@ async function generateResults() {
         badge: g.trending ? 'Trending' : (g.rating >= 4.8 ? 'Top Rated' : null),
         reason: g.reason || `Rated ${g.rating ?? '4.0'}/5 · ${g.category || ''}`,
         link: g.link || g.affiliateUrl || '#'
-      }));
-      state.currentResults = gifts;
-      displayResults(gifts);
+      })).filter(gift => isWithinBudgetRange(gift.price));
+      const displayGifts = gifts.length > 0 ? gifts : getBudgetFallbackGifts();
+      state.currentResults = displayGifts;
+      displayResults(displayGifts);
 
       if (gifts.length > 0) {
         showToast(`Found ${gifts.length} perfect gift ideas! 🎁`);
       } else {
-        showToast('No gifts match your exact preferences and budget. Adjust your filters to see results.');
+        showToast('Showing prototype picks within your budget.');
       }
       done();
       return;
@@ -187,9 +327,10 @@ async function generateResults() {
   } catch (err) {
     done();
     console.warn('API recommendations failed:', err.message);
-    state.currentResults = [];
-    displayResults([]);
-    showToast('Could not load strict recommendations. Please try again.');
+    const fallbackGifts = getBudgetFallbackGifts();
+    state.currentResults = fallbackGifts;
+    displayResults(fallbackGifts);
+    showToast('Showing prototype picks within your budget.');
   }
 }
 
@@ -230,7 +371,7 @@ function displayResults(gifts) {
 
   grid.innerHTML = '';
   if (!Array.isArray(gifts) || gifts.length === 0) {
-    grid.innerHTML = '<div class="results-empty">No matching gifts found. Try a higher budget or fewer filters.</div>';
+    grid.innerHTML = '<div class="results-empty">No gifts found inside this exact price range. Try widening your minimum or maximum budget.</div>';
   }
 
   gifts.forEach((gift, idx) => {
@@ -326,6 +467,11 @@ function showCartPurchaseConfirmation() {
     showToast('Your cart is empty.');
     return;
   }
+  const validItems = state.cart.map(normalizeGiftForStorage).filter(item => Number.isFinite(Number(item.price)));
+  if (validItems.length === 0) {
+    showToast('Your cart items are missing valid prices.');
+    return;
+  }
   const total = getCartTotal();
   const gift = {
     id: `cart-${Date.now()}`,
@@ -336,19 +482,40 @@ function showCartPurchaseConfirmation() {
     link: '#',
   };
   state.pendingPurchaseGift = gift;
-  state.pendingCheckoutItems = state.cart.map(normalizeGiftForStorage);
-  $('#purchaseGiftEmoji').textContent = gift.emoji;
-  $('#purchaseGiftName').textContent = gift.name;
-  $('#purchaseGiftPrice').textContent = gift.priceLabel;
-  $('#purchaseGiftReason').textContent = gift.reason;
-  $('#purchaseGiftDetails').textContent = 'Confirm your cart and continue to the INCANTO payment page.';
+  state.pendingCheckoutItems = validItems;
+  const emoji = $('#purchaseGiftEmoji');
+  const name = $('#purchaseGiftName');
+  const price = $('#purchaseGiftPrice');
+  const reason = $('#purchaseGiftReason');
+  const details = $('#purchaseGiftDetails');
+
+  if (emoji) emoji.textContent = gift.emoji;
+  if (name) name.textContent = gift.name;
+  if (price) price.textContent = gift.priceLabel;
+  if (reason) reason.textContent = gift.reason;
+  if (details) details.textContent = 'Confirm your cart and continue to the INCANTO payment page.';
   window.location.hash = '#purchase';
   handleRouting();
 }
 
+function showSingleCartItemPurchase(item) {
+  const gift = normalizeGiftForStorage(item);
+  if (!Number.isFinite(Number(gift.price))) {
+    showToast('This cart item is missing a valid price.');
+    return;
+  }
+  state.pendingPurchaseGift = gift;
+  state.pendingCheckoutItems = [gift];
+  showPurchaseConfirmation(gift);
+}
+
 async function confirmPurchase() {
   const gift = state.pendingPurchaseGift;
-  if (!gift) return;
+  if (!gift) {
+    showToast('Choose an item from your cart before checkout.');
+    window.location.hash = '#cart';
+    return;
+  }
   showPaymentPage(gift);
 }
 
@@ -401,6 +568,9 @@ function showPaymentPage(gift) {
   const isCartCheckout = String(gift.id).startsWith('cart-');
   if (!isCartCheckout) {
     state.pendingCheckoutItems = [normalizeGiftForStorage(gift)];
+  }
+  if (isCartCheckout && state.pendingCheckoutItems.length === 0) {
+    state.pendingCheckoutItems = state.cart.map(normalizeGiftForStorage);
   }
   state.voucher = { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' };
   $('#voucherCode').value = '';
@@ -484,6 +654,8 @@ function initStaticTrendingCards() {
 function cancelPurchase() {
   state.pendingPurchaseGift = null;
   state.pendingCheckoutItems = [];
+  $('#paymentForm')?.reset();
+  setPaymentMethod('card');
   window.location.hash = '#home';
 }
 
@@ -817,7 +989,7 @@ function renderCartPage() {
     row.querySelector('[data-action="decrease"]')?.addEventListener('click', () => changeCartQuantity(item.id, -1));
     row.querySelector('[data-action="increase"]')?.addEventListener('click', () => changeCartQuantity(item.id, 1));
     row.querySelector('[data-action="remove"]')?.addEventListener('click', () => removeFromCart(item.id));
-    row.querySelector('[data-action="buy"]')?.addEventListener('click', () => showPurchaseConfirmation(item));
+    row.querySelector('[data-action="buy"]')?.addEventListener('click', () => showSingleCartItemPurchase(item));
     list.appendChild(row);
   });
 }
@@ -993,10 +1165,33 @@ function goToStep(step) {
 function initBudgetSlider() {
   const slider = $('#budgetSlider');
   const val = $('#budgetVal');
+  const minVal = $('#minBudgetVal');
+  const minInput = $('#minBudgetInput');
+  const maxInput = $('#maxBudgetInput');
+  const syncBudgetUI = () => {
+    const { minBudget, maxBudget } = getBudgetRange();
+    state.inputs.minBudget = minBudget;
+    state.inputs.budget = maxBudget;
+    if (slider) slider.value = maxBudget;
+    if (minInput) minInput.value = minBudget;
+    if (maxInput) maxInput.value = maxBudget;
+    if (minVal) minVal.textContent = minBudget.toLocaleString('en-IN');
+    if (val) val.textContent = maxBudget.toLocaleString('en-IN');
+    updateSliderBackground(slider);
+  };
   slider.addEventListener('input', function () {
-    state.inputs.budget = parseInt(this.value);
-    val.textContent = parseInt(this.value).toLocaleString('en-IN');
-    updateSliderBackground(this);
+    state.inputs.budget = Math.max(parseInt(this.value, 10), Number(state.inputs.minBudget) || 0);
+    syncBudgetUI();
+  });
+  minInput?.addEventListener('input', function () {
+    state.inputs.minBudget = Math.max(0, parseInt(this.value, 10) || 0);
+    if (state.inputs.minBudget > state.inputs.budget) state.inputs.budget = state.inputs.minBudget;
+    syncBudgetUI();
+  });
+  maxInput?.addEventListener('input', function () {
+    state.inputs.budget = Math.max(0, parseInt(this.value, 10) || 0);
+    if (state.inputs.budget < state.inputs.minBudget) state.inputs.minBudget = state.inputs.budget;
+    syncBudgetUI();
   });
   $$('.preset-btn').forEach(btn => {
     btn.addEventListener('click', function (event) {
@@ -1004,12 +1199,15 @@ function initBudgetSlider() {
       $$('.preset-btn').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       const v = parseInt(this.dataset.val);
+      const defaultMins = { 1000: 0, 3000: 1000, 7000: 3000, 15000: 7000 };
+      const min = this.dataset.min !== undefined ? parseInt(this.dataset.min, 10) : defaultMins[v] || 0;
       slider.value = v;
+      state.inputs.minBudget = min;
       state.inputs.budget = v;
-      val.textContent = v.toLocaleString('en-IN');
-      updateSliderBackground(slider);
+      syncBudgetUI();
     });
   });
+  syncBudgetUI();
 }
 
 function updateSliderBackground(slider) {
@@ -1043,7 +1241,9 @@ function loadMoreGifts() {
   btn.disabled = true;
   setTimeout(() => {
     const currentIds = state.currentResults.map(g => g.id);
-    const more = GIFT_DATABASE.filter(g => !currentIds.includes(g.id)).slice(0, 3);
+    const more = REAL_WORLD_GIFT_DATABASE
+      .filter(g => isWithinBudgetRange(g.price) && !currentIds.includes(g.id))
+      .slice(0, 3);
     if (more.length > 0) {
       const grid = $('#recommendationsGrid');
       more.forEach((gift, idx) => {
@@ -1064,13 +1264,16 @@ function loadMoreGifts() {
 
 /* ─── RESTART ────────────────────────────── */
 function restartFinder() {
-  state.inputs = { occasion: null, recipient: null, budget: 2500, interests: [], personality: null };
+  state.inputs = { occasion: null, recipient: null, minBudget: 500, budget: 2500, interests: [], personality: null };
   state.currentStep = 1;
   state.currentResults = [];
   $$('.choice-btn, .tag-btn, .pers-btn').forEach(b => b.classList.remove('selected'));
   $$('.btn-next').forEach(b => b.disabled = true);
   $('#next3').disabled = false;
   $('#budgetSlider').value = 2500;
+  $('#minBudgetInput').value = 500;
+  $('#maxBudgetInput').value = 2500;
+  $('#minBudgetVal').textContent = '500';
   $('#budgetVal').textContent = '2,500';
   $$('.preset-btn').forEach(b => b.classList.remove('active'));
   $$('.finder-step').forEach(s => s.classList.remove('active'));
@@ -1346,8 +1549,15 @@ function handleRouting() {
     window.location.hash = '#home';
     return;
   }
+  const nestedShopViews = ['cart', 'payment', 'orders'];
+  const isNestedShopView = nestedShopViews.includes(targetId);
   const isHomeView = ['home','hero','how','finder','results','about'].includes(targetId);
-  $$('.view-section').forEach(sec => sec.classList.toggle('active', sec.id === (isHomeView ? 'home' : targetId)));
+  $('#home')?.classList.toggle('subpage-active', isNestedShopView);
+  $$('.view-section').forEach(sec => {
+    const shouldShowHome = sec.id === 'home' && (isHomeView || isNestedShopView);
+    const shouldShowTarget = !isHomeView && sec.id === targetId;
+    sec.classList.toggle('active', shouldShowHome || shouldShowTarget);
+  });
   if (!document.querySelector('.view-section.active')) $('#home')?.classList.add('active');
   if (targetId === 'cart') renderCartPage();
   if (targetId === 'orders') renderOrdersPage();
@@ -1388,6 +1598,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#quickViewCartBtn')?.addEventListener('click', showCartPage);
   $('#quickCheckoutNowBtn')?.addEventListener('click', showCartPurchaseConfirmation);
   $('#cancelPurchaseBtn')?.addEventListener('click', cancelPurchase);
+  $('#purchaseCancelBtn')?.addEventListener('click', cancelPurchase);
   $('#backToPurchaseBtn')?.addEventListener('click', backToPurchase);
   $('#paymentForm')?.addEventListener('submit', handlePaymentSubmit);
   $('#checkoutCartBtn')?.addEventListener('click', showCartPurchaseConfirmation);
