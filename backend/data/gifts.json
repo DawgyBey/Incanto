@@ -779,6 +779,97 @@
       "Tags": "traditional,budget,sentimental",
       "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-herbal-dhoop-incense-sticks-316.jpg",
       "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Herbal%20Dhoop%20Incense%20Sticks"
+    },
+    {
+      "id": 317,
+      "Item Name": "Ceramic Dinner Set",
+      "Category": "Kitchen",
+      "Recipient": "Friend,Sibling,Colleague",
+      "Price (NPR)": 5200,
+      "Occasion": "Wedding",
+      "Description": "A useful home-starting gift for newlyweds.",
+      "Availability": "Daraz",
+      "Tags": "practical,home,cooking,traditional",
+      "image_url": "https://sg-live.slatic.net/p/daraz-np-kitchen-ceramic-dinner-set-317.jpg",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Ceramic%20Dinner%20Set"
+    },
+    {
+      "id": 318,
+      "Item Name": "Premium Baby Diaper Bag",
+      "Category": "Baby",
+      "Recipient": "Friend,Sibling,Colleague,Partner",
+      "Price (NPR)": 2900,
+      "Occasion": "Babyshower",
+      "Description": "Organized storage for bottles, clothes, wipes, and newborn essentials.",
+      "Availability": "Daraz",
+      "Tags": "baby,practical,travel,useful",
+      "image_url": "https://sg-live.slatic.net/p/daraz-np-baby-premium-diaper-bag-318.jpg",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Premium%20Baby%20Diaper%20Bag"
+    },
+    {
+      "id": 319,
+      "Item Name": "Academic Planner and Pen Set",
+      "Category": "Stationery",
+      "Recipient": "Friend,Sibling,Child,Colleague",
+      "Price (NPR)": 1350,
+      "Occasion": "Graduation",
+      "Description": "A polished planner set for students starting college or a new job.",
+      "Availability": "Daraz",
+      "Tags": "books,practical,intellectual,study",
+      "image_url": "https://sg-live.slatic.net/p/daraz-np-stationery-academic-planner-319.jpg",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Academic%20Planner%20Pen%20Set"
+    },
+    {
+      "id": 320,
+      "Item Name": "Couple Spa Voucher",
+      "Category": "Experience",
+      "Recipient": "Partner",
+      "Price (NPR)": 6500,
+      "Occasion": "Anniversary",
+      "Description": "A relaxed shared experience for anniversaries and romantic surprises.",
+      "Availability": "Local Market",
+      "Tags": "romantic,wellness,sentimental,luxury",
+      "image_url": "https://sg-live.slatic.net/p/daraz-np-experience-couple-spa-voucher-320.jpg",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Couple%20Spa%20Voucher"
+    },
+    {
+      "id": 321,
+      "Item Name": "Festival Dry Fruit Gift Tray",
+      "Category": "Food",
+      "Recipient": "Mom,Dad,Grandparent,Friend,Colleague",
+      "Price (NPR)": 3200,
+      "Occasion": "Festival",
+      "Description": "A graceful family-safe tray for Dashain, Tihar, and seasonal visits.",
+      "Availability": "Both",
+      "Tags": "traditional,food,practical,family",
+      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-festival-dry-fruit-tray-321.jpg",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Festival%20Dry%20Fruit%20Gift%20Tray"
+    },
+    {
+      "id": 322,
+      "Item Name": "Desk Lamp with Wireless Charger",
+      "Category": "Tech",
+      "Recipient": "Friend,Sibling,Child,Colleague",
+      "Price (NPR)": 3100,
+      "Occasion": "Graduation",
+      "Description": "A cleaner study or work desk setup with light and charging in one.",
+      "Availability": "Daraz",
+      "Tags": "tech,practical,books,intellectual",
+      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-desk-lamp-wireless-charger-322.jpg",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Desk%20Lamp%20Wireless%20Charger"
+    },
+    {
+      "id": 323,
+      "Item Name": "Polaroid Style Photo Album",
+      "Category": "Photography",
+      "Recipient": "Partner,Friend,Sibling",
+      "Price (NPR)": 1600,
+      "Occasion": "Valentine",
+      "Description": "A memory-first gift for travel photos, college memories, and couples.",
+      "Availability": "Daraz",
+      "Tags": "photography,sentimental,art,romantic",
+      "image_url": "https://sg-live.slatic.net/p/daraz-np-photography-polaroid-photo-album-323.jpg",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Polaroid%20Style%20Photo%20Album"
     }
   ]
 }

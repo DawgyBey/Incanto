@@ -2055,6 +2055,22 @@ ul { list-style: none; }
   margin-top: 20px;
 }
 
+.auth-message {
+  display: none;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(250, 208, 122, 0.24);
+  border-radius: var(--radius-lg);
+  background: rgba(250, 208, 122, 0.08);
+  color: var(--gold-light);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.auth-message.show {
+  display: block;
+}
+
 .auth-form.active {
   display: flex;
 }
@@ -2137,17 +2153,105 @@ ul { list-style: none; }
   transform: translateX(-50%) translateY(80px);
   background: var(--text-primary);
   color: var(--bg);
-  padding: 12px 28px;
-  border-radius: var(--radius-xl);
+  width: min(92vw, 460px);
+  padding: 14px 22px;
+  border-radius: var(--radius-lg);
   font-size: 0.88rem;
   font-weight: 500;
+  line-height: 1.45;
+  text-align: center;
   z-index: 9999;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
   box-shadow: var(--shadow-md);
-  white-space: nowrap;
 }
 
-.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.purchase-success-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(10px);
+  z-index: 10000;
+}
+
+.purchase-success-modal.open {
+  display: flex;
+}
+
+.purchase-success-card {
+  width: min(92vw, 430px);
+  padding: 34px;
+  border: 1px solid rgba(250, 208, 122, 0.26);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, #171717, #101010);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  animation: modal-in 0.25s ease;
+}
+
+.purchase-success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: rgba(250, 208, 122, 0.14);
+  color: var(--gold);
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.purchase-success-kicker {
+  margin-bottom: 8px;
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.purchase-success-card h2 {
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-size: 1.7rem;
+}
+
+.purchase-success-card p {
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.purchase-success-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 22px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+}
+
+.purchase-success-meta strong {
+  color: var(--gold);
+}
+
+.btn-primary.is-processing {
+  opacity: 0.82;
+  cursor: wait;
+}
 
 /* ─── RESPONSIVE ─────────────────────────── */
 @media (max-width: 1024px) {
@@ -2306,6 +2410,34 @@ ul { list-style: none; }
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 40px;
+}
+
+.purchase-final {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border: 1px solid rgba(250, 208, 122, 0.22);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+}
+
+.purchase-final-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  margin-bottom: 18px;
+  padding: 6px 14px;
+  border: 1px solid rgba(250, 208, 122, 0.22);
+  border-radius: 999px;
+  background: rgba(250, 208, 122, 0.08);
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .purchase-header {
@@ -2685,6 +2817,36 @@ ul { list-style: none; }
 .payment-form input:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.payment-process {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 11px 13px;
+  border: 1px solid rgba(250, 208, 122, 0.16);
+  border-radius: var(--radius-lg);
+  background: rgba(250, 208, 122, 0.06);
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+
+.payment-process span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 5px rgba(250, 208, 122, 0.12);
+}
+
+.payment-process.is-active span {
+  animation: process-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes process-pulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.55; }
+  50% { transform: scale(1.25); opacity: 1; }
 }
 
 .payment-summary {

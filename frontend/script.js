@@ -1,7 +1,13 @@
 'use strict';
 
 /* ─── CONFIG ─────────────────────────────── */
-const API_BASE = 'http://localhost:5000/api/v1';
+const API_BASE = window.INCANTO_API_BASE
+  || (window.location.protocol === 'file:'
+    || (['localhost', '127.0.0.1'].includes(window.location.hostname) && window.location.port && window.location.port !== '5000')
+    ? 'http://localhost:5000/api/v1'
+    : `${window.location.origin}/api/v1`);
+const IS_PAYMENT_PAGE = window.location.pathname.endsWith('/payment.html');
+const PENDING_CHECKOUT_KEY_PREFIX = 'incanto_pending_checkout';
 
 /* ─── MOCK FALLBACK DATA ─────────────────── */
 const GIFT_DATABASE = [
@@ -47,20 +53,90 @@ const REAL_WORLD_GIFT_DATABASE = [
   { id: 127, name: "Baby Milestone Blanket", description: "Photo-friendly blanket for tracking a baby's first months.", emoji: "👶", price: 1700, priceLabel: "Rs. 1,700", category: "Baby", badge: "Baby shower", tags: ["photography", "sentimental", "practical"], recipients: ["child", "partner", "mom"], occasions: ["babyshower"], link: "https://www.daraz.com.np/catalog/?q=baby%20milestone%20blanket" },
   { id: 128, name: "Newborn Care Hamper", description: "Soft towels, baby wash, and tiny essentials for new parents.", emoji: "🧸", price: 3500, priceLabel: "Rs. 3,500", category: "Baby", badge: "Useful", tags: ["skincare", "practical", "sentimental"], recipients: ["child", "partner", "mom"], occasions: ["babyshower"], link: "https://www.daraz.com.np/catalog/?q=newborn%20care%20hamper" },
   { id: 129, name: "Dried Fruit and Nut Hamper", description: "Premium snack hamper that works for family visits and festivals.", emoji: "🎁", price: 2600, priceLabel: "Rs. 2,600", category: "Food", badge: "Festival", tags: ["cooking", "traditional", "practical"], recipients: ["mom", "dad", "grandparent", "colleague", "friend"], occasions: ["festival", "wedding", "birthday"], link: "https://www.daraz.com.np/catalog/?q=dried%20fruit%20nut%20hamper" },
-  { id: 130, name: "Brass Singing Bowl", description: "Meditation bowl with calming tones and a timeless local feel.", emoji: "🛕", price: 2200, priceLabel: "Rs. 2,200", category: "Lifestyle", badge: "Traditional", tags: ["nature", "art", "traditional", "sentimental"], recipients: ["mom", "dad", "grandparent", "partner"], occasions: ["festival", "birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=brass%20singing%20bowl" }
+  { id: 130, name: "Brass Singing Bowl", description: "Meditation bowl with calming tones and a timeless local feel.", emoji: "🛕", price: 2200, priceLabel: "Rs. 2,200", category: "Lifestyle", badge: "Traditional", tags: ["nature", "art", "traditional", "sentimental"], recipients: ["mom", "dad", "grandparent", "partner"], occasions: ["festival", "birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=brass%20singing%20bowl" },
+  { id: 131, name: "Couple Spa Voucher", description: "A relaxed shared experience for anniversaries and romantic surprises.", emoji: "💆", price: 6500, priceLabel: "Rs. 6,500", category: "Experience", badge: "Anniversary", tags: ["romantic", "wellness", "sentimental", "luxury"], recipients: ["partner"], occasions: ["anniversary", "valentine"], link: "https://www.daraz.com.np/catalog/?q=spa%20voucher%20couple" },
+  { id: 132, name: "Engraved Wooden Photo Frame", description: "A personal frame for wedding portraits, family photos, or milestone memories.", emoji: "🖼️", price: 1500, priceLabel: "Rs. 1,500", category: "Home", badge: "Personal", tags: ["sentimental", "personalized", "handmade", "art"], recipients: ["friend", "sibling", "partner", "mom", "dad", "grandparent"], occasions: ["wedding", "anniversary", "birthday"], link: "https://www.daraz.com.np/catalog/?q=engraved%20wooden%20photo%20frame" },
+  { id: 133, name: "Ceramic Dinner Set", description: "A practical home upgrade that makes sense for newlyweds and new homes.", emoji: "🍽️", price: 5200, priceLabel: "Rs. 5,200", category: "Kitchen", badge: "Wedding useful", tags: ["practical", "home", "cooking", "traditional"], recipients: ["friend", "sibling", "colleague"], occasions: ["wedding"], link: "https://www.daraz.com.np/catalog/?q=ceramic%20dinner%20set" },
+  { id: 134, name: "Electric Rice Cooker", description: "A dependable kitchen gift for couples setting up a home.", emoji: "🍚", price: 4300, priceLabel: "Rs. 4,300", category: "Kitchen", badge: "Home starter", tags: ["practical", "cooking", "home"], recipients: ["friend", "sibling", "colleague"], occasions: ["wedding", "graduation"], link: "https://www.daraz.com.np/catalog/?q=electric%20rice%20cooker" },
+  { id: 135, name: "Premium Baby Diaper Bag", description: "Organized storage for bottles, clothes, wipes, and daily baby essentials.", emoji: "🍼", price: 2900, priceLabel: "Rs. 2,900", category: "Baby", badge: "Parent favorite", tags: ["baby", "practical", "travel"], recipients: ["partner", "friend", "sibling", "colleague"], occasions: ["babyshower"], link: "https://www.daraz.com.np/catalog/?q=baby%20diaper%20bag" },
+  { id: 136, name: "Baby Bath and Grooming Kit", description: "Gentle bath, grooming, and care items for a newborn-ready home.", emoji: "🛁", price: 2200, priceLabel: "Rs. 2,200", category: "Baby", badge: "Baby shower", tags: ["baby", "skincare", "practical"], recipients: ["child", "partner", "friend", "sibling", "mom"], occasions: ["babyshower"], link: "https://www.daraz.com.np/catalog/?q=baby%20bath%20grooming%20kit" },
+  { id: 137, name: "Academic Planner and Pen Set", description: "A polished planner set for students starting college or a new role.", emoji: "🗓️", price: 1350, priceLabel: "Rs. 1,350", category: "Stationery", badge: "Graduation", tags: ["books", "practical", "intellectual", "study"], recipients: ["friend", "sibling", "child", "colleague"], occasions: ["graduation"], link: "https://www.daraz.com.np/catalog/?q=academic%20planner%20pen%20set" },
+  { id: 138, name: "Laptop Backpack with Rain Cover", description: "A practical daily bag for students, office starters, and commuters.", emoji: "🎒", price: 3600, priceLabel: "Rs. 3,600", category: "Travel", badge: "Career starter", tags: ["travel", "practical", "tech", "adventurous"], recipients: ["friend", "sibling", "child", "colleague", "partner"], occasions: ["graduation", "birthday"], link: "https://www.daraz.com.np/catalog/?q=laptop%20backpack%20rain%20cover" },
+  { id: 139, name: "Desk Lamp with Wireless Charger", description: "A cleaner study or work desk setup with light and charging in one.", emoji: "💡", price: 3100, priceLabel: "Rs. 3,100", category: "Tech", badge: "Study setup", tags: ["tech", "practical", "books", "intellectual"], recipients: ["friend", "sibling", "child", "colleague"], occasions: ["graduation", "birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=desk%20lamp%20wireless%20charger" },
+  { id: 140, name: "Festival Dry Fruit Gift Tray", description: "A graceful family-safe tray for Dashain, Tihar, and seasonal visits.", emoji: "🪔", price: 3200, priceLabel: "Rs. 3,200", category: "Food", badge: "Festival", tags: ["traditional", "food", "practical", "family"], recipients: ["mom", "dad", "grandparent", "friend", "colleague"], occasions: ["festival"], link: "https://www.daraz.com.np/catalog/?q=festival%20dry%20fruit%20gift%20tray" },
+  { id: 141, name: "Copper Water Bottle Set", description: "A traditional yet useful wellness gift for family and colleagues.", emoji: "🏺", price: 2400, priceLabel: "Rs. 2,400", category: "Lifestyle", badge: "Traditional", tags: ["traditional", "wellness", "practical", "nature"], recipients: ["mom", "dad", "grandparent", "colleague", "friend"], occasions: ["festival", "birthday", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=copper%20water%20bottle%20set" },
+  { id: 142, name: "Scented Candle Gift Box", description: "Warm, simple, and elegant for friends, partners, and cozy-home people.", emoji: "🕯️", price: 1700, priceLabel: "Rs. 1,700", category: "Home", badge: "Cozy", tags: ["romantic", "home", "sentimental", "artistic"], recipients: ["partner", "friend", "sibling", "mom"], occasions: ["birthday", "anniversary", "valentine", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=scented%20candle%20gift%20box" },
+  { id: 143, name: "Custom Name Bracelet", description: "A small personalized accessory that works well for romantic gifting.", emoji: "📿", price: 1300, priceLabel: "Rs. 1,300", category: "Fashion", badge: "Personalized", tags: ["romantic", "personalized", "fashion", "sentimental"], recipients: ["partner", "friend", "sibling"], occasions: ["valentine", "anniversary", "birthday"], link: "https://www.daraz.com.np/catalog/?q=custom%20name%20bracelet" },
+  { id: 144, name: "Polaroid-Style Photo Album", description: "A memory-first gift for travel photos, college memories, and couples.", emoji: "📔", price: 1600, priceLabel: "Rs. 1,600", category: "Photography", badge: "Memory keeper", tags: ["photography", "sentimental", "art", "romantic"], recipients: ["partner", "friend", "sibling"], occasions: ["birthday", "anniversary", "valentine", "graduation"], link: "https://www.daraz.com.np/catalog/?q=polaroid%20photo%20album" },
+  { id: 145, name: "Board Game Night Set", description: "A social, low-pressure gift for playful friends and siblings.", emoji: "🎲", price: 2100, priceLabel: "Rs. 2,100", category: "Games", badge: "Fun pick", tags: ["funny", "playful", "gaming", "social"], recipients: ["friend", "sibling", "partner", "colleague"], occasions: ["birthday", "justbecause", "graduation"], link: "https://www.daraz.com.np/catalog/?q=board%20game%20set" },
+  { id: 146, name: "Premium Fountain Pen", description: "A refined gift for writers, graduates, mentors, and office professionals.", emoji: "🖋️", price: 2800, priceLabel: "Rs. 2,800", category: "Stationery", badge: "Classic", tags: ["books", "intellectual", "practical", "premium"], recipients: ["dad", "mom", "colleague", "friend", "sibling"], occasions: ["graduation", "birthday", "festival"], link: "https://www.daraz.com.np/catalog/?q=premium%20fountain%20pen" },
+  { id: 147, name: "Compact Travel Organizer", description: "Keeps chargers, passport, toiletries, and small essentials sorted.", emoji: "🧳", price: 950, priceLabel: "Rs. 950", category: "Travel", badge: "Budget useful", tags: ["travel", "practical", "adventurous"], recipients: ["friend", "sibling", "partner", "colleague"], occasions: ["birthday", "graduation", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=travel%20organizer%20pouch" },
+  { id: 148, name: "Gourmet Cookie Tin", description: "An easy, polished gift for colleagues, friends, and family visits.", emoji: "🍪", price: 1200, priceLabel: "Rs. 1,200", category: "Food", badge: "Easy win", tags: ["food", "practical", "traditional"], recipients: ["friend", "colleague", "mom", "dad", "grandparent"], occasions: ["birthday", "festival", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=gourmet%20cookie%20tin" },
+  { id: 149, name: "Silk Sleep Mask and Pillow Spray", description: "A soft self-care bundle for rest, travel, and cozy evenings.", emoji: "😴", price: 1900, priceLabel: "Rs. 1,900", category: "Wellness", badge: "Self-care", tags: ["wellness", "romantic", "travel", "sentimental"], recipients: ["partner", "friend", "sibling", "mom"], occasions: ["birthday", "anniversary", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=silk%20sleep%20mask%20pillow%20spray" },
+  { id: 150, name: "Mini Projector", description: "Turns a room into a movie-night setup for couples, friends, and families.", emoji: "📽️", price: 11500, priceLabel: "Rs. 11,500", category: "Tech", badge: "Premium", tags: ["tech", "romantic", "music", "funny", "premium"], recipients: ["partner", "friend", "sibling"], occasions: ["birthday", "anniversary", "valentine", "justbecause"], link: "https://www.daraz.com.np/catalog/?q=mini%20projector" }
 ];
 
 /* ─── APP STATE ──────────────────────────── */
+const USER_SCOPED_KEYS = {
+  favorites: 'incanto_favorites',
+  recentlyViewed: 'incanto_recent',
+  cart: 'incanto_cart',
+  orders: 'incanto_orders',
+};
+
+const legacyStorageKeys = Object.values(USER_SCOPED_KEYS);
+
+function getActiveUserId() {
+  return window.IncantoAuth?.getUser()?.id || null;
+}
+
+function getScopedStorageKey(key) {
+  const userId = getActiveUserId();
+  return userId ? `${USER_SCOPED_KEYS[key]}_${userId}` : null;
+}
+
+function getScopedPendingCheckoutKey() {
+  const userId = getActiveUserId();
+  return userId ? `${PENDING_CHECKOUT_KEY_PREFIX}_${userId}` : null;
+}
+
+function readScopedArray(key) {
+  const storageKey = getScopedStorageKey(key);
+  if (!storageKey) return [];
+  try {
+    return JSON.parse(localStorage.getItem(storageKey) || '[]');
+  } catch (_err) {
+    return [];
+  }
+}
+
+function writeScopedArray(key, value) {
+  const storageKey = getScopedStorageKey(key);
+  if (!storageKey) return;
+  localStorage.setItem(storageKey, JSON.stringify(Array.isArray(value) ? value : []));
+}
+
+function clearLegacySharedStorage() {
+  legacyStorageKeys.forEach((key) => localStorage.removeItem(key));
+  sessionStorage.removeItem(PENDING_CHECKOUT_KEY_PREFIX);
+}
+
+function updateStoredUser(user) {
+  state.user = user;
+  localStorage.setItem('incanto_user', JSON.stringify(user));
+}
+
 const state = {
   currentStep: 1,
   totalSteps: 5,
   inputs: { occasion: null, recipient: null, minBudget: 500, budget: 2500, interests: [], personality: null },
-  favorites: JSON.parse(localStorage.getItem('incanto_favorites') || '[]'),
-  recentlyViewed: JSON.parse(localStorage.getItem('incanto_recent') || '[]'),
-  cart: JSON.parse(localStorage.getItem('incanto_cart') || '[]'),
-  orders: JSON.parse(localStorage.getItem('incanto_orders') || '[]'),
+  favorites: readScopedArray('favorites'),
+  recentlyViewed: readScopedArray('recentlyViewed'),
+  cart: readScopedArray('cart'),
+  orders: readScopedArray('orders'),
   currentResults: [],
   isFindingGifts: false,
+  isProcessingPayment: false,
   pendingPurchaseGift: null,
   pendingCheckoutItems: [],
   voucher: { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' },
@@ -70,11 +146,11 @@ const state = {
 
 const recipientOptionsByOccasion = {
   birthday: ["partner", "friend", "mom", "dad", "sibling", "colleague", "child", "grandparent"],
-  anniversary: ["partner"],
-  wedding: ["partner", "mom", "dad", "sibling", "grandparent"],
-  festival: ["partner", "friend", "mom", "dad", "sibling", "colleague", "grandparent"],
-  graduation: ["friend", "sibling", "child", "colleague"],
-  babyshower: ["partner", "mom", "dad"],
+  anniversary: ["partner", "mom", "dad", "grandparent"],
+  wedding: ["friend", "sibling", "colleague"],
+  festival: ["partner", "friend", "mom", "dad", "sibling", "colleague", "child", "grandparent"],
+  graduation: ["partner", "friend", "sibling", "colleague", "child"],
+  babyshower: ["partner", "friend", "sibling", "colleague", "mom", "child"],
   valentine: ["partner"],
   justbecause: ["partner", "friend", "mom", "dad", "sibling", "colleague", "child", "grandparent"]
 };
@@ -83,8 +159,21 @@ const allRecipientOptions = [
   "partner", "friend", "mom", "dad", "sibling", "colleague", "child", "grandparent"
 ];
 
+const recipientHintsByOccasion = {
+  birthday: "Birthday gifts can fit almost anyone.",
+  anniversary: "Anniversary gifts usually go to your partner, parents, or grandparents.",
+  wedding: "Wedding gifts are usually for a friend, sibling, or colleague.",
+  festival: "Festival gifts are great for family, friends, partners, and children.",
+  graduation: "Graduation gifts usually fit partners, friends, siblings, classmates, colleagues, or children.",
+  babyshower: "Baby shower gifts are usually for the new parent or the baby.",
+  valentine: "Valentine's gifts are best matched to a partner.",
+  justbecause: "Just-because gifts can be for anyone you want to surprise.",
+};
+
 function updateRecipientOptions(occasion) {
   const allowed = recipientOptionsByOccasion[occasion] || allRecipientOptions;
+  const hint = $('#step-2 .step-hint');
+  if (hint) hint.textContent = recipientHintsByOccasion[occasion] || 'Tell us about your recipient';
   $$('#step-2 .choice-btn').forEach((btn) => {
     const value = btn.dataset.value;
     if (allowed.includes(value)) {
@@ -140,6 +229,51 @@ async function apiFetch(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   const data = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, data };
+}
+
+const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+function requireLoginForAction(action = 'continue') {
+  if (state.isAuthenticated) return true;
+  const messages = {
+    cart: 'Please log in to add gifts to your cart. Your cart stays private to your account.',
+    buy: 'Please log in before buying. Purchases are saved only to your account.',
+    checkout: 'Please log in before checkout. Your cart and purchases stay private to your account.',
+  };
+  showAuthModal('login', messages[action] || 'Please log in to continue.');
+  showToast(messages[action] || 'Please log in to continue.');
+  return false;
+}
+
+function rememberPendingCheckout() {
+  if (!state.pendingPurchaseGift) return;
+  const storageKey = getScopedPendingCheckoutKey();
+  if (!storageKey) return;
+  sessionStorage.setItem(storageKey, JSON.stringify({
+    gift: state.pendingPurchaseGift,
+    items: state.pendingCheckoutItems,
+    voucher: state.voucher,
+  }));
+}
+
+function restorePendingCheckout() {
+  const storageKey = getScopedPendingCheckoutKey();
+  if (!storageKey) return false;
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
+    if (!saved?.gift) return false;
+    state.pendingPurchaseGift = saved.gift;
+    state.pendingCheckoutItems = Array.isArray(saved.items) ? saved.items : [normalizeGiftForStorage(saved.gift)];
+    state.voucher = saved.voucher || { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' };
+    return true;
+  } catch (_err) {
+    return false;
+  }
+}
+
+function clearPendingCheckout() {
+  const storageKey = getScopedPendingCheckoutKey();
+  if (storageKey) sessionStorage.removeItem(storageKey);
 }
 
 /* ─── GENERATE RESULTS ───────────────────── */
@@ -309,12 +443,21 @@ async function generateResults() {
         reason: g.reason || `Rated ${g.rating ?? '4.0'}/5 · ${g.category || ''}`,
         link: g.link || g.affiliateUrl || '#'
       })).filter(gift => isWithinBudgetRange(gift.price));
-      const displayGifts = gifts.length > 0 ? gifts : getBudgetFallbackGifts();
+      const presentationGifts = getBudgetFallbackGifts(9);
+      const seenGiftKeys = new Set();
+      const displayGifts = [...presentationGifts, ...gifts]
+        .filter((gift) => {
+          const key = String(gift.id || gift.name).toLowerCase();
+          if (seenGiftKeys.has(key)) return false;
+          seenGiftKeys.add(key);
+          return true;
+        })
+        .slice(0, 9);
       state.currentResults = displayGifts;
       displayResults(displayGifts);
 
-      if (gifts.length > 0) {
-        showToast(`Found ${gifts.length} perfect gift ideas! 🎁`);
+      if (displayGifts.length > 0) {
+        showToast(`Found ${displayGifts.length} presentation-ready gift ideas!`);
       } else {
         showToast('Showing prototype picks within your budget.');
       }
@@ -440,6 +583,7 @@ function createGiftCard(gift) {
 }
 
 function showPurchaseConfirmation(gift) {
+  if (!requireLoginForAction('buy')) return;
   state.pendingPurchaseGift = gift;
   state.pendingCheckoutItems = [normalizeGiftForStorage(gift)];
   const emoji = $('#purchaseGiftEmoji');
@@ -454,6 +598,7 @@ function showPurchaseConfirmation(gift) {
   if (reason) reason.textContent = gift.reason || 'This gift matches the preferences you selected.';
   if (details) details.textContent = `Confirm ${gift.name} and continue to the INCANTO payment page.`;
 
+  showToast(`Great choice. Review "${gift.name}" before payment.`);
   window.location.hash = '#purchase';
   handleRouting();
 }
@@ -463,6 +608,7 @@ function getCartTotal() {
 }
 
 function showCartPurchaseConfirmation() {
+  if (!requireLoginForAction('checkout')) return;
   if (state.cart.length === 0) {
     showToast('Your cart is empty.');
     return;
@@ -494,6 +640,7 @@ function showCartPurchaseConfirmation() {
   if (price) price.textContent = gift.priceLabel;
   if (reason) reason.textContent = gift.reason;
   if (details) details.textContent = 'Confirm your cart and continue to the INCANTO payment page.';
+  showToast(`Checkout started for ${validItems.length} private cart item${validItems.length === 1 ? '' : 's'}.`);
   window.location.hash = '#purchase';
   handleRouting();
 }
@@ -510,12 +657,59 @@ function showSingleCartItemPurchase(item) {
 }
 
 async function confirmPurchase() {
+  if (!requireLoginForAction('buy')) return;
   const gift = state.pendingPurchaseGift;
   if (!gift) {
     showToast('Choose an item from your cart before checkout.');
     window.location.hash = '#cart';
     return;
   }
+  showFinalPurchasePage(gift);
+}
+
+function showFinalPurchasePage(gift) {
+  if (!requireLoginForAction('buy')) return;
+  state.pendingPurchaseGift = gift;
+  const isCartCheckout = String(gift.id).startsWith('cart-');
+  if (!isCartCheckout) {
+    state.pendingCheckoutItems = [normalizeGiftForStorage(gift)];
+  }
+  if (isCartCheckout && state.pendingCheckoutItems.length === 0) {
+    state.pendingCheckoutItems = state.cart.map(normalizeGiftForStorage);
+  }
+
+  const total = getPendingTotal();
+  const finalEmoji = $('#finalPurchaseGiftEmoji');
+  const finalName = $('#finalPurchaseGiftName');
+  const finalReason = $('#finalPurchaseGiftReason');
+  const finalPrice = $('#finalPurchaseGiftPrice');
+  const finalDetails = $('#finalPurchaseGiftDetails');
+
+  if (finalEmoji) finalEmoji.textContent = gift.emoji || '🎁';
+  if (finalName) finalName.textContent = gift.name || 'Gift item';
+  if (finalReason) finalReason.textContent = gift.reason || 'Ready for checkout.';
+  if (finalPrice) finalPrice.textContent = total ? `Rs. ${total.toLocaleString('en-IN')}` : (gift.priceLabel || 'Price unavailable');
+  if (finalDetails) {
+    finalDetails.textContent = isCartCheckout
+      ? `You are confirming ${state.pendingCheckoutItems.length} cart item${state.pendingCheckoutItems.length === 1 ? '' : 's'} before payment.`
+      : `You are confirming "${gift.name}" before payment.`;
+  }
+
+  showToast('Almost there. Confirm once more to open payment.');
+  window.location.hash = '#purchase-final';
+  handleRouting();
+}
+
+function continueToPayment() {
+  if (!requireLoginForAction('buy')) return;
+  const gift = state.pendingPurchaseGift;
+  if (!gift) {
+    showToast('Choose a gift before payment.');
+    window.location.hash = '#home';
+    return;
+  }
+  rememberPendingCheckout();
+  showToast('Opening your secure demo payment page.');
   showPaymentPage(gift);
 }
 
@@ -544,12 +738,14 @@ function applyVoucher(code) {
   if (!normalized) {
     state.voucher = { code: '', amount: 0, message: 'No voucher applied.' };
     updatePaymentTotal();
+    showToast('No voucher applied.');
     return state.voucher;
   }
 
   const promo = DEMO_VOUCHERS[normalized];
   if (!promo) {
     state.voucher = { code: normalized, amount: 0, message: 'Invalid voucher. Try INCANTO10 or GIFT50.' };
+    showToast('That voucher was not accepted. Try INCANTO10 or GIFT50.');
   } else {
     const amount = promo.maxAmount ? Math.min(raw * promo.discount, promo.maxAmount) : raw * promo.discount;
     state.voucher = {
@@ -557,6 +753,7 @@ function applyVoucher(code) {
       amount: Math.round(amount),
       message: `Voucher applied: ${promo.label} (-Rs. ${Math.round(amount).toLocaleString('en-IN')})`,
     };
+    showToast(`Voucher ${normalized} applied. You saved Rs. ${Math.round(amount).toLocaleString('en-IN')}.`);
   }
 
   updatePaymentTotal();
@@ -564,6 +761,7 @@ function applyVoucher(code) {
 }
 
 function showPaymentPage(gift) {
+  if (!requireLoginForAction('buy')) return;
   state.pendingPurchaseGift = gift;
   const isCartCheckout = String(gift.id).startsWith('cart-');
   if (!isCartCheckout) {
@@ -573,14 +771,43 @@ function showPaymentPage(gift) {
     state.pendingCheckoutItems = state.cart.map(normalizeGiftForStorage);
   }
   state.voucher = { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' };
-  $('#voucherCode').value = '';
+  rememberPendingCheckout();
+  if (!IS_PAYMENT_PAGE) {
+    window.location.href = 'payment.html';
+    return;
+  }
+  showToast('Payment form ready. Your checkout is private to this account.');
+  updatePaymentProcess('Ready for secure demo payment.', false);
+  if ($('#voucherCode')) $('#voucherCode').value = '';
   $('#paymentGiftEmoji').textContent = gift.emoji || '🎁';
-  $('#paymentGiftName').textContent = gift.name || 'Gift item';
-  $('#paymentGiftReason').textContent = gift.reason || 'Ready for checkout.';
-  $('#paymentGiftPrice').textContent = gift.priceLabel || 'Price unavailable';
+  if ($('#paymentGiftName')) $('#paymentGiftName').textContent = gift.name || 'Gift item';
+  if ($('#paymentGiftReason')) $('#paymentGiftReason').textContent = gift.reason || 'Ready for checkout.';
+  if ($('#paymentGiftPrice')) $('#paymentGiftPrice').textContent = gift.priceLabel || 'Price unavailable';
   updatePaymentTotal();
-  window.location.hash = '#payment';
-  handleRouting();
+}
+
+function hydrateCheckoutPage() {
+  if (IS_PAYMENT_PAGE && !state.isAuthenticated) {
+    showToast('Please log in before payment.');
+    window.location.href = 'index.html#home';
+    return;
+  }
+  if (!restorePendingCheckout()) {
+    if (IS_PAYMENT_PAGE) {
+      showToast('Choose a gift before payment.');
+      window.location.href = 'index.html#finder';
+    }
+    return;
+  }
+
+  if (IS_PAYMENT_PAGE && state.pendingPurchaseGift) {
+    showPaymentPage(state.pendingPurchaseGift);
+    return;
+  }
+
+  if (window.location.hash === '#purchase-final' && state.pendingPurchaseGift) {
+    showFinalPurchasePage(state.pendingPurchaseGift);
+  }
 }
 
 function getGiftFromCard(card, btn) {
@@ -654,22 +881,30 @@ function initStaticTrendingCards() {
 function cancelPurchase() {
   state.pendingPurchaseGift = null;
   state.pendingCheckoutItems = [];
+  clearPendingCheckout();
   $('#paymentForm')?.reset();
   setPaymentMethod('card');
-  window.location.hash = '#home';
+  window.location.href = IS_PAYMENT_PAGE ? 'index.html#home' : '#home';
 }
 
 function backToPurchase() {
   if (state.pendingPurchaseGift) {
+    rememberPendingCheckout();
+    if (IS_PAYMENT_PAGE) {
+      window.location.href = 'index.html#purchase-final';
+      return;
+    }
     showPurchaseConfirmation(state.pendingPurchaseGift);
   } else {
-    window.location.hash = '#home';
+    window.location.href = IS_PAYMENT_PAGE ? 'index.html#home' : '#home';
   }
 }
 
 async function handlePaymentSubmit(event) {
   event.preventDefault();
   event.stopPropagation();
+  if (!requireLoginForAction('buy')) return;
+  if (state.isProcessingPayment) return;
   const gift = state.pendingPurchaseGift;
   if (!gift) {
     showToast('Choose a gift before payment.');
@@ -702,14 +937,26 @@ async function handlePaymentSubmit(event) {
     return;
   }
 
-  addToRecentlyViewed(gift, { sync: false });
-  await saveOrder(gift);
-  showToast(`Order placed for ${gift.name}.`);
-  state.pendingPurchaseGift = null;
-  state.pendingCheckoutItems = [];
-  $('#paymentForm')?.reset();
-  setPaymentMethod('card');
-  window.location.hash = '#orders';
+  setPaymentProcessing(true, 'Verifying details...');
+  try {
+    showToast('Processing your purchase for this account...');
+    await wait(450);
+    setPaymentProcessing(true, 'Saving order...');
+    addToRecentlyViewed(gift, { sync: false });
+    const savedOrder = await saveOrder(gift);
+    await wait(350);
+    const purchasedCount = state.pendingCheckoutItems.length || 1;
+    setPaymentProcessing(false);
+    showPurchaseSuccessPopup(savedOrder, purchasedCount);
+    showToast(`Purchase complete. ${purchasedCount} item${purchasedCount === 1 ? '' : 's'} saved to My Purchases.`);
+    state.pendingPurchaseGift = null;
+    state.pendingCheckoutItems = [];
+    clearPendingCheckout();
+    $('#paymentForm')?.reset();
+    setPaymentMethod('card');
+  } finally {
+    if (state.isProcessingPayment) setPaymentProcessing(false);
+  }
 }
 
 async function saveOrder(gift) {
@@ -732,26 +979,31 @@ async function saveOrder(gift) {
   };
 
   state.orders.unshift(order);
-  localStorage.setItem('incanto_orders', JSON.stringify(state.orders));
+  writeScopedArray('orders', state.orders);
 
   if (state.isAuthenticated) {
-    const { ok, data } = await apiFetch('/users/orders', {
-      method: 'POST',
-      body: JSON.stringify({ order }),
-    });
-    if (ok && data?.data?.order) {
-      state.orders[0] = data.data.order;
-      localStorage.setItem('incanto_orders', JSON.stringify(state.orders));
-      state.user = data.data.user;
-      localStorage.setItem('incanto_user', JSON.stringify(state.user));
+    try {
+      const { ok, data } = await apiFetch('/users/orders', {
+        method: 'POST',
+        body: JSON.stringify({ order }),
+      });
+      if (ok && data?.data?.order) {
+        state.orders[0] = data.data.order;
+        writeScopedArray('orders', state.orders);
+        updateStoredUser(data.data.user);
+        state.cart = Array.isArray(state.user?.cart) ? state.user.cart : state.cart;
+      }
+    } catch (_err) {
+      showToast('Order saved locally for this account. API sync will need the backend online.');
     }
   }
 
   const orderedIds = new Set(items.map(item => String(item.id)));
   state.cart = state.cart.filter(item => !orderedIds.has(String(item.id)));
-  localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
+  writeScopedArray('cart', state.cart);
   updateCartUI();
   renderOrdersPage();
+  return state.orders[0] || order;
 }
 
 window.IncantoSubmitPayment = (event) => {
@@ -780,6 +1032,65 @@ function setPaymentMethod(method) {
   });
 }
 
+function setPaymentProcessing(isProcessing, label = 'Processing...') {
+  state.isProcessingPayment = isProcessing;
+  updatePaymentProcess(isProcessing ? label : 'Ready for secure demo payment.', isProcessing);
+  const submitBtn = $('#paymentSubmitBtn') || $('#paymentForm button[type="submit"]');
+  const labelEl = submitBtn?.querySelector('.payment-submit-label');
+  if (submitBtn) {
+    submitBtn.disabled = isProcessing;
+    submitBtn.classList.toggle('is-processing', isProcessing);
+  }
+  if (labelEl) labelEl.textContent = isProcessing ? label : 'Confirm & Pay';
+  else if (submitBtn) submitBtn.textContent = isProcessing ? label : 'Confirm & Pay';
+  $$('#paymentForm input, #paymentForm button').forEach((control) => {
+    if (control === submitBtn) return;
+    control.disabled = isProcessing || control.dataset.paymentDisabled === 'true';
+  });
+  if (!isProcessing) {
+    setPaymentMethod(document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card');
+  }
+}
+
+function updatePaymentProcess(message, isActive = false) {
+  const status = $('#paymentProcessStatus');
+  if (!status) return;
+  status.classList.toggle('is-active', isActive);
+  const text = status.querySelector('p');
+  if (text) text.textContent = message;
+}
+
+function closePurchaseSuccessPopup() {
+  $('#purchaseSuccessModal')?.classList.remove('open');
+  $('#purchaseSuccessModal')?.setAttribute('aria-hidden', 'true');
+  window.location.href = IS_PAYMENT_PAGE ? 'index.html#orders' : '#orders';
+}
+
+function showPurchaseSuccessPopup(order, itemCount) {
+  updatePaymentProcess('Order confirmed and saved to your account.', false);
+  const modal = $('#purchaseSuccessModal');
+  if (!modal) {
+    window.location.href = IS_PAYMENT_PAGE ? 'index.html#orders' : '#orders';
+    return;
+  }
+
+  const orderTotal = Number(order?.total);
+  const total = Number.isFinite(orderTotal) ? orderTotal : getPendingTotal();
+  const itemLabel = `${itemCount} item${itemCount === 1 ? '' : 's'}`;
+  if ($('#purchaseSuccessTitle')) $('#purchaseSuccessTitle').textContent = 'Your order is confirmed';
+  if ($('#purchaseSuccessMessage')) {
+    $('#purchaseSuccessMessage').textContent = `${itemLabel} saved to My Purchases. Your cart was updated for this account.`;
+  }
+  if ($('#purchaseSuccessOrderId')) $('#purchaseSuccessOrderId').textContent = `Order ${order?.id || 'INC-'}`;
+  if ($('#purchaseSuccessTotal')) $('#purchaseSuccessTotal').textContent = `Rs. ${total.toLocaleString('en-IN')}`;
+
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  window.setTimeout(() => {
+    if (modal.classList.contains('open')) closePurchaseSuccessPopup();
+  }, 4200);
+}
+
 /* ─── FAVORITES ──────────────────────────── */
 function toggleFavorite(gift, btn) {
   const idx = state.favorites.findIndex(f => f.id === gift.id);
@@ -794,13 +1105,14 @@ function toggleFavorite(gift, btn) {
     btn.textContent = '❤️';
     showToast(`Saved "${gift.name}" ❤️`);
   }
-  localStorage.setItem('incanto_favorites', JSON.stringify(state.favorites));
+  writeScopedArray('favorites', state.favorites);
   updateFavoritesUI();
 }
 
 function updateFavoritesUI() {
   const bar = $('#favoritesBar');
   const count = $('#favCount');
+  if (!bar || !count) return;
   if (state.favorites.length > 0) {
     bar.style.display = 'flex';
     count.textContent = state.favorites.length;
@@ -857,30 +1169,81 @@ function normalizeGiftForStorage(gift) {
   };
 }
 
-function addToCart(gift) {
-  const existing = state.cart.find(item => item.id === gift.id);
+async function addToCart(gift) {
+  if (!requireLoginForAction('cart')) return;
+  const normalizedGift = normalizeGiftForStorage(gift);
+  const existing = state.cart.find(item => String(item.id) === String(gift.id));
   if (existing) {
     existing.quantity += 1;
   } else {
-    state.cart.unshift({ ...normalizeGiftForStorage(gift), quantity: 1, addedAt: new Date().toISOString() });
+    state.cart.unshift({ ...normalizedGift, quantity: 1, addedAt: new Date().toISOString() });
   }
-  localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
+  writeScopedArray('cart', state.cart);
   updateCartUI();
-  showToast(`Added "${gift.name}" to cart`);
+  showToast(existing
+    ? `"${gift.name}" quantity updated in your private cart.`
+    : `"${gift.name}" added to your private cart.`);
+
+  try {
+    const { ok, data } = await apiFetch('/users/cart', {
+      method: 'POST',
+      body: JSON.stringify({ gift: normalizedGift }),
+    });
+    if (ok && data?.data?.user) {
+      updateStoredUser(data.data.user);
+      state.cart = Array.isArray(state.user.cart) ? state.user.cart : state.cart;
+      writeScopedArray('cart', state.cart);
+      updateCartUI();
+    }
+  } catch (_err) {
+    showToast('Saved locally for this account. API sync will need the backend online.');
+  }
 }
 
-function removeFromCart(giftId) {
+async function removeFromCart(giftId) {
+  const removedItem = state.cart.find(item => String(item.id) === String(giftId));
   state.cart = state.cart.filter(item => String(item.id) !== String(giftId));
-  localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
+  writeScopedArray('cart', state.cart);
   updateCartUI();
+  if (removedItem) showToast(`Removed "${removedItem.name}" from your cart.`);
+  if (state.isAuthenticated) {
+    try {
+      const { ok, data } = await apiFetch(`/users/cart/${encodeURIComponent(giftId)}`, { method: 'DELETE' });
+      if (ok && data?.data?.user) {
+        updateStoredUser(data.data.user);
+        state.cart = Array.isArray(state.user.cart) ? state.user.cart : state.cart;
+        writeScopedArray('cart', state.cart);
+        updateCartUI();
+      }
+    } catch (_err) {
+      showToast('Removed locally. API sync will need the backend online.');
+    }
+  }
 }
 
-function changeCartQuantity(giftId, delta) {
+async function changeCartQuantity(giftId, delta) {
   const item = state.cart.find(cartItem => String(cartItem.id) === String(giftId));
   if (!item) return;
   item.quantity = Math.max(1, (item.quantity || 1) + delta);
-  localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
+  writeScopedArray('cart', state.cart);
   updateCartUI();
+  showToast(`Quantity for "${item.name}" is now ${item.quantity}.`);
+  if (state.isAuthenticated) {
+    try {
+      const { ok, data } = await apiFetch(`/users/cart/${encodeURIComponent(giftId)}`, {
+        method: 'PUT',
+        body: JSON.stringify({ quantity: item.quantity }),
+      });
+      if (ok && data?.data?.user) {
+        updateStoredUser(data.data.user);
+        state.cart = Array.isArray(state.user.cart) ? state.user.cart : state.cart;
+        writeScopedArray('cart', state.cart);
+        updateCartUI();
+      }
+    } catch (_err) {
+      showToast('Quantity changed locally. API sync will need the backend online.');
+    }
+  }
 }
 
 function updateCartUI() {
@@ -1041,7 +1404,7 @@ function addToRecentlyViewed(gift, options = {}) {
     viewedAt: new Date().toISOString(),
   });
   state.recentlyViewed = state.recentlyViewed.slice(0, 6);
-  localStorage.setItem('incanto_recent', JSON.stringify(state.recentlyViewed));
+  writeScopedArray('recentlyViewed', state.recentlyViewed);
   if (sync && state.isAuthenticated) {
     apiFetch('/users/recently-viewed', {
       method: 'POST',
@@ -1282,6 +1645,8 @@ function restartFinder() {
   $('.pstep[data-step="1"]').classList.add('active');
   $('#progressFill').style.width = '0%';
   $('#results').style.display = 'none';
+  const recipientHint = $('#step-2 .step-hint');
+  if (recipientHint) recipientHint.textContent = 'Tell us about your recipient';
   $('#finder').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -1312,33 +1677,50 @@ function initScrollReveal() {
 }
 
 /* ─── TOAST ──────────────────────────────── */
+let toastTimer = null;
+
 function showToast(message, duration = 2800) {
   const toast = $('#toast');
+  if (!toast) return;
+  window.clearTimeout(toastTimer);
   toast.textContent = message;
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
   toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), duration);
+  toastTimer = window.setTimeout(() => toast.classList.remove('show'), duration);
 }
 
 /* ─── ROUTING ────────────────────────────── */
-function showAuthModal(mode = 'login') {
+function showAuthModal(mode = 'login', message = '') {
   setAuthMode(mode);
+  const messageEl = $('#authModalMessage');
+  if (messageEl) {
+    messageEl.textContent = message;
+    messageEl.classList.toggle('show', Boolean(message));
+  }
   $('#authModal')?.classList.add('open');
 }
 
 function hideAuthModal() {
   $('#authModal')?.classList.remove('open');
+  const messageEl = $('#authModalMessage');
+  if (messageEl) {
+    messageEl.textContent = '';
+    messageEl.classList.remove('show');
+  }
 }
 
 function setAuthMode(mode) {
   const isRegister = mode === 'register';
-  $('#authModalTitle').textContent = isRegister ? 'Create account' : 'Log in';
-  $('#authLoginTab').classList.toggle('active', !isRegister);
-  $('#authRegisterTab').classList.toggle('active', isRegister);
-  $('#loginForm').classList.toggle('active', !isRegister);
-  $('#registerForm').classList.toggle('active', isRegister);
+  if ($('#authModalTitle')) $('#authModalTitle').textContent = isRegister ? 'Create account' : 'Log in';
+  $('#authLoginTab')?.classList.toggle('active', !isRegister);
+  $('#authRegisterTab')?.classList.toggle('active', isRegister);
+  $('#loginForm')?.classList.toggle('active', !isRegister);
+  $('#registerForm')?.classList.toggle('active', isRegister);
 }
 
 function updateProfileUI(user = state.user) {
+  if (!$('#profileUsername')) return;
   $('#profileUsername').textContent = user?.username || '';
   $('#profileEmail').textContent = user?.email || '';
   $('#profileVerified').textContent = user?.verified ? 'Yes' : 'No';
@@ -1357,42 +1739,34 @@ function updateProfileUI(user = state.user) {
 }
 
 function updateAuthUI() {
+  clearLegacySharedStorage();
   state.isAuthenticated = window.IncantoAuth?.isAuthenticated() || false;
   state.user = window.IncantoAuth?.getUser() || null;
 
-  if (state.user?.cart) {
-    const serverCart = Array.isArray(state.user.cart) ? state.user.cart : [];
-    const localCart = Array.isArray(state.cart) ? state.cart : [];
-    const mergedCart = [...serverCart];
-    localCart.forEach((item) => {
-      const existing = mergedCart.find((cartItem) => String(cartItem.id) === String(item.id));
-      if (existing) {
-        existing.quantity = Math.max(existing.quantity || 1, item.quantity || 1);
-      } else {
-        mergedCart.unshift(item);
-      }
-    });
-    state.cart = mergedCart;
-    localStorage.setItem('incanto_cart', JSON.stringify(state.cart));
+  if (state.isAuthenticated) {
+    state.favorites = readScopedArray('favorites');
+    state.cart = Array.isArray(state.user?.cart) ? state.user.cart : [];
+    state.recentlyViewed = Array.isArray(state.user?.recentlyViewed) ? state.user.recentlyViewed : [];
+    state.orders = Array.isArray(state.user?.orders) ? state.user.orders : [];
+    writeScopedArray('cart', state.cart);
+    writeScopedArray('recentlyViewed', state.recentlyViewed);
+    writeScopedArray('orders', state.orders);
+  } else {
+    state.favorites = [];
+    state.cart = [];
+    state.recentlyViewed = [];
+    state.orders = [];
   }
 
-  if (state.user?.recentlyViewed) {
-    state.recentlyViewed = state.user.recentlyViewed;
-    localStorage.setItem('incanto_recent', JSON.stringify(state.recentlyViewed));
-  }
-
-  if (state.user?.orders) {
-    state.orders = Array.isArray(state.user.orders) ? state.user.orders : state.orders;
-    localStorage.setItem('incanto_orders', JSON.stringify(state.orders));
-  }
-
-  $('#loginBtn').style.display = state.isAuthenticated ? 'none' : 'inline-flex';
-  $('#mobileLoginBtn').style.display = state.isAuthenticated ? 'none' : 'block';
-  $('#profileBtn').style.display = state.isAuthenticated ? 'inline-flex' : 'none';
-  $('#mobileProfileBtn').style.display = state.isAuthenticated ? 'block' : 'none';
-  $('#logoutBtn').style.display = state.isAuthenticated ? 'inline-flex' : 'none';
+  if ($('#loginBtn')) $('#loginBtn').style.display = state.isAuthenticated ? 'none' : 'inline-flex';
+  if ($('#mobileLoginBtn')) $('#mobileLoginBtn').style.display = state.isAuthenticated ? 'none' : 'block';
+  if ($('#profileBtn')) $('#profileBtn').style.display = state.isAuthenticated ? 'inline-flex' : 'none';
+  if ($('#mobileProfileBtn')) $('#mobileProfileBtn').style.display = state.isAuthenticated ? 'block' : 'none';
+  if ($('#logoutBtn')) $('#logoutBtn').style.display = state.isAuthenticated ? 'inline-flex' : 'none';
   updateProfileUI();
+  updateFavoritesUI();
   updateCartUI();
+  renderRecentlyViewed();
   renderOrdersPage();
 }
 
@@ -1428,37 +1802,6 @@ async function handleAuthSubmit(formType, event) {
   }
 }
 
-async function saveProfilePreferences(event) {
-  event.preventDefault();
-  if (!state.isAuthenticated) {
-    showAuthModal('login');
-    return;
-  }
-
-  const interests = $('#prefInterests').value
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-  const { ok, data } = await apiFetch('/users/preferences', {
-    method: 'POST',
-    body: JSON.stringify({
-      recipient: $('#prefRecipient').value,
-      budget: $('#prefBudget').value,
-      interests,
-      personality: $('#prefPersonality').value,
-    }),
-  });
-
-  if (ok && data.success) {
-    localStorage.setItem('incanto_user', JSON.stringify(data.data.user));
-    updateAuthUI();
-    showToast('Preferences saved.');
-  } else {
-    showToast(data.message || 'Could not save preferences.');
-  }
-}
-
 async function savePersonalInfo(event) {
   event.preventDefault();
   if (!state.isAuthenticated) {
@@ -1477,7 +1820,7 @@ async function savePersonalInfo(event) {
   });
 
   if (ok && data.success) {
-    localStorage.setItem('incanto_user', JSON.stringify(data.data.user));
+    updateStoredUser(data.data.user);
     updateAuthUI();
     showToast('Personal information saved.');
   } else {
@@ -1534,7 +1877,6 @@ function initAuth() {
   $('#loginForm')?.addEventListener('submit', (event) => handleAuthSubmit('login', event));
   $('#registerForm')?.addEventListener('submit', (event) => handleAuthSubmit('register', event));
   $('#personalInfoForm')?.addEventListener('submit', savePersonalInfo);
-  $('#preferencesForm')?.addEventListener('submit', saveProfilePreferences);
   $('#googleSetupBtn')?.addEventListener('click', () => showToast('Paste your Google OAuth client ID in frontend/user.js first.'));
   window.addEventListener('incanto:auth-change', updateAuthUI);
   window.addEventListener('load', initGoogleSignIn);
@@ -1542,10 +1884,22 @@ function initAuth() {
 }
 
 function handleRouting() {
+  if (IS_PAYMENT_PAGE) {
+    window.scrollTo({ top: 0 });
+    $('#mobileMenu')?.classList.remove('open');
+    $('#hamburger')?.setAttribute('aria-expanded', 'false');
+    $('#hamburger')?.setAttribute('aria-label', 'Open menu');
+    return;
+  }
   const hash = window.location.hash || '#home';
   const targetId = hash.replace('#', '');
-  if (targetId === 'profile' && !state.isAuthenticated) {
-    showAuthModal('login');
+  if (targetId === 'payment' && !IS_PAYMENT_PAGE) {
+    window.location.href = 'payment.html';
+    return;
+  }
+  if (['profile', 'cart', 'orders', 'purchase', 'purchase-final', 'payment'].includes(targetId) && !state.isAuthenticated) {
+    showAuthModal('login', 'Please log in to view your private account area.');
+    showToast('Please log in to continue.');
     window.location.hash = '#home';
     return;
   }
@@ -1576,7 +1930,11 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     $('#favsModal').classList.remove('open');
     hideAuthModal();
-    if (window.location.hash === '#purchase' || window.location.hash === '#payment') cancelPurchase();
+    if ($('#purchaseSuccessModal')?.classList.contains('open')) {
+      closePurchaseSuccessPopup();
+      return;
+    }
+    if (window.location.hash === '#purchase' || window.location.hash === '#purchase-final' || window.location.hash === '#payment') cancelPurchase();
   }
 });
 
@@ -1584,22 +1942,33 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initScrollReveal();
-  initFinder();
-  initBudgetSlider();
-  initFilters();
   initAuth();
-  updateFavoritesUI();
+  if (!IS_PAYMENT_PAGE) {
+    initFinder();
+    initBudgetSlider();
+    initFilters();
+    updateFavoritesUI();
+  }
   updateCartUI();
   renderOrdersPage();
   renderRecentlyViewed();
-  initBuyButtons();
-  initStaticTrendingCards();
+  if (!IS_PAYMENT_PAGE) {
+    initBuyButtons();
+    initStaticTrendingCards();
+  }
   $('#confirmPurchaseBtn')?.addEventListener('click', confirmPurchase);
+  $('#continueToPaymentBtn')?.addEventListener('click', continueToPayment);
   $('#quickViewCartBtn')?.addEventListener('click', showCartPage);
   $('#quickCheckoutNowBtn')?.addEventListener('click', showCartPurchaseConfirmation);
   $('#cancelPurchaseBtn')?.addEventListener('click', cancelPurchase);
   $('#purchaseCancelBtn')?.addEventListener('click', cancelPurchase);
+  $('#finalPurchaseCancelBtn')?.addEventListener('click', cancelPurchase);
+  $('#finalPurchaseBackBtn')?.addEventListener('click', backToPurchase);
   $('#backToPurchaseBtn')?.addEventListener('click', backToPurchase);
+  $('#purchaseSuccessClose')?.addEventListener('click', closePurchaseSuccessPopup);
+  $('#purchaseSuccessModal')?.addEventListener('click', (event) => {
+    if (event.target === $('#purchaseSuccessModal')) closePurchaseSuccessPopup();
+  });
   $('#paymentForm')?.addEventListener('submit', handlePaymentSubmit);
   $('#checkoutCartBtn')?.addEventListener('click', showCartPurchaseConfirmation);
   $('#applyVoucherBtn')?.addEventListener('click', () => applyVoucher($('#voucherCode')?.value));
@@ -1607,5 +1976,6 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('change', () => setPaymentMethod(input.value));
   });
   setPaymentMethod('card');
+  hydrateCheckoutPage();
   handleRouting();
 });

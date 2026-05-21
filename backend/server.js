@@ -5,18 +5,38 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import path from "path";
+import { fileURLToPath } from "url";
 import config from "./config.js";
 
 import indexRouter from "./routes/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendDir = path.resolve(__dirname, "../frontend");
 const allowedOrigins = (config.clientOrigin || "*")
   .split(",")
   .map((origin) => origin.trim());
 
 // Security
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "http://localhost:5000", "http://127.0.0.1:5000"],
+        frameSrc: ["'self'", "https://accounts.google.com"],
+      },
+    },
+  })
+);
 
 // CORS
 app.use(
@@ -53,6 +73,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use("/api/v1", indexRouter);
+app.use(express.static(frontendDir));
 
 // Health check
 app.get("/health", (_req, res) => {
@@ -62,6 +83,11 @@ app.get("/health", (_req, res) => {
     environment: config.nodeEnv,
     timestamp: new Date().toISOString(),
   });
+});
+
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api/")) return next();
+  res.sendFile(path.join(frontendDir, "index.html"));
 });
 
 // 404 handler

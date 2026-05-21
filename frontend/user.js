@@ -1,7 +1,11 @@
 'use strict';
 
 const IncantoAuth = (() => {
-  const AUTH_API_BASE = 'http://localhost:5000/api/v1';
+  const AUTH_API_BASE = window.INCANTO_API_BASE
+    || (window.location.protocol === 'file:'
+      || (['localhost', '127.0.0.1'].includes(window.location.hostname) && window.location.port && window.location.port !== '5000')
+      ? 'http://localhost:5000/api/v1'
+      : `${window.location.origin}/api/v1`);
   const AUTH_TOKEN_KEY = 'incanto_auth_token';
   const AUTH_USER_KEY = 'incanto_user';
   const GOOGLE_CLIENT_ID = '436047080407-nougkk1036aasu9pa5j4vgqlkib5pb7m.apps.googleusercontent.com'; // Paste your Google OAuth web client ID here.

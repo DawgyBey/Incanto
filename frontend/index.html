@@ -654,6 +654,11 @@
                 Demo card: <strong>4242 4242 4242 4242</strong>. Voucher codes: <strong>INCANTO10</strong>, <strong>GIFT50</strong>.
               </div>
 
+              <div class="payment-process" id="paymentProcessStatus" aria-live="polite">
+                <span></span>
+                <p>Ready for secure demo payment.</p>
+              </div>
+
               <div class="payment-footer">
                 <div class="payment-total">Total <span id="paymentTotal">Rs. 0</span></div>
                 <div class="payment-actions">
@@ -663,8 +668,8 @@
                   <button type="button" class="btn-secondary" id="cancelPurchaseBtn">
                     Cancel
                   </button>
-                  <button type="submit" class="btn-primary">
-                    Confirm & Pay
+                  <button type="submit" class="btn-primary" id="paymentSubmitBtn">
+                    <span class="payment-submit-label">Confirm & Pay</span>
                   </button>
                 </div>
               </div>
@@ -1402,6 +1407,49 @@
 
     <!-- ══════════════════════════════════════════ PROFILE -->
     <section
+      id="purchase-final"
+      class="page-section view-section"
+      style="padding: 150px 0 100px; min-height: 80vh"
+    >
+      <div class="container">
+        <div class="purchase-final">
+          <div class="purchase-final-status">Purchase Review</div>
+          <div class="purchase-header">
+            <span class="purchase-emoji" id="finalPurchaseGiftEmoji">🎁</span>
+            <h1 class="purchase-title">Confirm before payment</h1>
+            <p class="purchase-subtitle">
+              Review your selected gift one more time. Payment will be collected
+              on the next page.
+            </p>
+          </div>
+          <div class="purchase-details">
+            <div class="purchase-item">
+              <h3 id="finalPurchaseGiftName">Gift Name</h3>
+              <p id="finalPurchaseGiftReason">Reason</p>
+              <div class="purchase-price" id="finalPurchaseGiftPrice">Price</div>
+            </div>
+            <div class="purchase-info">
+              <p id="finalPurchaseGiftDetails">
+                Confirm this purchase to continue to payment.
+              </p>
+            </div>
+          </div>
+          <div class="purchase-actions">
+            <button class="btn-secondary" id="finalPurchaseBackBtn" type="button">
+              Back
+            </button>
+            <button class="btn-secondary" id="finalPurchaseCancelBtn" type="button">
+              Cancel
+            </button>
+            <button class="btn-primary" id="continueToPaymentBtn" type="button">
+              Continue to Payment
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
       id="profile"
       class="page-section view-section"
       style="padding: 150px 0 100px; min-height: 80vh"
@@ -1526,6 +1574,7 @@
               Create account
             </button>
           </div>
+          <p class="auth-message" id="authModalMessage"></p>
 
           <form class="auth-form active" id="loginForm">
             <label>
@@ -1592,6 +1641,24 @@
           </button>
           <div id="googleNote" class="auth-note"></div>
         </div>
+      </div>
+    </div>
+
+    <div class="purchase-success-modal" id="purchaseSuccessModal" aria-hidden="true">
+      <div class="purchase-success-card" role="dialog" aria-modal="true" aria-labelledby="purchaseSuccessTitle">
+        <div class="purchase-success-icon">✓</div>
+        <p class="purchase-success-kicker">Purchase Complete</p>
+        <h2 id="purchaseSuccessTitle">Your order is confirmed</h2>
+        <p id="purchaseSuccessMessage">
+          We saved this purchase to your account.
+        </p>
+        <div class="purchase-success-meta">
+          <span id="purchaseSuccessOrderId">Order INC-</span>
+          <strong id="purchaseSuccessTotal">Rs. 0</strong>
+        </div>
+        <button class="btn-primary" id="purchaseSuccessClose" type="button">
+          View My Purchases
+        </button>
       </div>
     </div>
 

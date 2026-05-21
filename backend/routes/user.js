@@ -282,7 +282,7 @@ router.get("/", (_req, res) => {
       preferences: "POST /api/v1/users/preferences",
       personalInfo: "POST /api/v1/users/personal-info",
       recentlyViewed: "POST /api/v1/users/recently-viewed",
-      cart: "POST /api/v1/users/cart",
+      cart: "POST /api/v1/users/cart, PUT/DELETE /api/v1/users/cart/:id",
       orders: "GET /api/v1/users/orders, POST /api/v1/users/orders",
     },
   });
@@ -397,6 +397,22 @@ router.delete("/cart/:id", requireAuth, (req, res) => {
   res.json({ success: true, data: { user: toPublicUser(req.user) } });
 });
 
+router.put("/cart/:id", requireAuth, (req, res) => {
+  const quantity = Math.max(1, Number(req.body.quantity) || 1);
+  const item = (req.user.cart || []).find(
+    (gift) => String(gift.id) === String(req.params.id)
+  );
+
+  if (!item) {
+    return res.status(404).json({ success: false, message: "Cart item not found." });
+  }
+
+  item.quantity = quantity;
+  saveUsers();
+
+  res.json({ success: true, data: { user: toPublicUser(req.user) } });
+});
+
 router.get("/orders", requireAuth, (req, res) => {
   res.json({
     success: true,
@@ -437,6 +453,10 @@ router.post("/orders", requireAuth, (req, res) => {
 
   req.user.orders = req.user.orders || [];
   req.user.orders.unshift(normalizedOrder);
+  const orderedIds = new Set(normalizedOrder.items.map((item) => String(item.id)));
+  req.user.cart = (req.user.cart || []).filter(
+    (item) => !orderedIds.has(String(item.id))
+  );
   saveUsers();
 
   res.json({ success: true, data: { order: normalizedOrder, user: toPublicUser(req.user) } });
