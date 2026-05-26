@@ -314,8 +314,8 @@ async function generateResults() {
 
   // Map local recipient names to backend-accepted values
   const recipientMap = {
-    partner: 'partner', friend: 'friend', mom: 'parent', dad: 'parent',
-    sibling: 'sibling', colleague: 'colleague', child: 'child', grandparent: 'other'
+    partner: 'partner', friend: 'friend', mom: 'mom', dad: 'dad',
+    sibling: 'sibling', colleague: 'colleague', child: 'child', grandparent: 'grandparent'
   };
 
   const recipient = recipientMap[state.inputs.recipient] || null;
@@ -417,10 +417,12 @@ async function generateResults() {
     // Fetch recommendations
     const params = new URLSearchParams();
     if (recipient) params.set('recipient', recipient);
+    if (state.inputs.minBudget) params.set('minBudget', state.inputs.minBudget);
     if (state.inputs.budget) params.set('budget', state.inputs.budget);
     if (state.inputs.interests.length) params.set('interests', state.inputs.interests.join(','));
     if (state.inputs.personality) params.set('personality', state.inputs.personality);
     if (state.inputs.occasion) params.set('occasion', state.inputs.occasion);
+    params.set('preferOnline', 'true');
     params.set('limit', '9');
 
     const { ok, data } = await apiFetch(`/gifts/recommendations?${params}`);
@@ -432,20 +434,26 @@ async function generateResults() {
     if (ok && data.success) {
       const gifts = apiResults.map(g => ({
         id: g.id,
-        name: g.name,
+        name: g.item_name || g.name,
         description: g.description,
-        imageUrl: null,
+        imageUrl: g.image_url || g.imageUrl || null,
         emoji: '🎁',
-        price: g.price,
-        priceLabel: g.price ? `Rs. ${g.price.toLocaleString()}` : 'Price unavailable',
+        price: g.price_npr || g.price,
+        priceLabel: (g.price_npr || g.price) ? `Rs. ${Number(g.price_npr || g.price).toLocaleString('en-IN')}` : 'Price unavailable',
         category: g.category || 'Gift',
-        badge: g.trending ? 'Trending' : (g.rating >= 4.8 ? 'Top Rated' : null),
+        badge: g.availability || g.price_range || null,
         reason: g.reason || `Rated ${g.rating ?? '4.0'}/5 · ${g.category || ''}`,
-        link: g.link || g.affiliateUrl || '#'
+        link: g.daraz_search_link || g.link || '#',
+        recipients: g.recipient || g.recipients || [],
+        occasions: g.occasion || g.occasions || [],
+        tags: g.tags || [],
+        availability: g.availability || 'Available',
+        priceRange: g.price_range,
+        isLocalNepaliGift: Boolean(g.is_local_nepali_gift)
       })).filter(gift => isWithinBudgetRange(gift.price));
       const presentationGifts = getBudgetFallbackGifts(9);
       const seenGiftKeys = new Set();
-      const displayGifts = [...presentationGifts, ...gifts]
+      const displayGifts = [...gifts, ...presentationGifts]
         .filter((gift) => {
           const key = String(gift.id || gift.name).toLowerCase();
           if (seenGiftKeys.has(key)) return false;
@@ -535,30 +543,43 @@ function createGiftCard(gift) {
   div.className = 'gift-card';
   div.dataset.id = gift.id;
   div.dataset.price = gift.price;
+  const fallbackImage = '/images/fallback-gift.jpg';
   const safeName = escapeHtml(gift.name || 'Gift item');
   const safeDescription = escapeHtml(gift.description || 'A thoughtful recommendation based on your choices.');
   const safeReason = escapeHtml(gift.reason || 'It matches the preferences you selected.');
   const safePriceLabel = escapeHtml(gift.priceLabel || 'Price unavailable');
-  const safeBadge = gift.badge ? escapeHtml(gift.badge) : '';
+  const safeBadge = escapeHtml(gift.availability || gift.badge || 'Available');
   const safeLink = escapeHtml(gift.link || '#');
+  const safeCategory = escapeHtml(gift.category || 'Gift');
+  const safeRecipients = escapeHtml((gift.recipients || gift.recipient || []).join(', ') || 'Anyone');
+  const safeOccasions = escapeHtml((gift.occasions || gift.occasion || []).join(', ') || 'Any occasion');
+  const safeTagsHtml = (gift.tags || []).slice(0, 4).map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
+  const imageSrc = escapeHtml(gift.imageUrl || fallbackImage);
   const safeEmoji = escapeHtml(gift.emoji || '🎁');
 
   div.innerHTML = `
     <div class="gift-img-wrap">
-      ${gift.imageUrl ? `<img src="${escapeHtml(gift.imageUrl)}" alt="${safeName}" class="gift-image" />` : `<span style="position:relative;z-index:1">${safeEmoji}</span>`}
-      ${safeBadge ? `<div class="gift-badge">${safeBadge}</div>` : ''}
+      <img src="${imageSrc}" alt="${safeName}" class="gift-image" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';" />
+      <span class="gift-emoji-fallback" aria-hidden="true">${safeEmoji}</span>
+      <div class="gift-badge">${safeBadge}</div>
       <button class="fav-btn ${isFaved ? 'saved' : ''}" data-id="${gift.id}" title="Save to favorites">
         ${isFaved ? '❤️' : '🤍'}
       </button>
     </div>
     <div class="gift-body">
       <h3 class="gift-name">${safeName}</h3>
+      <div class="gift-meta">
+        <span>${safeCategory}</span>
+        <span>${safeRecipients}</span>
+        <span>${safeOccasions}</span>
+      </div>
       <p class="gift-desc">${safeDescription}</p>
+      ${safeTagsHtml ? `<div class="gift-tags">${safeTagsHtml}</div>` : ''}
       <div class="gift-ai-reason"><strong>✦ Why it's perfect</strong> ${safeReason}</div>
       <div class="gift-footer">
         <div class="gift-price">${safePriceLabel} <span>onwards</span></div>
         <button class="btn-cart" type="button" data-gift-id="${gift.id}">Add to Cart</button>
-        <a href="#" class="btn-buy" data-gift-id="${gift.id}" data-link="${safeLink}">Buy Now →</a>
+        <a href="#" class="btn-buy" data-gift-id="${gift.id}" data-link="${safeLink}">Search on Daraz</a>
       </div>
     </div>
   `;

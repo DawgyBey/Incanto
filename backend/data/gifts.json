@@ -1,875 +1,2422 @@
 {
-  "nepal_gift_database": [
+  "gifts": [
     {
       "id": 1,
-      "Item Name": "Bluetooth Earbuds",
-      "Category": "Tech",
-      "Recipient": "Friend",
-      "Price (NPR)": 3500,
-      "Occasion": "Birthday",
-      "Description": "Wireless earbuds that feel premium without breaking the bank.",
-      "Availability": "Daraz",
-      "Tags": "budget,trendy,gadget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-bluetooth-earbuds-1.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Bluetooth%20Earbuds"
+      "item_name": "Bluetooth Earbuds",
+      "category": "Tech",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Colleague"
+      ],
+      "price_npr": 3500,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "Wireless earbuds make an easy everyday upgrade for music, calls, online classes, and commuting around the city.",
+      "availability": "Daraz",
+      "tags": [
+        "budget",
+        "trendy",
+        "gadget",
+        "tech",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Bluetooth%20Earbuds",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Bluetooth%20Earbuds",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 2,
-      "Item Name": "Smart Watch Noise/Boat",
-      "Category": "Tech",
-      "Recipient": "Dad",
-      "Price (NPR)": 6500,
-      "Occasion": "Birthday",
-      "Description": "Tracks steps, sleep, and notifications — dad will love it.",
-      "Availability": "Daraz",
-      "Tags": "trendy,gadget,premium",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-smart-watch-noise-boat-2.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Smart%20Watch%20Noise%2FBoat"
+      "item_name": "Smart Watch Noise/Boat",
+      "category": "Tech",
+      "recipient": [
+        "Dad",
+        "Friend",
+        "Sibling",
+        "Partner"
+      ],
+      "price_npr": 6500,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "A useful fitness and notification companion for someone who likes tracking health, calls, and daily routines.",
+      "availability": "Daraz",
+      "tags": [
+        "trendy",
+        "gadget",
+        "premium",
+        "tech",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Smart%20Watch%20Noise%2FBoat",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Smart%20Watch%20Noise%2FBoat",
+      "price_range": "Premium",
+      "gender_suitability": [
+        "Male",
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 3,
-      "Item Name": "Portable Power Bank 20000mAh",
-      "Category": "Tech",
-      "Recipient": "Friend",
-      "Price (NPR)": 2800,
-      "Occasion": "Casual",
-      "Description": "Never let their phone die again, ever.",
-      "Availability": "Daraz",
-      "Tags": "practical,budget,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-portable-power-bank-20000mah-3.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Portable%20Power%20Bank%2020000mAh"
+      "item_name": "Portable Power Bank 20000mAh",
+      "category": "Tech",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Colleague",
+        "Dad"
+      ],
+      "price_npr": 2800,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "A practical everyday gift that keeps phones charged during travel, work, college, and long power-cut days.",
+      "availability": "Daraz",
+      "tags": [
+        "practical",
+        "budget",
+        "trendy",
+        "tech",
+        "gadget"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Portable%20Power%20Bank%2020000mAh",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Portable%20Power%20Bank%2020000mAh",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 9,
+      "is_local_nepali_gift": false
     },
     {
       "id": 4,
-      "Item Name": "USB-C Charging Hub",
-      "Category": "Tech",
-      "Recipient": "Dad",
-      "Price (NPR)": 1800,
-      "Occasion": "Casual",
-      "Description": "One hub to charge everything on the desk.",
-      "Availability": "Daraz",
-      "Tags": "practical,budget,gadget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-usb-c-charging-hub-4.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=USB-C%20Charging%20Hub"
+      "item_name": "USB-C Charging Hub",
+      "category": "Tech",
+      "recipient": [
+        "Dad",
+        "Colleague",
+        "Friend",
+        "Sibling"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "A tidy desk accessory for charging phones, earbuds, and work devices without juggling multiple adapters.",
+      "availability": "Daraz",
+      "tags": [
+        "practical",
+        "budget",
+        "gadget",
+        "tech"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=USB-C%20Charging%20Hub",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=USB-C%20Charging%20Hub",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 7,
+      "is_local_nepali_gift": false
     },
     {
       "id": 5,
-      "Item Name": "Wireless Charging Pad",
-      "Category": "Tech",
-      "Recipient": "Friend",
-      "Price (NPR)": 1500,
-      "Occasion": "Casual",
-      "Description": "Just drop the phone and it charges — magic.",
-      "Availability": "Daraz",
-      "Tags": "trendy,budget,gadget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-wireless-charging-pad-5.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Wireless%20Charging%20Pad"
+      "item_name": "Wireless Charging Pad",
+      "category": "Tech",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Partner",
+        "Colleague"
+      ],
+      "price_npr": 1500,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "A clean bedside or desk charger for anyone using wireless charging and wanting fewer cables around.",
+      "availability": "Daraz",
+      "tags": [
+        "trendy",
+        "budget",
+        "gadget",
+        "tech",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Wireless%20Charging%20Pad",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Wireless%20Charging%20Pad",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 7,
+      "is_local_nepali_gift": false
     },
     {
       "id": 6,
-      "Item Name": "Mini Bluetooth Speaker",
-      "Category": "Tech",
-      "Recipient": "Friend",
-      "Price (NPR)": 2200,
-      "Occasion": "Birthday",
-      "Description": "Plays crisp sound anywhere you take it.",
-      "Availability": "Daraz",
-      "Tags": "trendy,budget,gadget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-mini-bluetooth-speaker-6.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Mini%20Bluetooth%20Speaker"
+      "item_name": "Mini Bluetooth Speaker",
+      "category": "Tech",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Partner"
+      ],
+      "price_npr": 2200,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "A compact speaker for hostel rooms, picnics, small gatherings, and casual music lovers.",
+      "availability": "Daraz",
+      "tags": [
+        "trendy",
+        "budget",
+        "gadget",
+        "tech",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Mini%20Bluetooth%20Speaker",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Mini%20Bluetooth%20Speaker",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 7,
-      "Item Name": "Laptop Stand Foldable",
-      "Category": "Tech",
-      "Recipient": "Dad",
-      "Price (NPR)": 1200,
-      "Occasion": "Casual",
-      "Description": "Keeps the laptop cool and the neck happy.",
-      "Availability": "Daraz",
-      "Tags": "practical,budget,gadget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-laptop-stand-foldable-7.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Laptop%20Stand%20Foldable"
+      "item_name": "Laptop Stand Foldable",
+      "category": "Tech",
+      "recipient": [
+        "Dad",
+        "Friend",
+        "Sibling",
+        "Colleague"
+      ],
+      "price_npr": 1200,
+      "occasion": [
+        "Graduation",
+        "Birthday",
+        "Just Because"
+      ],
+      "description": "A lightweight stand that improves laptop posture during office work, study sessions, and video calls.",
+      "availability": "Daraz",
+      "tags": [
+        "practical",
+        "budget",
+        "gadget",
+        "tech"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Laptop%20Stand%20Foldable",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Laptop%20Stand%20Foldable",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 8,
-      "Item Name": "Mechanical Keyboard",
-      "Category": "Tech",
-      "Recipient": "Friend",
-      "Price (NPR)": 4500,
-      "Occasion": "Birthday",
-      "Description": "Satisfying clicky keys every developer dreams of.",
-      "Availability": "Daraz",
-      "Tags": "trendy,premium,gadget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-mechanical-keyboard-8.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Mechanical%20Keyboard"
+      "item_name": "Mechanical Keyboard",
+      "category": "Tech",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Colleague"
+      ],
+      "price_npr": 4500,
+      "occasion": [
+        "Birthday",
+        "Graduation"
+      ],
+      "description": "A satisfying desk upgrade for gamers, writers, programmers, and anyone who spends long hours typing.",
+      "availability": "Daraz",
+      "tags": [
+        "trendy",
+        "premium",
+        "gadget",
+        "tech",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Mechanical%20Keyboard",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Mechanical%20Keyboard",
+      "price_range": "Premium",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 9,
-      "Item Name": "Ring Light 10 inch",
-      "Category": "Tech",
-      "Recipient": "Friend",
-      "Price (NPR)": 2500,
-      "Occasion": "Birthday",
-      "Description": "Perfect selfies and video calls every time.",
-      "Availability": "Daraz",
-      "Tags": "trendy,budget,gadget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-ring-light-10-inch-9.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Ring%20Light%2010%20inch"
+      "item_name": "Ring Light 10 inch",
+      "category": "Tech",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Partner"
+      ],
+      "price_npr": 2500,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "Helpful lighting for content creation, video calls, makeup practice, and clearer online meetings.",
+      "availability": "Daraz",
+      "tags": [
+        "trendy",
+        "budget",
+        "gadget",
+        "tech",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Ring%20Light%2010%20inch",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Ring%20Light%2010%20inch",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 7,
+      "is_local_nepali_gift": false
     },
     {
       "id": 10,
-      "Item Name": "Smart LED Bulb WiFi",
-      "Category": "Tech",
-      "Recipient": "Mom",
-      "Price (NPR)": 900,
-      "Occasion": "Festival",
-      "Description": "Control the room mood from your phone.",
-      "Availability": "Daraz",
-      "Tags": "trendy,budget,gadget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-smart-led-bulb-wifi-10.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Smart%20LED%20Bulb%20WiFi"
+      "item_name": "Smart LED Bulb WiFi",
+      "category": "Tech",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Mom",
+        "Dad"
+      ],
+      "price_npr": 900,
+      "occasion": [
+        "Festival",
+        "Birthday",
+        "Just Because"
+      ],
+      "description": "A small smart-home gift that adds adjustable lighting for bedrooms, study corners, and festive evenings.",
+      "availability": "Daraz",
+      "tags": [
+        "trendy",
+        "budget",
+        "gadget",
+        "tech",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Smart%20LED%20Bulb%20WiFi",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Smart%20LED%20Bulb%20WiFi",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 7,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 11,
+      "item_name": "Thangka Painting Small",
+      "category": "Art",
+      "recipient": [
+        "Mom",
+        "Dad",
+        "Grandparent",
+        "Colleague"
+      ],
+      "price_npr": 3500,
+      "occasion": [
+        "Festival",
+        "Birthday",
+        "Wedding"
+      ],
+      "description": "A meaningful Nepali art piece that brings cultural warmth to a home, office, or prayer space.",
+      "availability": "Local Market",
+      "tags": [
+        "handmade",
+        "traditional",
+        "sentimental",
+        "art",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Thangka%20Painting%20Small",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Thangka%20Painting%20Small",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 9,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 12,
+      "item_name": "Madhubani Art Print",
+      "category": "Art",
+      "recipient": [
+        "Mom",
+        "Friend",
+        "Colleague"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Birthday",
+        "Festival",
+        "Wedding"
+      ],
+      "description": "A colorful folk-art print that suits a framed wall, creative workspace, or thoughtful housewarming gift.",
+      "availability": "Local Market",
+      "tags": [
+        "handmade",
+        "traditional",
+        "sentimental",
+        "art"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Madhubani%20Art%20Print",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Madhubani%20Art%20Print",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 7,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 13,
+      "item_name": "Lokta Paper Notebook",
+      "category": "Art",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Colleague",
+        "Partner"
+      ],
+      "price_npr": 450,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "A handmade Nepali paper notebook for journaling, sketches, class notes, and small personal reflections.",
+      "availability": "Both",
+      "tags": [
+        "handmade",
+        "traditional",
+        "budget",
+        "art",
+        "sentimental",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Lokta%20Paper%20Notebook",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Lokta%20Paper%20Notebook",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 9,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 14,
+      "item_name": "Pashmina Wall Hanging",
+      "category": "Art",
+      "recipient": [
+        "Mom",
+        "Dad",
+        "Grandparent",
+        "Colleague"
+      ],
+      "price_npr": 2200,
+      "occasion": [
+        "Festival",
+        "Wedding",
+        "Birthday"
+      ],
+      "description": "A soft decorative textile gift that adds Nepali craft character to living rooms and quiet corners.",
+      "availability": "Local Market",
+      "tags": [
+        "handmade",
+        "traditional",
+        "premium",
+        "art",
+        "sentimental",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Pashmina%20Wall%20Hanging",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Pashmina%20Wall%20Hanging",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 15,
+      "item_name": "Hand-painted Ceramic Mug",
+      "category": "Art",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Colleague",
+        "Mom"
+      ],
+      "price_npr": 750,
+      "occasion": [
+        "Birthday",
+        "Just Because",
+        "Festival"
+      ],
+      "description": "A personal everyday mug that feels more thoughtful than standard drinkware and works for many recipients.",
+      "availability": "Both",
+      "tags": [
+        "handmade",
+        "budget",
+        "sentimental",
+        "art"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Hand-painted%20Ceramic%20Mug",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Hand-painted%20Ceramic%20Mug",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 16,
+      "item_name": "Woodcarving Elephant",
+      "category": "Art",
+      "recipient": [
+        "Mom",
+        "Dad",
+        "Grandparent",
+        "Colleague"
+      ],
+      "price_npr": 1500,
+      "occasion": [
+        "Festival",
+        "Birthday",
+        "Wedding"
+      ],
+      "description": "A classic carved showpiece for someone who enjoys traditional decor and lasting handmade objects.",
+      "availability": "Local Market",
+      "tags": [
+        "handmade",
+        "traditional",
+        "sentimental",
+        "art",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Woodcarving%20Elephant",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Woodcarving%20Elephant",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 7,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 17,
+      "item_name": "Custom Sketch Portrait",
+      "category": "Art",
+      "recipient": [
+        "Partner",
+        "Friend",
+        "Mom",
+        "Dad",
+        "Grandparent"
+      ],
+      "price_npr": 2500,
+      "occasion": [
+        "Birthday",
+        "Anniversary",
+        "Valentine"
+      ],
+      "description": "A personal portrait gift that preserves a favorite person, pet, or memory in a heartfelt way.",
+      "availability": "Local Market",
+      "tags": [
+        "handmade",
+        "sentimental",
+        "romantic",
+        "art"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Custom%20Sketch%20Portrait",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Custom%20Sketch%20Portrait",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 9,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 18,
+      "item_name": "Brass Singing Bowl",
+      "category": "Art",
+      "recipient": [
+        "Mom",
+        "Dad",
+        "Grandparent",
+        "Partner"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Festival",
+        "Birthday",
+        "Just Because"
+      ],
+      "description": "A calming traditional gift for meditation, home rituals, mindfulness practice, and peaceful room decor.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "handmade",
+        "sentimental",
+        "art",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Brass%20Singing%20Bowl",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Brass%20Singing%20Bowl",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 9,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 19,
+      "item_name": "Mandala Art Kit",
+      "category": "Art",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Child",
+        "Partner"
+      ],
+      "price_npr": 1200,
+      "occasion": [
+        "Birthday",
+        "Graduation",
+        "Just Because"
+      ],
+      "description": "A creative kit for relaxed evenings, mindful drawing, and anyone who enjoys patient hands-on art.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "handmade",
+        "trendy",
+        "art",
+        "sentimental"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Mandala%20Art%20Kit",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Mandala%20Art%20Kit",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 20,
+      "item_name": "Paubha Painting Newari",
+      "category": "Art",
+      "recipient": [
+        "Mom",
+        "Dad",
+        "Grandparent"
+      ],
+      "price_npr": 5500,
+      "occasion": [
+        "Festival",
+        "Wedding",
+        "Anniversary"
+      ],
+      "description": "A premium Newari art gift with spiritual depth, best suited for collectors and culturally rooted homes.",
+      "availability": "Local Market",
+      "tags": [
+        "handmade",
+        "premium",
+        "traditional",
+        "art",
+        "sentimental",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Paubha%20Painting%20Newari",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Paubha%20Painting%20Newari",
+      "price_range": "Premium",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 9,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 21,
+      "item_name": "Yoga Mat 6mm Non-Slip",
+      "category": "Sport",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "practical",
+        "trendy",
+        "sport",
+        "fitness"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Yoga%20Mat%206mm%20Non-Slip",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Yoga%20Mat%206mm%20Non-Slip",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 22,
+      "item_name": "Resistance Bands Set 5pc",
+      "category": "Sport",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 850,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "practical",
+        "trendy",
+        "sport",
+        "fitness"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Resistance%20Bands%20Set%205pc",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Resistance%20Bands%20Set%205pc",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 23,
+      "item_name": "Trekking Pole Pair",
+      "category": "Sport",
+      "recipient": [
+        "Dad"
+      ],
+      "price_npr": 2500,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "practical",
+        "trendy",
+        "sport",
+        "fitness"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Trekking%20Pole%20Pair",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Trekking%20Pole%20Pair",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 24,
+      "item_name": "Football Size 5",
+      "category": "Sport",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 1200,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "sport",
+        "fitness",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Football%20Size%205",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Football%20Size%205",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 25,
+      "item_name": "Badminton Racket Set",
+      "category": "Sport",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "sport",
+        "trendy",
+        "fitness",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Badminton%20Racket%20Set",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Badminton%20Racket%20Set",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 26,
+      "item_name": "Hiking Daypack 25L",
+      "category": "Sport",
+      "recipient": [
+        "Dad"
+      ],
+      "price_npr": 3200,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "practical",
+        "trendy",
+        "sport",
+        "fitness"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Hiking%20Daypack%2025L",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Hiking%20Daypack%2025L",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 27,
+      "item_name": "Jump Rope Speed Bearing",
+      "category": "Sport",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 450,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "practical",
+        "sport",
+        "fitness"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Jump%20Rope%20Speed%20Bearing",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Jump%20Rope%20Speed%20Bearing",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 28,
+      "item_name": "Cricket Bat Kashmir Willow",
+      "category": "Sport",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 2800,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Local Market",
+      "tags": [
+        "budget",
+        "sport",
+        "traditional",
+        "fitness",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Cricket%20Bat%20Kashmir%20Willow",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Cricket%20Bat%20Kashmir%20Willow",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 29,
+      "item_name": "Gym Gloves Wrist Support",
+      "category": "Sport",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 700,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "practical",
+        "sport",
+        "fitness"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Gym%20Gloves%20Wrist%20Support",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Gym%20Gloves%20Wrist%20Support",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 30,
+      "item_name": "Stainless Steel Sports Bottle",
+      "category": "Sport",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 900,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A useful fitness gift for active routines, weekend games, short hikes, and healthy everyday movement.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "practical",
+        "sport",
+        "fitness"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Stainless%20Steel%20Sports%20Bottle",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Stainless%20Steel%20Sports%20Bottle",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 31,
+      "item_name": "Himalayan Honey Jar 500g",
+      "category": "Food",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 850,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Both",
+      "tags": [
+        "traditional",
+        "budget",
+        "handmade",
+        "food",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Himalayan%20Honey%20Jar%20500g",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Himalayan%20Honey%20Jar%20500g",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 32,
+      "item_name": "Nepali Tea Assortment Box",
+      "category": "Food",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 1200,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Both",
+      "tags": [
+        "traditional",
+        "budget",
+        "sentimental",
+        "food",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Nepali%20Tea%20Assortment%20Box",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Nepali%20Tea%20Assortment%20Box",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Male"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 33,
+      "item_name": "Yak Cheese Chhurpi Hard",
+      "category": "Food",
+      "recipient": [
+        "Dad"
+      ],
+      "price_npr": 600,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "budget",
+        "unique",
+        "food",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Yak%20Cheese%20Chhurpi%20Hard",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Yak%20Cheese%20Chhurpi%20Hard",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 34,
+      "item_name": "Handmade Chocolate Box",
+      "category": "Food",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 1500,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Both",
+      "tags": [
+        "premium",
+        "sentimental",
+        "trendy",
+        "food",
+        "traditional",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Handmade%20Chocolate%20Box",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Handmade%20Chocolate%20Box",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 35,
+      "item_name": "Dried Fruit Nut Hamper",
+      "category": "Food",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 2500,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Both",
+      "tags": [
+        "premium",
+        "traditional",
+        "sentimental",
+        "food",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Dried%20Fruit%20Nut%20Hamper",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Dried%20Fruit%20Nut%20Hamper",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 36,
+      "item_name": "Chyawanprash Himalayan",
+      "category": "Food",
+      "recipient": [
+        "Dad"
+      ],
+      "price_npr": 900,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Both",
+      "tags": [
+        "traditional",
+        "budget",
+        "practical",
+        "food"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Chyawanprash%20Himalayan",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Chyawanprash%20Himalayan",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 37,
+      "item_name": "Single Origin Nepal Coffee",
+      "category": "Food",
+      "recipient": [
+        "Dad"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Both",
+      "tags": [
+        "premium",
+        "trendy",
+        "traditional",
+        "food",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Single%20Origin%20Nepal%20Coffee",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Single%20Origin%20Nepal%20Coffee",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 38,
+      "item_name": "Organic Mustard Honey",
+      "category": "Food",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 750,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "budget",
+        "unique",
+        "food",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Organic%20Mustard%20Honey",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Organic%20Mustard%20Honey",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 39,
+      "item_name": "Lapsi Candy Gift Box",
+      "category": "Food",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 350,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "budget",
+        "unique",
+        "food",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Lapsi%20Candy%20Gift%20Box",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Lapsi%20Candy%20Gift%20Box",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 40,
+      "item_name": "Wai Wai Noodle Hamper",
+      "category": "Food",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 800,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A tasteful edible gift that feels easy to share during visits, festivals, birthdays, or relaxed evenings.",
+      "availability": "Local Market",
+      "tags": [
+        "budget",
+        "trendy",
+        "funny",
+        "food",
+        "traditional",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Wai%20Wai%20Noodle%20Hamper",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Wai%20Wai%20Noodle%20Hamper",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 41,
+      "item_name": "Dhaka Topi Traditional",
+      "category": "Clothing",
+      "recipient": [
+        "Dad"
+      ],
+      "price_npr": 650,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A wearable gift with practical value, cultural character, and enough style for regular use.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "budget",
+        "sentimental",
+        "fashion",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Dhaka%20Topi%20Traditional",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Dhaka%20Topi%20Traditional",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Male"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 42,
+      "item_name": "Pashmina Shawl Pure Cashmere",
+      "category": "Clothing",
+      "recipient": [
+        "Partner",
+        "Mom",
+        "Grandparent"
+      ],
+      "price_npr": 5500,
+      "occasion": [
+        "Anniversary",
+        "Festival",
+        "Birthday"
+      ],
+      "description": "A soft premium shawl for anniversaries, festivals, travel, and elegant cold-weather gifting.",
+      "availability": "Local Market",
+      "tags": [
+        "premium",
+        "traditional",
+        "romantic",
+        "fashion",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Pashmina%20Shawl%20Pure%20Cashmere",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Pashmina%20Shawl%20Pure%20Cashmere",
+      "price_range": "Premium",
+      "gender_suitability": [
+        "Female",
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 43,
+      "item_name": "Dhaka Kurta Men Traditional",
+      "category": "Clothing",
+      "recipient": [
+        "Dad"
+      ],
+      "price_npr": 2800,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A wearable gift with practical value, cultural character, and enough style for regular use.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "budget",
+        "sentimental",
+        "fashion",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Dhaka%20Kurta%20Men%20Traditional",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Dhaka%20Kurta%20Men%20Traditional",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Male"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 44,
+      "item_name": "Woolen Sweater Hand-Knit",
+      "category": "Clothing",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 3200,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A wearable gift with practical value, cultural character, and enough style for regular use.",
+      "availability": "Local Market",
+      "tags": [
+        "handmade",
+        "traditional",
+        "sentimental",
+        "fashion",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Woolen%20Sweater%20Hand-Knit",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Woolen%20Sweater%20Hand-Knit",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 45,
+      "item_name": "Cotton Kurti Block Print",
+      "category": "Clothing",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A wearable gift with practical value, cultural character, and enough style for regular use.",
+      "availability": "Both",
+      "tags": [
+        "handmade",
+        "budget",
+        "traditional",
+        "fashion",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Cotton%20Kurti%20Block%20Print",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Cotton%20Kurti%20Block%20Print",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Female"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 46,
+      "item_name": "Nepali Football Jersey ANFA",
+      "category": "Clothing",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 1500,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A wearable gift with practical value, cultural character, and enough style for regular use.",
+      "availability": "Both",
+      "tags": [
+        "sport",
+        "trendy",
+        "budget",
+        "fashion",
+        "traditional",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Nepali%20Football%20Jersey%20ANFA",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Nepali%20Football%20Jersey%20ANFA",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 47,
+      "item_name": "Graphic Tee Kathmandu Print",
+      "category": "Clothing",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 850,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A wearable gift with practical value, cultural character, and enough style for regular use.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "trendy",
+        "sentimental",
+        "fashion",
+        "traditional",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Graphic%20Tee%20Kathmandu%20Print",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Graphic%20Tee%20Kathmandu%20Print",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 48,
+      "item_name": "Hemp Drawstring Bag",
+      "category": "Clothing",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 650,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A wearable gift with practical value, cultural character, and enough style for regular use.",
+      "availability": "Local Market",
+      "tags": [
+        "handmade",
+        "budget",
+        "trendy",
+        "fashion",
+        "traditional",
+        "practical",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Hemp%20Drawstring%20Bag",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Hemp%20Drawstring%20Bag",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 49,
+      "item_name": "Woolen Socks Himalayan Thick",
+      "category": "Clothing",
+      "recipient": [
+        "Dad"
+      ],
+      "price_npr": 450,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A wearable gift with practical value, cultural character, and enough style for regular use.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "budget",
+        "practical",
+        "fashion",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Woolen%20Socks%20Himalayan%20Thick",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Woolen%20Socks%20Himalayan%20Thick",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 50,
+      "item_name": "Couple Matching Hoodies",
+      "category": "Clothing",
+      "recipient": [
+        "Partner"
+      ],
+      "price_npr": 4500,
+      "occasion": [
+        "Anniversary",
+        "Valentine"
+      ],
+      "description": "A playful romantic clothing gift for couples who enjoy coordinated outfits and cozy casual wear.",
+      "availability": "Daraz",
+      "tags": [
+        "romantic",
+        "trendy",
+        "premium",
+        "fashion",
+        "traditional",
+        "practical"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Couple%20Matching%20Hoodies",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Couple%20Matching%20Hoodies",
+      "price_range": "Premium",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 7,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 51,
+      "item_name": "Singing Bowl Meditation Set",
+      "category": "Lifestyle",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 3200,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "sentimental",
+        "handmade",
+        "wellness",
+        "home",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Singing%20Bowl%20Meditation%20Set",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Singing%20Bowl%20Meditation%20Set",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 52,
+      "item_name": "Essential Oil Diffuser Ultrasonic",
+      "category": "Lifestyle",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 2800,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Daraz",
+      "tags": [
+        "trendy",
+        "practical",
+        "premium",
+        "wellness",
+        "home",
+        "sentimental"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Essential%20Oil%20Diffuser%20Ultrasonic",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Essential%20Oil%20Diffuser%20Ultrasonic",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 53,
+      "item_name": "Scented Soy Candles Set 4pk",
+      "category": "Lifestyle",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 1500,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Both",
+      "tags": [
+        "trendy",
+        "sentimental",
+        "budget",
+        "wellness",
+        "home"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Scented%20Soy%20Candles%20Set%204pk",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Scented%20Soy%20Candles%20Set%204pk",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 54,
+      "item_name": "Indoor Plant Trio Pots",
+      "category": "Lifestyle",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Local Market",
+      "tags": [
+        "budget",
+        "practical",
+        "trendy",
+        "wellness",
+        "home",
+        "sentimental"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Indoor%20Plant%20Trio%20Pots",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Indoor%20Plant%20Trio%20Pots",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 55,
+      "item_name": "Gratitude Journal Daily",
+      "category": "Lifestyle",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 700,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Both",
+      "tags": [
+        "budget",
+        "sentimental",
+        "trendy",
+        "wellness",
+        "home"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Gratitude%20Journal%20Daily",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Gratitude%20Journal%20Daily",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 56,
+      "item_name": "Himalayan Salt Lamp Medium",
+      "category": "Lifestyle",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 1800,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Both",
+      "tags": [
+        "traditional",
+        "sentimental",
+        "budget",
+        "wellness",
+        "home"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Himalayan%20Salt%20Lamp%20Medium",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Himalayan%20Salt%20Lamp%20Medium",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 57,
+      "item_name": "Custom Star Map Print",
+      "category": "Lifestyle",
+      "recipient": [
+        "Partner",
+        "Friend",
+        "Sibling"
+      ],
+      "price_npr": 2800,
+      "occasion": [
+        "Anniversary",
+        "Valentine",
+        "Birthday"
+      ],
+      "description": "A sentimental print capturing a meaningful night sky for couples, close friends, and milestone memories.",
+      "availability": "Daraz",
+      "tags": [
+        "romantic",
+        "sentimental",
+        "premium",
+        "wellness",
+        "home"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Custom%20Star%20Map%20Print",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Custom%20Star%20Map%20Print",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 58,
+      "item_name": "Mini Succulent Garden Set",
+      "category": "Lifestyle",
+      "recipient": [
+        "Friend"
+      ],
+      "price_npr": 1200,
+      "occasion": [
+        "Casual"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Local Market",
+      "tags": [
+        "budget",
+        "trendy",
+        "sentimental",
+        "wellness",
+        "home"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Mini%20Succulent%20Garden%20Set",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Mini%20Succulent%20Garden%20Set",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 59,
+      "item_name": "Organic Nepali Skin Care Set",
+      "category": "Lifestyle",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 3500,
+      "occasion": [
+        "Birthday"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Both",
+      "tags": [
+        "premium",
+        "practical",
+        "trendy",
+        "wellness",
+        "home",
+        "sentimental"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Organic%20Nepali%20Skin%20Care%20Set",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Organic%20Nepali%20Skin%20Care%20Set",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Female"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
+    },
+    {
+      "id": 60,
+      "item_name": "Herbal Dhoop Incense Sticks",
+      "category": "Lifestyle",
+      "recipient": [
+        "Mom"
+      ],
+      "price_npr": 550,
+      "occasion": [
+        "Festival"
+      ],
+      "description": "A calming home and lifestyle gift for comfort, wellness, daily rituals, and personal spaces.",
+      "availability": "Local Market",
+      "tags": [
+        "traditional",
+        "budget",
+        "sentimental",
+        "wellness",
+        "home",
+        "local nepali"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Herbal%20Dhoop%20Incense%20Sticks",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Herbal%20Dhoop%20Incense%20Sticks",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": true
+    },
+    {
+      "id": 61,
+      "item_name": "Ceramic Dinner Set",
+      "category": "Kitchen",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Colleague",
+        "Partner"
+      ],
+      "price_npr": 5200,
+      "occasion": [
+        "Wedding"
+      ],
+      "description": "A practical home-starting gift for newlyweds or anyone setting up a kitchen with reliable basics.",
+      "availability": "Daraz",
+      "tags": [
+        "practical",
+        "home",
+        "cooking",
+        "traditional",
+        "kitchen"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Ceramic%20Dinner%20Set",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Ceramic%20Dinner%20Set",
+      "price_range": "Premium",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 62,
-      "Item Name": "Thangka Painting Small",
-      "Category": "Art",
-      "Recipient": "Mom",
-      "Price (NPR)": 3500,
-      "Occasion": "Festival",
-      "Description": "Hand-painted Buddhist art, made right here in Nepal.",
-      "Availability": "Local Market",
-      "Tags": "handmade,traditional,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-thangka-painting-small-62.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Thangka%20Painting%20Small"
+      "item_name": "Premium Baby Diaper Bag",
+      "category": "Baby",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Partner",
+        "Colleague"
+      ],
+      "price_npr": 2900,
+      "occasion": [
+        "Babyshower"
+      ],
+      "description": "A useful baby shower gift that keeps bottles, wipes, clothes, and newborn essentials organized outside home.",
+      "availability": "Daraz",
+      "tags": [
+        "baby",
+        "practical",
+        "travel",
+        "useful"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Premium%20Baby%20Diaper%20Bag",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Premium%20Baby%20Diaper%20Bag",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 9,
+      "is_local_nepali_gift": false
     },
     {
       "id": 63,
-      "Item Name": "Madhubani Art Print",
-      "Category": "Art",
-      "Recipient": "Mom",
-      "Price (NPR)": 1800,
-      "Occasion": "Birthday",
-      "Description": "Vibrant folk art print that frames beautifully.",
-      "Availability": "Local Market",
-      "Tags": "handmade,traditional,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-madhubani-art-print-63.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Madhubani%20Art%20Print"
+      "item_name": "Academic Planner and Pen Set",
+      "category": "Stationery",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Child",
+        "Colleague"
+      ],
+      "price_npr": 1350,
+      "occasion": [
+        "Graduation",
+        "Birthday"
+      ],
+      "description": "A polished planner set for students, interns, and new professionals organizing the next chapter.",
+      "availability": "Daraz",
+      "tags": [
+        "books",
+        "practical",
+        "intellectual",
+        "study",
+        "stationery"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Academic%20Planner%20and%20Pen%20Set",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Academic%20Planner%20and%20Pen%20Set",
+      "price_range": "Budget",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 64,
-      "Item Name": "Lokta Paper Notebook",
-      "Category": "Art",
-      "Recipient": "Friend",
-      "Price (NPR)": 450,
-      "Occasion": "Casual",
-      "Description": "Handmade paper from Nepali bark — truly local.",
-      "Availability": "Both",
-      "Tags": "handmade,traditional,budget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-lokta-paper-notebook-64.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Lokta%20Paper%20Notebook"
+      "item_name": "Couple Spa Voucher",
+      "category": "Experience",
+      "recipient": [
+        "Partner"
+      ],
+      "price_npr": 6500,
+      "occasion": [
+        "Anniversary",
+        "Valentine"
+      ],
+      "description": "A relaxing shared experience for couples who would appreciate quiet time, wellness, and a special date.",
+      "availability": "Local Market",
+      "tags": [
+        "romantic",
+        "wellness",
+        "sentimental",
+        "luxury"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Couple%20Spa%20Voucher",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Couple%20Spa%20Voucher",
+      "price_range": "Premium",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 65,
-      "Item Name": "Pashmina Wall Hanging",
-      "Category": "Art",
-      "Recipient": "Mom",
-      "Price (NPR)": 2200,
-      "Occasion": "Festival",
-      "Description": "Soft Pashmina woven into a decorative wall piece.",
-      "Availability": "Local Market",
-      "Tags": "handmade,traditional,premium",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-pashmina-wall-hanging-65.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Pashmina%20Wall%20Hanging"
+      "item_name": "Festival Dry Fruit Gift Tray",
+      "category": "Food",
+      "recipient": [
+        "Mom",
+        "Dad",
+        "Grandparent",
+        "Friend",
+        "Colleague"
+      ],
+      "price_npr": 3200,
+      "occasion": [
+        "Festival",
+        "Wedding"
+      ],
+      "description": "A polished family-safe gift tray for Dashain, Tihar, house visits, and respectful seasonal greetings.",
+      "availability": "Both",
+      "tags": [
+        "traditional",
+        "food",
+        "practical",
+        "family"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Festival%20Dry%20Fruit%20Gift%20Tray",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Festival%20Dry%20Fruit%20Gift%20Tray",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Young Adult",
+        "Adult",
+        "Senior"
+      ],
+      "gift_score": 9,
+      "is_local_nepali_gift": false
     },
     {
       "id": 66,
-      "Item Name": "Hand-painted Ceramic Mug",
-      "Category": "Art",
-      "Recipient": "Friend",
-      "Price (NPR)": 750,
-      "Occasion": "Birthday",
-      "Description": "Each one is unique — no two look the same.",
-      "Availability": "Both",
-      "Tags": "handmade,budget,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-hand-painted-ceramic-mug-66.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Hand-painted%20Ceramic%20Mug"
+      "item_name": "Desk Lamp with Wireless Charger",
+      "category": "Tech",
+      "recipient": [
+        "Friend",
+        "Sibling",
+        "Child",
+        "Colleague"
+      ],
+      "price_npr": 3100,
+      "occasion": [
+        "Graduation",
+        "Birthday"
+      ],
+      "description": "A smart desk upgrade combining focused lighting and phone charging for study or work routines.",
+      "availability": "Daraz",
+      "tags": [
+        "tech",
+        "practical",
+        "books",
+        "intellectual",
+        "gadget"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Desk%20Lamp%20with%20Wireless%20Charger",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Desk%20Lamp%20with%20Wireless%20Charger",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     },
     {
       "id": 67,
-      "Item Name": "Woodcarving Elephant",
-      "Category": "Art",
-      "Recipient": "Mom",
-      "Price (NPR)": 1500,
-      "Occasion": "Festival",
-      "Description": "Intricate Nepali wood carving, a classic showpiece.",
-      "Availability": "Local Market",
-      "Tags": "handmade,traditional,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-woodcarving-elephant-67.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Woodcarving%20Elephant"
-    },
-    {
-      "id": 68,
-      "Item Name": "Custom Sketch Portrait",
-      "Category": "Art",
-      "Recipient": "Friend",
-      "Price (NPR)": 2500,
-      "Occasion": "Birthday",
-      "Description": "A beautiful hand-drawn portrait of someone they love.",
-      "Availability": "Local Market",
-      "Tags": "handmade,sentimental,romantic",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-custom-sketch-portrait-68.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Custom%20Sketch%20Portrait"
-    },
-    {
-      "id": 69,
-      "Item Name": "Brass Singing Bowl",
-      "Category": "Art",
-      "Recipient": "Mom",
-      "Price (NPR)": 1800,
-      "Occasion": "Festival",
-      "Description": "Meditative tones with a single tap of the mallet.",
-      "Availability": "Local Market",
-      "Tags": "traditional,handmade,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-brass-singing-bowl-69.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Brass%20Singing%20Bowl"
-    },
-    {
-      "id": 70,
-      "Item Name": "Mandala Art Kit",
-      "Category": "Art",
-      "Recipient": "Friend",
-      "Price (NPR)": 1200,
-      "Occasion": "Birthday",
-      "Description": "Meditative drawing kit for quiet creative hours.",
-      "Availability": "Both",
-      "Tags": "budget,handmade,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-mandala-art-kit-70.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Mandala%20Art%20Kit"
-    },
-    {
-      "id": 71,
-      "Item Name": "Paubha Painting Newari",
-      "Category": "Art",
-      "Recipient": "Mom",
-      "Price (NPR)": 5500,
-      "Occasion": "Festival",
-      "Description": "Traditional Newari religious painting, heirloom quality.",
-      "Availability": "Local Market",
-      "Tags": "handmade,premium,traditional",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-art-paubha-painting-newari-71.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Paubha%20Painting%20Newari"
-    },
-    {
-      "id": 123,
-      "Item Name": "Yoga Mat 6mm Non-Slip",
-      "Category": "Sport",
-      "Recipient": "Mom",
-      "Price (NPR)": 1800,
-      "Occasion": "Birthday",
-      "Description": "Non-slip, cushioned, and easy to roll and carry.",
-      "Availability": "Both",
-      "Tags": "budget,practical,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-yoga-mat-6mm-non-slip-123.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Yoga%20Mat%206mm%20Non-Slip"
-    },
-    {
-      "id": 124,
-      "Item Name": "Resistance Bands Set 5pc",
-      "Category": "Sport",
-      "Recipient": "Friend",
-      "Price (NPR)": 850,
-      "Occasion": "Casual",
-      "Description": "Full-body workout with absolutely no gym needed.",
-      "Availability": "Both",
-      "Tags": "budget,practical,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-resistance-bands-set-5pc-124.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Resistance%20Bands%20Set%205pc"
-    },
-    {
-      "id": 125,
-      "Item Name": "Trekking Pole Pair",
-      "Category": "Sport",
-      "Recipient": "Dad",
-      "Price (NPR)": 2500,
-      "Occasion": "Birthday",
-      "Description": "Sturdy collapsible poles for every trail in Nepal.",
-      "Availability": "Both",
-      "Tags": "practical,trendy,sport",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-trekking-pole-pair-125.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Trekking%20Pole%20Pair"
-    },
-    {
-      "id": 126,
-      "Item Name": "Football Size 5",
-      "Category": "Sport",
-      "Recipient": "Friend",
-      "Price (NPR)": 1200,
-      "Occasion": "Birthday",
-      "Description": "Official size, durable for outdoor fields everywhere.",
-      "Availability": "Both",
-      "Tags": "budget,sport",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-football-size-5-126.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Football%20Size%205"
-    },
-    {
-      "id": 127,
-      "Item Name": "Badminton Racket Set",
-      "Category": "Sport",
-      "Recipient": "Friend",
-      "Price (NPR)": 1800,
-      "Occasion": "Casual",
-      "Description": "Two rackets and shuttles — game on anytime.",
-      "Availability": "Both",
-      "Tags": "budget,sport,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-badminton-racket-set-127.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Badminton%20Racket%20Set"
-    },
-    {
-      "id": 128,
-      "Item Name": "Hiking Daypack 25L",
-      "Category": "Sport",
-      "Recipient": "Dad",
-      "Price (NPR)": 3200,
-      "Occasion": "Birthday",
-      "Description": "Light and comfy for a full day on the trail.",
-      "Availability": "Both",
-      "Tags": "practical,trendy,sport",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-hiking-daypack-25l-128.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Hiking%20Daypack%2025L"
-    },
-    {
-      "id": 129,
-      "Item Name": "Jump Rope Speed Bearing",
-      "Category": "Sport",
-      "Recipient": "Friend",
-      "Price (NPR)": 450,
-      "Occasion": "Casual",
-      "Description": "Burns calories faster than you would think.",
-      "Availability": "Both",
-      "Tags": "budget,practical,sport",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-jump-rope-speed-bearing-129.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Jump%20Rope%20Speed%20Bearing"
-    },
-    {
-      "id": 130,
-      "Item Name": "Cricket Bat Kashmir Willow",
-      "Category": "Sport",
-      "Recipient": "Friend",
-      "Price (NPR)": 2800,
-      "Occasion": "Birthday",
-      "Description": "Quality willow for local weekend match days.",
-      "Availability": "Local Market",
-      "Tags": "budget,sport,traditional",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-cricket-bat-kashmir-willow-130.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Cricket%20Bat%20Kashmir%20Willow"
-    },
-    {
-      "id": 131,
-      "Item Name": "Gym Gloves Wrist Support",
-      "Category": "Sport",
-      "Recipient": "Friend",
-      "Price (NPR)": 700,
-      "Occasion": "Casual",
-      "Description": "Grip better, blister less, lift more each day.",
-      "Availability": "Both",
-      "Tags": "budget,practical,sport",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-gym-gloves-wrist-support-131.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Gym%20Gloves%20Wrist%20Support"
-    },
-    {
-      "id": 132,
-      "Item Name": "Stainless Steel Sports Bottle",
-      "Category": "Sport",
-      "Recipient": "Friend",
-      "Price (NPR)": 900,
-      "Occasion": "Casual",
-      "Description": "Keeps cold drinks cold all afternoon long.",
-      "Availability": "Both",
-      "Tags": "budget,practical,sport",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-sport-stainless-steel-sports-bottle-132.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Stainless%20Steel%20Sports%20Bottle"
-    },
-    {
-      "id": 184,
-      "Item Name": "Himalayan Honey Jar 500g",
-      "Category": "Food",
-      "Recipient": "Mom",
-      "Price (NPR)": 850,
-      "Occasion": "Festival",
-      "Description": "Raw wild honey from Nepal's highlands — pure gold.",
-      "Availability": "Both",
-      "Tags": "traditional,budget,handmade",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-himalayan-honey-jar-500g-184.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Himalayan%20Honey%20Jar%20500g"
-    },
-    {
-      "id": 185,
-      "Item Name": "Nepali Tea Assortment Box",
-      "Category": "Food",
-      "Recipient": "Mom",
-      "Price (NPR)": 1200,
-      "Occasion": "Festival",
-      "Description": "Ilam, masala, and green teas in one gift box.",
-      "Availability": "Both",
-      "Tags": "traditional,budget,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-nepali-tea-assortment-box-185.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Nepali%20Tea%20Assortment%20Box"
-    },
-    {
-      "id": 186,
-      "Item Name": "Yak Cheese Chhurpi Hard",
-      "Category": "Food",
-      "Recipient": "Dad",
-      "Price (NPR)": 600,
-      "Occasion": "Casual",
-      "Description": "Hard Himalayan cheese — a true mountain snack.",
-      "Availability": "Local Market",
-      "Tags": "traditional,budget,unique",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-yak-cheese-chhurpi-hard-186.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Yak%20Cheese%20Chhurpi%20Hard"
-    },
-    {
-      "id": 187,
-      "Item Name": "Handmade Chocolate Box",
-      "Category": "Food",
-      "Recipient": "Friend",
-      "Price (NPR)": 1500,
-      "Occasion": "Birthday",
-      "Description": "Artisan chocolate made right here in Kathmandu.",
-      "Availability": "Both",
-      "Tags": "premium,sentimental,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-handmade-chocolate-box-187.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Handmade%20Chocolate%20Box"
-    },
-    {
-      "id": 188,
-      "Item Name": "Dried Fruit Nut Hamper",
-      "Category": "Food",
-      "Recipient": "Mom",
-      "Price (NPR)": 2500,
-      "Occasion": "Festival",
-      "Description": "Cashews, almonds, and dried berries in a pretty hamper.",
-      "Availability": "Both",
-      "Tags": "premium,traditional,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-dried-fruit-nut-hamper-188.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Dried%20Fruit%20Nut%20Hamper"
-    },
-    {
-      "id": 189,
-      "Item Name": "Chyawanprash Himalayan",
-      "Category": "Food",
-      "Recipient": "Dad",
-      "Price (NPR)": 900,
-      "Occasion": "Festival",
-      "Description": "Traditional Ayurvedic immunity booster in a jar.",
-      "Availability": "Both",
-      "Tags": "traditional,budget,practical",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-chyawanprash-himalayan-189.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Chyawanprash%20Himalayan"
-    },
-    {
-      "id": 190,
-      "Item Name": "Single Origin Nepal Coffee",
-      "Category": "Food",
-      "Recipient": "Dad",
-      "Price (NPR)": 1800,
-      "Occasion": "Birthday",
-      "Description": "Premium Nepali coffee, grown and roasted locally.",
-      "Availability": "Both",
-      "Tags": "premium,trendy,traditional",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-single-origin-nepal-coffee-190.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Single%20Origin%20Nepal%20Coffee"
-    },
-    {
-      "id": 191,
-      "Item Name": "Organic Mustard Honey",
-      "Category": "Food",
-      "Recipient": "Mom",
-      "Price (NPR)": 750,
-      "Occasion": "Casual",
-      "Description": "Rich and thick mustard honey straight from Terai farms.",
-      "Availability": "Local Market",
-      "Tags": "traditional,budget,unique",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-organic-mustard-honey-191.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Organic%20Mustard%20Honey"
-    },
-    {
-      "id": 192,
-      "Item Name": "Lapsi Candy Gift Box",
-      "Category": "Food",
-      "Recipient": "Friend",
-      "Price (NPR)": 350,
-      "Occasion": "Festival",
-      "Description": "Tangy Nepali hog plum candy — nostalgic and local.",
-      "Availability": "Local Market",
-      "Tags": "traditional,budget,unique",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-lapsi-candy-gift-box-192.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Lapsi%20Candy%20Gift%20Box"
-    },
-    {
-      "id": 193,
-      "Item Name": "Wai Wai Noodle Hamper",
-      "Category": "Food",
-      "Recipient": "Friend",
-      "Price (NPR)": 800,
-      "Occasion": "Casual",
-      "Description": "Everyone's favourite quick noodle, gifted in style.",
-      "Availability": "Local Market",
-      "Tags": "budget,trendy,funny",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-wai-wai-noodle-hamper-193.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Wai%20Wai%20Noodle%20Hamper"
-    },
-    {
-      "id": 245,
-      "Item Name": "Dhaka Topi Traditional",
-      "Category": "Clothing",
-      "Recipient": "Dad",
-      "Price (NPR)": 650,
-      "Occasion": "Festival",
-      "Description": "The Nepali national cap — worn with quiet pride.",
-      "Availability": "Local Market",
-      "Tags": "traditional,budget,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-dhaka-topi-traditional-245.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Dhaka%20Topi%20Traditional"
-    },
-    {
-      "id": 246,
-      "Item Name": "Pashmina Shawl Pure Cashmere",
-      "Category": "Clothing",
-      "Recipient": "Mom",
-      "Price (NPR)": 5500,
-      "Occasion": "Anniversary",
-      "Description": "Ultra-soft cashmere, lightweight and luxuriously warm.",
-      "Availability": "Local Market",
-      "Tags": "premium,traditional,romantic",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-pashmina-shawl-pure-cashmere-246.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Pashmina%20Shawl%20Pure%20Cashmere"
-    },
-    {
-      "id": 247,
-      "Item Name": "Dhaka Kurta Men Traditional",
-      "Category": "Clothing",
-      "Recipient": "Dad",
-      "Price (NPR)": 2800,
-      "Occasion": "Festival",
-      "Description": "Elegant Dhaka weave kurta for Dashain and Tihar.",
-      "Availability": "Local Market",
-      "Tags": "traditional,budget,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-dhaka-kurta-men-traditional-247.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Dhaka%20Kurta%20Men%20Traditional"
-    },
-    {
-      "id": 248,
-      "Item Name": "Woolen Sweater Hand-Knit",
-      "Category": "Clothing",
-      "Recipient": "Mom",
-      "Price (NPR)": 3200,
-      "Occasion": "Birthday",
-      "Description": "Hand-knitted in the hills — warm and full of heart.",
-      "Availability": "Local Market",
-      "Tags": "handmade,traditional,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-woolen-sweater-hand-knit-248.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Woolen%20Sweater%20Hand-Knit"
-    },
-    {
-      "id": 249,
-      "Item Name": "Cotton Kurti Block Print",
-      "Category": "Clothing",
-      "Recipient": "Mom",
-      "Price (NPR)": 1800,
-      "Occasion": "Birthday",
-      "Description": "Light cotton with traditional hand block-print patterns.",
-      "Availability": "Both",
-      "Tags": "handmade,budget,traditional",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-cotton-kurti-block-print-249.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Cotton%20Kurti%20Block%20Print"
-    },
-    {
-      "id": 250,
-      "Item Name": "Nepali Football Jersey ANFA",
-      "Category": "Clothing",
-      "Recipient": "Friend",
-      "Price (NPR)": 1500,
-      "Occasion": "Birthday",
-      "Description": "Official Nepal national football team jersey.",
-      "Availability": "Both",
-      "Tags": "sport,trendy,budget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-nepali-football-jersey-anfa-250.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Nepali%20Football%20Jersey%20ANFA"
-    },
-    {
-      "id": 251,
-      "Item Name": "Graphic Tee Kathmandu Print",
-      "Category": "Clothing",
-      "Recipient": "Friend",
-      "Price (NPR)": 850,
-      "Occasion": "Casual",
-      "Description": "Wear Kathmandu culture proudly on your chest.",
-      "Availability": "Both",
-      "Tags": "budget,trendy,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-graphic-tee-kathmandu-print-251.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Graphic%20Tee%20Kathmandu%20Print"
-    },
-    {
-      "id": 252,
-      "Item Name": "Hemp Drawstring Bag",
-      "Category": "Clothing",
-      "Recipient": "Friend",
-      "Price (NPR)": 650,
-      "Occasion": "Casual",
-      "Description": "Eco-friendly and locally made natural hemp bag.",
-      "Availability": "Local Market",
-      "Tags": "handmade,budget,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-hemp-drawstring-bag-252.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Hemp%20Drawstring%20Bag"
-    },
-    {
-      "id": 253,
-      "Item Name": "Woolen Socks Himalayan Thick",
-      "Category": "Clothing",
-      "Recipient": "Dad",
-      "Price (NPR)": 450,
-      "Occasion": "Casual",
-      "Description": "Thick wool for cold Kathmandu mornings always.",
-      "Availability": "Local Market",
-      "Tags": "traditional,budget,practical",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-woolen-socks-himalayan-thick-253.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Woolen%20Socks%20Himalayan%20Thick"
-    },
-    {
-      "id": 254,
-      "Item Name": "Couple Matching Hoodies",
-      "Category": "Clothing",
-      "Recipient": "Friend",
-      "Price (NPR)": 4500,
-      "Occasion": "Anniversary",
-      "Description": "Soft matching hoodies — a sweet romantic gift.",
-      "Availability": "Daraz",
-      "Tags": "romantic,trendy,premium",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-clothing-couple-matching-hoodies-254.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Couple%20Matching%20Hoodies"
-    },
-    {
-      "id": 307,
-      "Item Name": "Singing Bowl Meditation Set",
-      "Category": "Lifestyle",
-      "Recipient": "Mom",
-      "Price (NPR)": 3200,
-      "Occasion": "Festival",
-      "Description": "Bowl, cushion, and mallet for a perfect daily ritual.",
-      "Availability": "Local Market",
-      "Tags": "traditional,sentimental,handmade",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-singing-bowl-meditation-set-307.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Singing%20Bowl%20Meditation%20Set"
-    },
-    {
-      "id": 308,
-      "Item Name": "Essential Oil Diffuser Ultrasonic",
-      "Category": "Lifestyle",
-      "Recipient": "Mom",
-      "Price (NPR)": 2800,
-      "Occasion": "Birthday",
-      "Description": "Fills the home with calming scents all day long.",
-      "Availability": "Daraz",
-      "Tags": "trendy,practical,premium",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-essential-oil-diffuser-ultrasonic-308.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Essential%20Oil%20Diffuser%20Ultrasonic"
-    },
-    {
-      "id": 309,
-      "Item Name": "Scented Soy Candles Set 4pk",
-      "Category": "Lifestyle",
-      "Recipient": "Mom",
-      "Price (NPR)": 1500,
-      "Occasion": "Birthday",
-      "Description": "Hand-poured soy candles in warm and cozy home scents.",
-      "Availability": "Both",
-      "Tags": "trendy,sentimental,budget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-scented-soy-candles-set-4pk-309.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Scented%20Soy%20Candles%20Set%204pk"
-    },
-    {
-      "id": 310,
-      "Item Name": "Indoor Plant Trio Pots",
-      "Category": "Lifestyle",
-      "Recipient": "Mom",
-      "Price (NPR)": 1800,
-      "Occasion": "Birthday",
-      "Description": "Three air-purifying plants to green up any room.",
-      "Availability": "Local Market",
-      "Tags": "budget,practical,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-indoor-plant-trio-pots-310.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Indoor%20Plant%20Trio%20Pots"
-    },
-    {
-      "id": 311,
-      "Item Name": "Gratitude Journal Daily",
-      "Category": "Lifestyle",
-      "Recipient": "Friend",
-      "Price (NPR)": 700,
-      "Occasion": "Birthday",
-      "Description": "Daily prompts to shift the mindset toward gratitude.",
-      "Availability": "Both",
-      "Tags": "budget,sentimental,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-gratitude-journal-daily-311.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Gratitude%20Journal%20Daily"
-    },
-    {
-      "id": 312,
-      "Item Name": "Himalayan Salt Lamp Medium",
-      "Category": "Lifestyle",
-      "Recipient": "Mom",
-      "Price (NPR)": 1800,
-      "Occasion": "Festival",
-      "Description": "Warm amber glow and natural air-purifying effect.",
-      "Availability": "Both",
-      "Tags": "traditional,sentimental,budget",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-himalayan-salt-lamp-medium-312.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Himalayan%20Salt%20Lamp%20Medium"
-    },
-    {
-      "id": 313,
-      "Item Name": "Custom Star Map Print",
-      "Category": "Lifestyle",
-      "Recipient": "Friend",
-      "Price (NPR)": 2800,
-      "Occasion": "Birthday",
-      "Description": "The exact night sky on a date that matters to them.",
-      "Availability": "Daraz",
-      "Tags": "romantic,sentimental,premium",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-custom-star-map-print-313.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Custom%20Star%20Map%20Print"
-    },
-    {
-      "id": 314,
-      "Item Name": "Mini Succulent Garden Set",
-      "Category": "Lifestyle",
-      "Recipient": "Friend",
-      "Price (NPR)": 1200,
-      "Occasion": "Casual",
-      "Description": "Tiny low-maintenance plants in a cute ceramic pot set.",
-      "Availability": "Local Market",
-      "Tags": "budget,trendy,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-mini-succulent-garden-set-314.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Mini%20Succulent%20Garden%20Set"
-    },
-    {
-      "id": 315,
-      "Item Name": "Organic Nepali Skin Care Set",
-      "Category": "Lifestyle",
-      "Recipient": "Mom",
-      "Price (NPR)": 3500,
-      "Occasion": "Birthday",
-      "Description": "Neem, turmeric, and rose water — beauty from nature.",
-      "Availability": "Both",
-      "Tags": "premium,practical,trendy",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-organic-nepali-skin-care-set-315.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Organic%20Nepali%20Skin%20Care%20Set"
-    },
-    {
-      "id": 316,
-      "Item Name": "Herbal Dhoop Incense Sticks",
-      "Category": "Lifestyle",
-      "Recipient": "Mom",
-      "Price (NPR)": 550,
-      "Occasion": "Festival",
-      "Description": "Traditional herbal dhoop for puja and calming the mind.",
-      "Availability": "Local Market",
-      "Tags": "traditional,budget,sentimental",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-lifestyle-herbal-dhoop-incense-sticks-316.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Herbal%20Dhoop%20Incense%20Sticks"
-    },
-    {
-      "id": 317,
-      "Item Name": "Ceramic Dinner Set",
-      "Category": "Kitchen",
-      "Recipient": "Friend,Sibling,Colleague",
-      "Price (NPR)": 5200,
-      "Occasion": "Wedding",
-      "Description": "A useful home-starting gift for newlyweds.",
-      "Availability": "Daraz",
-      "Tags": "practical,home,cooking,traditional",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-kitchen-ceramic-dinner-set-317.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Ceramic%20Dinner%20Set"
-    },
-    {
-      "id": 318,
-      "Item Name": "Premium Baby Diaper Bag",
-      "Category": "Baby",
-      "Recipient": "Friend,Sibling,Colleague,Partner",
-      "Price (NPR)": 2900,
-      "Occasion": "Babyshower",
-      "Description": "Organized storage for bottles, clothes, wipes, and newborn essentials.",
-      "Availability": "Daraz",
-      "Tags": "baby,practical,travel,useful",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-baby-premium-diaper-bag-318.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Premium%20Baby%20Diaper%20Bag"
-    },
-    {
-      "id": 319,
-      "Item Name": "Academic Planner and Pen Set",
-      "Category": "Stationery",
-      "Recipient": "Friend,Sibling,Child,Colleague",
-      "Price (NPR)": 1350,
-      "Occasion": "Graduation",
-      "Description": "A polished planner set for students starting college or a new job.",
-      "Availability": "Daraz",
-      "Tags": "books,practical,intellectual,study",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-stationery-academic-planner-319.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Academic%20Planner%20Pen%20Set"
-    },
-    {
-      "id": 320,
-      "Item Name": "Couple Spa Voucher",
-      "Category": "Experience",
-      "Recipient": "Partner",
-      "Price (NPR)": 6500,
-      "Occasion": "Anniversary",
-      "Description": "A relaxed shared experience for anniversaries and romantic surprises.",
-      "Availability": "Local Market",
-      "Tags": "romantic,wellness,sentimental,luxury",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-experience-couple-spa-voucher-320.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Couple%20Spa%20Voucher"
-    },
-    {
-      "id": 321,
-      "Item Name": "Festival Dry Fruit Gift Tray",
-      "Category": "Food",
-      "Recipient": "Mom,Dad,Grandparent,Friend,Colleague",
-      "Price (NPR)": 3200,
-      "Occasion": "Festival",
-      "Description": "A graceful family-safe tray for Dashain, Tihar, and seasonal visits.",
-      "Availability": "Both",
-      "Tags": "traditional,food,practical,family",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-food-festival-dry-fruit-tray-321.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Festival%20Dry%20Fruit%20Gift%20Tray"
-    },
-    {
-      "id": 322,
-      "Item Name": "Desk Lamp with Wireless Charger",
-      "Category": "Tech",
-      "Recipient": "Friend,Sibling,Child,Colleague",
-      "Price (NPR)": 3100,
-      "Occasion": "Graduation",
-      "Description": "A cleaner study or work desk setup with light and charging in one.",
-      "Availability": "Daraz",
-      "Tags": "tech,practical,books,intellectual",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-tech-desk-lamp-wireless-charger-322.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Desk%20Lamp%20Wireless%20Charger"
-    },
-    {
-      "id": 323,
-      "Item Name": "Polaroid Style Photo Album",
-      "Category": "Photography",
-      "Recipient": "Partner,Friend,Sibling",
-      "Price (NPR)": 1600,
-      "Occasion": "Valentine",
-      "Description": "A memory-first gift for travel photos, college memories, and couples.",
-      "Availability": "Daraz",
-      "Tags": "photography,sentimental,art,romantic",
-      "image_url": "https://sg-live.slatic.net/p/daraz-np-photography-polaroid-photo-album-323.jpg",
-      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Polaroid%20Style%20Photo%20Album"
+      "item_name": "Polaroid Style Photo Album",
+      "category": "Photography",
+      "recipient": [
+        "Partner",
+        "Friend",
+        "Sibling"
+      ],
+      "price_npr": 1600,
+      "occasion": [
+        "Valentine",
+        "Anniversary",
+        "Birthday",
+        "Graduation"
+      ],
+      "description": "A memory-focused album for travel photos, college friendships, anniversaries, and small printed moments.",
+      "availability": "Daraz",
+      "tags": [
+        "photography",
+        "sentimental",
+        "art",
+        "romantic"
+      ],
+      "image_url": "https://placehold.co/600x400/f5e8da/111111.jpg?text=Polaroid%20Style%20Photo%20Album",
+      "daraz_search_link": "https://www.daraz.com.np/catalog/?q=Polaroid%20Style%20Photo%20Album",
+      "price_range": "Mid Range",
+      "gender_suitability": [
+        "Unisex"
+      ],
+      "age_group": [
+        "Teen",
+        "Young Adult",
+        "Adult"
+      ],
+      "gift_score": 8,
+      "is_local_nepali_gift": false
     }
   ]
 }
