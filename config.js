@@ -28,8 +28,8 @@ const config = {
   // AI/API Keys
   openaiApiKey: process.env.OPENAI_API_KEY || "",
   huggingfaceApiKey: process.env.HUGGINGFACE_API_KEY || "",
-  geminiApiKey: process.env.GEMINI_API_KEY || "",
   apiKey: process.env.API_KEY || "",
+  geminiApiKey: process.env.GEMINI_API_KEY || "",
 
   // Email (Optional)
   smtp: {
