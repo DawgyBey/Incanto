@@ -1346,6 +1346,157 @@ ul { list-style: none; }
   color: #fff;
 }
 
+.ai-choice-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 20px;
+  align-items: center;
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 28px;
+}
+
+.ai-choice-kicker {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.ai-choice-copy h3 {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 1.24rem;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.ai-choice-copy p:not(.ai-choice-kicker) {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.ai-choice-controls {
+  display: grid;
+  gap: 12px;
+}
+
+.btn-ai-choice {
+  min-height: 46px;
+  padding: 12px 22px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--rose), var(--plum));
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(196, 99, 122, 0.28);
+  transition: all var(--transition);
+}
+
+.btn-ai-choice:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196, 99, 122, 0.36);
+}
+
+.btn-ai-choice:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.ai-chat-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.ai-chat-form input {
+  min-width: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  color: var(--text-primary);
+  padding: 12px 14px;
+  font-size: 0.88rem;
+}
+
+.ai-chat-form button {
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-xl);
+  background: rgba(200, 146, 58, 0.12);
+  color: var(--gold);
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0 18px;
+}
+
+.ai-choice-answer {
+  background: linear-gradient(135deg, rgba(200, 146, 58, 0.08), rgba(196, 99, 122, 0.08));
+  border: 1px solid rgba(200, 146, 58, 0.25);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  margin: -8px 0 28px;
+  padding: 18px 20px;
+}
+
+.ai-answer-main {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+
+.ai-answer-status {
+  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.ai-choice-answer ol {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.ai-choice-answer li {
+  padding-left: 4px;
+}
+
+.ai-choice-answer strong {
+  color: var(--text-primary);
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.ai-choice-answer span {
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .ai-choice-panel {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .ai-chat-form {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-chat-form button {
+    min-height: 44px;
+  }
+}
+
 /* Gift Cards Grid */
 .gifts-grid {
   display: grid;
@@ -1406,8 +1557,56 @@ ul { list-style: none; }
   background: var(--bg-alt);
 }
 
+.gift-img-wrap img.gift-image[hidden] {
+  display: none;
+}
+
+.gift-image-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  padding: 26px;
+  background:
+    linear-gradient(135deg, rgba(200, 146, 58, 0.16), rgba(196, 99, 122, 0.08)),
+    var(--bg-alt);
+  color: var(--text-primary);
+  z-index: 0;
+}
+
+.gift-image-placeholder span {
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid rgba(200, 146, 58, 0.4);
+  border-radius: var(--radius-md);
+  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  overflow: hidden;
+  padding: 5px 9px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.gift-image-placeholder strong {
+  display: -webkit-box;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.08;
+  max-width: 100%;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .gift-emoji-fallback {
   position: relative;
+  display: none;
   z-index: 0;
 }
 
