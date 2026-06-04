@@ -600,6 +600,9 @@ function displayResults(gifts) {
   grid.innerHTML = '';
   if (!Array.isArray(gifts) || gifts.length === 0) {
     grid.innerHTML = '<div class="results-empty">No gifts found inside this exact price range. Try widening your minimum or maximum budget.</div>';
+    $('#floatingAiBtn').style.display = 'none';
+  } else {
+    $('#floatingAiBtn').style.display = 'flex';
   }
 
   gifts.forEach((gift, idx) => {
@@ -648,6 +651,9 @@ function updateAiChoiceIntro() {
   message.textContent = hasResults
     ? `Ready to compare ${state.currentResults.length} gifts using your finder choices.`
     : 'Generate recommendations first, then ask for the strongest pick or chat about tradeoffs.';
+  // Ensure the AI panel is visible even when there are no results (compact mode)
+  const panel = $('#aiChoicePanel');
+  if (panel) panel.style.display = 'grid';
 }
 
 function renderAiChoiceResponse(response, meta = {}) {
@@ -659,9 +665,14 @@ function renderAiChoiceResponse(response, meta = {}) {
     : 'Gemini ranking';
   const suggestionHtml = suggestions.length
     ? `<ol>${suggestions.map((item) => `
-        <li>
-          <strong>${escapeHtml(item.name || 'Gift option')}</strong>
-          <span>${escapeHtml(item.reason || 'A strong match for your current choices.')}</span>
+        <li class="ai-suggestion-item">
+          <div class="ai-suggestion-content">
+            <strong>${escapeHtml(item.name || 'Gift option')}</strong>
+            <span>${escapeHtml(item.reason || 'A strong match for your current choices.')}</span>
+          </div>
+          <button class="ai-buy-now-btn" data-gift-name="${escapeHtml(item.name || 'Gift')}" type="button">
+            🛒 Buy Now
+          </button>
         </li>
       `).join('')}</ol>`
     : '';
@@ -672,6 +683,37 @@ function renderAiChoiceResponse(response, meta = {}) {
     ${suggestionHtml}
   `;
   answer.style.display = 'block';
+  
+  // Add event listeners to buy now buttons
+  $$('.ai-buy-now-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const giftName = this.dataset.giftName;
+      // Find the gift in currentResults by name
+      const matchedGift = state.currentResults.find(g => g.name === giftName);
+      if (matchedGift) {
+        showPurchaseConfirmation(matchedGift);
+      } else {
+        showToast('Gift item not found in current results.');
+      }
+    });
+  });
+}
+
+function reorderResultsBySuggestions(suggestions) {
+  if (!Array.isArray(suggestions) || !suggestions.length) return;
+  const suggestionsKeys = suggestions.map(s => (s.id || String(s.name || '')).toString().toLowerCase());
+  const rest = [];
+  const picked = [];
+  state.currentResults.forEach((g) => {
+    const key = (g.id || String(g.name || '')).toString().toLowerCase();
+    const idx = suggestionsKeys.indexOf(key);
+    if (idx === -1) rest.push(g);
+    else picked[idx] = g;
+  });
+  const ordered = [...picked.filter(Boolean), ...rest];
+  state.currentResults = ordered;
+  displayResults(state.currentResults);
 }
 
 async function askSmartChoice(message, triggerBtn = null) {
@@ -711,10 +753,40 @@ async function askSmartChoice(message, triggerBtn = null) {
     state.aiConversationHistory.push({ role: 'assistant', content: response.message || '' });
     state.aiConversationHistory = state.aiConversationHistory.slice(-8);
     renderAiChoiceResponse(response, { aiProvider });
-    showToast(aiProvider === 'local' ? 'Smart Choice is ready with local ranking.' : 'Smart Choice is ready.');
+    
+    // For local ranking, ensure results are randomized (different from original order)
+    if (aiProvider === 'local') {
+      let shuffled = [...state.currentResults];
+      // Fisher-Yates shuffle with multiple passes to ensure good randomization
+      for (let pass = 0; pass < 2; pass++) {
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+      }
+      state.currentResults = shuffled;
+      displayResults(state.currentResults);
+      showToast('✨ Local Smart Ranking: Results randomized for variety.');
+    } else {
+      // If AI returned ordered suggestions, reorder the visible results
+      if (Array.isArray(response.suggestions) && response.suggestions.length) {
+        reorderResultsBySuggestions(response.suggestions);
+      }
+      showToast('Smart Choice is ready.');
+    }
   } catch (err) {
     console.warn('Smart choice failed:', err.message);
-    showToast(err.message || 'AI ranking failed. Please try again.');
+    showToast(err.message || 'AI ranking failed. Showing randomized order.');
+    // Randomize results with double-pass shuffle to ensure difference from original
+    let shuffled = [...state.currentResults];
+    for (let pass = 0; pass < 2; pass++) {
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+    }
+    state.currentResults = shuffled;
+    displayResults(state.currentResults);
   } finally {
     state.isAskingAi = false;
     if (smartBtn) {
@@ -724,7 +796,7 @@ async function askSmartChoice(message, triggerBtn = null) {
   }
 }
 
-function createGiftCard(gift) {
+function createGiftCard(gift, idx = 0) {
   const isFaved = state.favorites.some(f => f.id === gift.id);
   const div = document.createElement('div');
   div.className = 'gift-card';
@@ -747,6 +819,9 @@ function createGiftCard(gift) {
   const imageHtml = hasImage
     ? `<img src="${imageSrc}" alt="" class="gift-image" loading="lazy" onerror="this.hidden=true;this.closest('.gift-img-wrap')?.classList.add('image-missing');" />`
     : '';
+  const aiInlineHtml = (idx === 0)
+    ? `<button class="ai-inline-badge" type="button" title="Ask AI about this pick">🤖</button>`
+    : '';
 
   div.innerHTML = `
     <div class="gift-img-wrap ${hasImage ? '' : 'image-missing'}">
@@ -757,6 +832,7 @@ function createGiftCard(gift) {
       </div>
       <span class="gift-emoji-fallback" aria-hidden="true">${safeEmoji}</span>
       <div class="gift-badge">${safeBadge}</div>
+      ${aiInlineHtml}
       <button class="fav-btn ${isFaved ? 'saved' : ''}" data-id="${gift.id}" title="Save to favorites">
         ${isFaved ? '❤️' : '🤍'}
       </button>
@@ -795,6 +871,13 @@ function createGiftCard(gift) {
     addToRecentlyViewed(gift);
     renderRecentlyViewed();
   });
+  const aiBtn = div.querySelector('.ai-inline-badge');
+  if (aiBtn) {
+    aiBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      askSmartChoice(`Rank these gifts and tell me why ${gift.name} is a strong pick.`, aiBtn);
+    });
+  }
   return div;
 }
 
@@ -1283,6 +1366,22 @@ function closePurchaseSuccessPopup() {
 }
 
 function showPurchaseSuccessPopup(order, itemCount) {
+  // Show floating payment success overlay first
+  const overlay = $('#paymentSuccessOverlay');
+  if (overlay) {
+    overlay.classList.add('active');
+    // Auto-hide overlay after 3 seconds, then show the regular modal
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      showPurchaseSuccessModal(order, itemCount);
+    }, 3000);
+  } else {
+    // Fallback if overlay not found
+    showPurchaseSuccessModal(order, itemCount);
+  }
+}
+
+function showPurchaseSuccessModal(order, itemCount) {
   updatePaymentProcess('Order confirmed and saved to your account.', false);
   const modal = $('#purchaseSuccessModal');
   if (!modal) {
@@ -1726,6 +1825,15 @@ function initFinder() {
 function initAiChoice() {
   $('#smartChoiceBtn')?.addEventListener('click', () => {
     askSmartChoice('Rank these gifts and choose the smartest single pick.', $('#smartChoiceBtn'));
+  });
+
+  $('#floatingAiBtn')?.addEventListener('click', () => {
+    askSmartChoice('Rank these gifts and choose the smartest single pick.', $('#floatingAiBtn'));
+    // Scroll to see results being reordered
+    setTimeout(() => {
+      const grid = $('#recommendationsGrid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 500);
   });
 
   $('#aiChatForm')?.addEventListener('submit', (event) => {

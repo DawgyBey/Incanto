@@ -478,6 +478,12 @@
         </div>
       </div>
 
+      <!-- ══════════════════════════════════════════ FLOATING AI BUTTON -->
+      <button class="floating-ai-btn" id="floatingAiBtn" type="button" title="Ask AI to rank gifts" style="display: none;">
+        <span class="ai-icon">🤖</span>
+        <span class="ai-label">Smart Choice</span>
+      </button>
+
       <!-- ══════════════════════════════════════════ RESULTS -->
       <section class="results-section" id="results" style="display: none">
         <div class="container">
@@ -510,15 +516,15 @@
 
           <div class="ai-choice-panel" id="aiChoicePanel">
             <div class="ai-choice-copy">
-              <p class="ai-choice-kicker">Gemini Smart Choice</p>
-              <h3>Let AI rank the best gift from these results.</h3>
+              <p class="ai-choice-kicker">🤖 Gemini Smart Choice — AI Enhanced</p>
+              <h3>Let AI rank and choose the best gift from these results.</h3>
               <p id="aiChoiceMessage">Generate recommendations first, then ask for the strongest pick or chat about tradeoffs.</p>
             </div>
             <div class="ai-choice-controls">
-              <button class="btn-ai-choice" id="smartChoiceBtn" type="button">Smart Choice</button>
+              <button class="btn-ai-choice" id="smartChoiceBtn" type="button">🎯 Smart Choice</button>
               <form class="ai-chat-form" id="aiChatForm">
                 <input id="aiChatInput" type="text" placeholder="Ask: which one feels most personal?" />
-                <button type="submit">Ask AI</button>
+                <button type="submit">💬 Ask AI</button>
               </form>
             </div>
           </div>
@@ -1657,6 +1663,17 @@
           </button>
           <div id="googleNote" class="auth-note"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT SUCCESS OVERLAY -->
+    <div class="payment-success-overlay" id="paymentSuccessOverlay">
+      <div class="payment-success-content">
+        <div class="checkmark-circle">
+          <div class="checkmark"></div>
+        </div>
+        <h1>Payment Successful</h1>
+        <p>Your order has been confirmed</p>
       </div>
     </div>
 

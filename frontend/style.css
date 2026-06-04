@@ -1351,11 +1351,29 @@ ul { list-style: none; }
   grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
   gap: 20px;
   align-items: center;
-  background: var(--surface-solid);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(196, 99, 122, 0.08) 0%, rgba(169, 100, 178, 0.08) 100%);
+  border: 2px solid var(--rose);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 24px;
   margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-choice-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--rose), var(--gold));
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .ai-choice-kicker {
@@ -1494,6 +1512,89 @@ ul { list-style: none; }
 
   .ai-chat-form button {
     min-height: 44px;
+  }
+
+  .ai-inline-badge {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .ai-inline-badge:hover { transform: translateY(-2px); }
+}
+
+/* Floating AI Button */
+.floating-ai-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 999;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--rose), var(--plum));
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(196, 99, 122, 0.4);
+  transition: all var(--transition);
+  animation: float-in 0.3s ease-out;
+}
+
+.floating-ai-btn:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(196, 99, 122, 0.5);
+}
+
+.floating-ai-btn:active {
+  transform: translateY(-2px);
+}
+
+.floating-ai-btn .ai-icon {
+  font-size: 1.2rem;
+  display: inline-block;
+  animation: pulse-icon 2s ease-in-out infinite;
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Mobile floating button */
+@media (max-width: 640px) {
+  .floating-ai-btn {
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+  }
+  
+  .floating-ai-btn .ai-label {
+    display: none;
   }
 }
 
