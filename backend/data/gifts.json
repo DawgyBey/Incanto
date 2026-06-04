@@ -1,4 +1,4 @@
-{
+[{
   "#": 1,
   "Item Name": "Smart LED Desk Lamp Touch",
   "Category": "Tech",
@@ -597,9 +597,7 @@
   "Availability": "Daraz",
   "Tags": "traditional,budget,unique",
   "Daraz Search Link": "🔗 Search on Daraz"
- }
-
-
+ },
  {
   "#": 51,
   "Item Name": "Chia Seeds Organic 500g",
@@ -1199,9 +1197,7 @@
   "Availability": "Daraz",
   "Tags": "budget,practical,sentimental",
   "Daraz Search Link": "🔗 Search on Daraz"
- }
-
-
+ },
  {
   "#": 101,
   "Item Name": "Palazzo Pants Linen Men",
@@ -1801,9 +1797,7 @@
   "Availability": "Daraz",
   "Tags": "budget,sport,practical",
   "Daraz Search Link": "🔗 Search on Daraz"
- }
-
- 
+ },
  {
   "#": 151,
   "Item Name": "Cricket Leather Ball Red",
@@ -2404,3 +2398,4 @@
   "Tags": "budget,handmade,trendy",
   "Daraz Search Link": "🔗 Search on Daraz"
  }
+]
