@@ -1365,16 +1365,33 @@ function closePurchaseSuccessPopup() {
   window.location.href = IS_PAYMENT_PAGE ? 'index.html#orders' : '#orders';
 }
 
+function handlePaymentSuccessContinue() {
+  // Close the overlay and show the purchase success modal
+  const overlay = $('#paymentSuccessOverlay');
+  if (overlay && overlay.dataset.order) {
+    // Parse the stored order data
+    const order = JSON.parse(overlay.dataset.order);
+    const itemCount = parseInt(overlay.dataset.itemCount) || 1;
+    
+    // Close overlay
+    overlay.classList.remove('active');
+    
+    // Show the detailed purchase success modal
+    showPurchaseSuccessModal(order, itemCount);
+  } else {
+    // Fallback: go to orders page
+    closePurchaseSuccessPopup();
+  }
+}
+
 function showPurchaseSuccessPopup(order, itemCount) {
-  // Show floating payment success overlay first
+  // Show payment success overlay with Continue button
   const overlay = $('#paymentSuccessOverlay');
   if (overlay) {
     overlay.classList.add('active');
-    // Auto-hide overlay after 3 seconds, then show the regular modal
-    setTimeout(() => {
-      overlay.classList.remove('active');
-      showPurchaseSuccessModal(order, itemCount);
-    }, 3000);
+    // Store order data for when Continue is clicked
+    overlay.dataset.order = JSON.stringify(order);
+    overlay.dataset.itemCount = itemCount;
   } else {
     // Fallback if overlay not found
     showPurchaseSuccessModal(order, itemCount);
@@ -1401,9 +1418,6 @@ function showPurchaseSuccessModal(order, itemCount) {
 
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
-  window.setTimeout(() => {
-    if (modal.classList.contains('open')) closePurchaseSuccessPopup();
-  }, 4200);
 }
 
 /* ─── FAVORITES ──────────────────────────── */
@@ -2316,6 +2330,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#finalPurchaseBackBtn')?.addEventListener('click', backToPurchase);
   $('#backToPurchaseBtn')?.addEventListener('click', backToPurchase);
   $('#purchaseSuccessClose')?.addEventListener('click', closePurchaseSuccessPopup);
+  $('#paymentSuccessContinueBtn')?.addEventListener('click', handlePaymentSuccessContinue);
   $('#purchaseSuccessModal')?.addEventListener('click', (event) => {
     if (event.target === $('#purchaseSuccessModal')) closePurchaseSuccessPopup();
   });
