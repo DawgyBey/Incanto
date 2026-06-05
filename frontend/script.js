@@ -897,7 +897,6 @@ function showPurchaseConfirmation(gift) {
   if (reason) reason.textContent = gift.reason || 'This gift matches the preferences you selected.';
   if (details) details.textContent = `Confirm ${gift.name} and continue to the INCANTO payment page.`;
 
-  showToast(`Great choice. Review "${gift.name}" before payment.`);
   window.location.hash = '#purchase';
   handleRouting();
 }
@@ -939,7 +938,6 @@ function showCartPurchaseConfirmation() {
   if (price) price.textContent = gift.priceLabel;
   if (reason) reason.textContent = gift.reason;
   if (details) details.textContent = 'Confirm your cart and continue to the INCANTO payment page.';
-  showToast(`Checkout started for ${validItems.length} private cart item${validItems.length === 1 ? '' : 's'}.`);
   window.location.hash = '#purchase';
   handleRouting();
 }
@@ -994,7 +992,6 @@ function showFinalPurchasePage(gift) {
       : `You are confirming "${gift.name}" before payment.`;
   }
 
-  showToast('Almost there. Confirm once more to open payment.');
   window.location.hash = '#purchase-final';
   handleRouting();
 }
@@ -1200,12 +1197,22 @@ function backToPurchase() {
 }
 
 async function handlePaymentSubmit(event) {
+  console.log('🔴 PAYMENT SUBMIT HANDLER CALLED');
   event.preventDefault();
   event.stopPropagation();
-  if (!requireLoginForAction('buy')) return;
-  if (state.isProcessingPayment) return;
+  if (!requireLoginForAction('buy')) {
+    console.log('❌ User not logged in');
+    return;
+  }
+  if (state.isProcessingPayment) {
+    console.log('❌ Already processing payment');
+    return;
+  }
+  
   const gift = state.pendingPurchaseGift;
+  console.log('Gift:', gift);
   if (!gift) {
+    console.log('❌ No gift selected');
     showToast('Choose a gift before payment.');
     window.location.hash = '#home';
     return;
@@ -1225,36 +1232,44 @@ async function handlePaymentSubmit(event) {
     const cardNumber = $('#cardNumber')?.value.replace(/\s+/g, '');
     const cardExpiry = $('#cardExpiry')?.value.trim();
     const cardCvc = $('#cardCvc')?.value.trim();
+    console.log('Card validation:', { cardName: !!cardName, cardNumber: cardNumber.length, cardExpiry: !!cardExpiry, cardCvc: !!cardCvc });
     if (!cardName || cardNumber.length < 12 || !cardExpiry || cardCvc.length < 3) {
+      console.log('❌ Card details incomplete');
       showToast('Please enter complete card details.');
       return;
     }
   }
 
   if (!address) {
+    console.log('❌ No delivery address');
     showToast('Please enter a delivery address.');
     return;
   }
 
+  console.log('✅ All validations passed, starting payment processing');
   setPaymentProcessing(true, 'Verifying details...');
   try {
     showToast('Processing your purchase for this account...');
     await wait(450);
     setPaymentProcessing(true, 'Saving order...');
     addToRecentlyViewed(gift, { sync: false });
+    console.log('💾 Calling saveOrder...');
     const savedOrder = await saveOrder(gift);
+    console.log('💾 Order saved:', savedOrder);
     await wait(350);
     const purchasedCount = state.pendingCheckoutItems.length || 1;
     setPaymentProcessing(false);
-    showPurchaseSuccessPopup(savedOrder, purchasedCount);
-    showToast(`Purchase complete. ${purchasedCount} item${purchasedCount === 1 ? '' : 's'} saved to My Purchases.`);
+    console.log('🎉 About to show payment success page with order:', savedOrder);
+    showPaymentSuccessPage(savedOrder, purchasedCount);
+    console.log('✅ After showing payment success page');
     state.pendingPurchaseGift = null;
     state.pendingCheckoutItems = [];
     clearPendingCheckout();
     $('#paymentForm')?.reset();
     setPaymentMethod('card');
-  } finally {
-    if (state.isProcessingPayment) setPaymentProcessing(false);
+  } catch (error) {
+    console.error('❌ Payment error:', error);
+    setPaymentProcessing(false);
   }
 }
 
@@ -1366,7 +1381,7 @@ function closePurchaseSuccessPopup() {
 }
 
 function handlePaymentSuccessContinue() {
-  // Close the overlay and show the purchase success modal
+  // Close the overlay and show the appropriate success view
   const overlay = $('#paymentSuccessOverlay');
   if (overlay && overlay.dataset.order) {
     // Parse the stored order data
@@ -1376,12 +1391,73 @@ function handlePaymentSuccessContinue() {
     // Close overlay
     overlay.classList.remove('active');
     
-    // Show the detailed purchase success modal
-    showPurchaseSuccessModal(order, itemCount);
+    // If on payment page, show success page. Otherwise show modal on main page
+    if (IS_PAYMENT_PAGE) {
+      const orderId = $('#successOrderId');
+      const itemCountEl = $('#successItemCount');
+      const totalEl = $('#successTotalAmount');
+      
+      if (orderId) orderId.textContent = order.id || 'INC-0000000';
+      if (itemCountEl) itemCountEl.textContent = `${itemCount} item${itemCount === 1 ? '' : 's'}`;
+      if (totalEl) totalEl.textContent = `Rs. ${(order.total || 0).toLocaleString('en-IN')}`;
+      
+      const paymentSection = $('#payment');
+      const successSection = $('#payment-success');
+      if (paymentSection) paymentSection.style.display = 'none';
+      if (successSection) {
+        successSection.style.display = 'block';
+        successSection.classList.add('active');
+      }
+      
+      window.scrollTo(0, 0);
+    } else {
+      // Show the detailed purchase success modal on main page
+      showPurchaseSuccessModal(order, itemCount);
+    }
   } else {
     // Fallback: go to orders page
     closePurchaseSuccessPopup();
   }
+}
+
+function showPaymentSuccessPage(order, itemCount) {
+  console.log('=== SHOWING PAYMENT SUCCESS PAGE ===');
+  console.log('Order:', order);
+  console.log('Item Count:', itemCount);
+  
+  const overlay = $('#paymentSuccessOverlay');
+  console.log('Overlay element:', overlay);
+  
+  if (!overlay) {
+    console.error('🚨 CRITICAL: Overlay element #paymentSuccessOverlay not found in DOM');
+    showToast('Payment successful! Overlay not found.');
+    return;
+  }
+
+  console.log('✅ Overlay element found');
+  console.log('Current classes before:', overlay.className);
+  
+  // Remove and re-add class
+  overlay.classList.remove('active');
+  console.log('Removed active class');
+  
+  // Force reflow
+  const reflow = overlay.offsetHeight;
+  console.log('Reflow triggered:', reflow);
+  
+  overlay.classList.add('active');
+  console.log('Added active class');
+  console.log('Current classes after:', overlay.className);
+  console.log('Computed display:', window.getComputedStyle(overlay).display);
+  console.log('Computed visibility:', window.getComputedStyle(overlay).visibility);
+  console.log('Computed z-index:', window.getComputedStyle(overlay).zIndex);
+
+  // Store order data
+  overlay.dataset.order = JSON.stringify(order);
+  overlay.dataset.itemCount = itemCount;
+  console.log('✅ Order data stored');
+
+  showToast(`Purchase complete. ${itemCount} item${itemCount === 1 ? '' : 's'} saved to My Purchases.`);
 }
 
 function showPurchaseSuccessPopup(order, itemCount) {
@@ -2331,6 +2407,9 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#backToPurchaseBtn')?.addEventListener('click', backToPurchase);
   $('#purchaseSuccessClose')?.addEventListener('click', closePurchaseSuccessPopup);
   $('#paymentSuccessContinueBtn')?.addEventListener('click', handlePaymentSuccessContinue);
+  $('#successGoToPurchasesBtn')?.addEventListener('click', () => {
+    window.location.href = 'index.html#orders';
+  });
   $('#purchaseSuccessModal')?.addEventListener('click', (event) => {
     if (event.target === $('#purchaseSuccessModal')) closePurchaseSuccessPopup();
   });

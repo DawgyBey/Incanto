@@ -178,6 +178,45 @@
           </div>
         </div>
       </section>
+
+      <!-- PAYMENT SUCCESS PAGE -->
+      <section id="payment-success" class="page-section view-section" style="padding: 150px 0 100px; min-height: 100vh; display: none;">
+        <div class="container">
+          <div class="payment-success-page">
+            <div class="success-icon-large">✓</div>
+            <h1 class="success-title">Payment Successful!</h1>
+            <p class="success-subtitle">Your order has been confirmed and saved to your account.</p>
+            
+            <div class="success-details">
+              <div class="success-item">
+                <span class="success-label">Order ID</span>
+                <span class="success-value" id="successOrderId">INC-0000000</span>
+              </div>
+              <div class="success-item">
+                <span class="success-label">Items</span>
+                <span class="success-value" id="successItemCount">1 item</span>
+              </div>
+              <div class="success-item">
+                <span class="success-label">Total Amount</span>
+                <span class="success-value" id="successTotalAmount">Rs. 0</span>
+              </div>
+            </div>
+
+            <div class="success-message">
+              <p id="successMessage">Thank you for your purchase! You can track your order in "My Purchases".</p>
+            </div>
+
+            <div class="success-actions">
+              <button class="btn-primary" id="successGoToPurchasesBtn" type="button">
+                View My Purchases
+              </button>
+              <a href="index.html#finder" class="btn-secondary" style="display: inline-block; text-align: center;">
+                Find Another Gift
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- PAYMENT SUCCESS OVERLAY -->
