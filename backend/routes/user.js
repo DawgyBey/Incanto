@@ -51,6 +51,10 @@ const ensureUserProfileFields = (user) => {
     user.orders = [];
     changed = true;
   }
+  if (!Array.isArray(user.favorites)) {
+    user.favorites = [];
+    changed = true;
+  }
   return changed;
 };
 
@@ -69,6 +73,7 @@ const toPublicUser = (user) => ({
   recentlyViewed: user.recentlyViewed || [],
   cart: user.cart || [],
   orders: user.orders || [],
+  favorites: user.favorites || [],
 });
 
 const base64Url = (value) =>
@@ -311,12 +316,68 @@ router.post("/preferences", requireAuth, (req, res) => {
   });
 });
 
-const savePersonalInfo = (req, res) => {
+const savePersonalInfo = (req, res, next) => {
+  const fullName = String(req.body.fullName || "").trim();
+  const phone = String(req.body.phone || "").trim();
+  const birthday = String(req.body.birthday || "").trim();
+  const location = String(req.body.location || "").trim();
+
+  if (phone) {
+    if (!/^\d+$/.test(phone)) {
+      return next(createError("Phone number must contain only digits.", 400));
+    }
+    if (phone.length < 10 || phone.length > 12) {
+      return next(createError("Phone number must be between 10 and 12 digits.", 400));
+    }
+  }
+
+  if (birthday) {
+    const match = birthday.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) {
+      return next(createError("Birthday must be in DD/MM/YYYY format.", 400));
+    }
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const year = parseInt(match[3], 10);
+
+    if (month < 1 || month > 12) {
+      return next(createError("Invalid birthday month.", 400));
+    }
+    if (day < 1 || day > 31) {
+      return next(createError("Invalid birthday day.", 400));
+    }
+
+    const daysInMonth = [
+      31,
+      (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28,
+      31,
+      30,
+      31,
+      30,
+      31,
+      31,
+      30,
+      31,
+      30,
+      31
+    ];
+    if (day > daysInMonth[month - 1]) {
+      return next(createError("Invalid day for the specified month.", 400));
+    }
+
+    const birthDate = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (birthDate > today) {
+      return next(createError("Birthday cannot be a future date.", 400));
+    }
+  }
+
   req.user.personalInfo = {
-    fullName: String(req.body.fullName || "").trim(),
-    phone: String(req.body.phone || "").trim(),
-    birthday: String(req.body.birthday || "").trim(),
-    location: String(req.body.location || "").trim(),
+    fullName,
+    phone,
+    birthday,
+    location,
     updatedAt: new Date().toISOString(),
   };
   saveUsers();
@@ -330,6 +391,68 @@ const savePersonalInfo = (req, res) => {
 
 router.post("/personal-info", requireAuth, savePersonalInfo);
 router.put("/personal-info", requireAuth, savePersonalInfo);
+
+router.post("/favorites", requireAuth, (req, res, next) => {
+  const item = req.body.gift || req.body;
+  if (!item?.id || !item?.name) {
+    return next(createError("Gift ID and Name are required.", 400));
+  }
+  req.user.favorites = req.user.favorites || [];
+  const exists = req.user.favorites.some(f => String(f.id) === String(item.id));
+  if (!exists) {
+    req.user.favorites.push({
+      id: item.id,
+      name: String(item.name || ""),
+      emoji: String(item.emoji || "🎁"),
+      priceLabel: String(item.priceLabel || "")
+    });
+    saveUsers();
+  }
+  res.json({ success: true, message: "Added to favorites", data: { user: toPublicUser(req.user) } });
+});
+
+router.delete("/favorites/:id", requireAuth, (req, res) => {
+  const { id } = req.params;
+  req.user.favorites = (req.user.favorites || []).filter(f => String(f.id) !== String(id));
+  saveUsers();
+  res.json({ success: true, message: "Removed from favorites", data: { user: toPublicUser(req.user) } });
+});
+
+router.post("/cart/sync", requireAuth, (req, res, next) => {
+  const { cart } = req.body;
+  if (!Array.isArray(cart)) {
+    return next(createError("Cart items array is required.", 400));
+  }
+  const userCart = req.user.cart || [];
+  cart.forEach(guestItem => {
+    const existing = userCart.find(item => String(item.id) === String(guestItem.id));
+    if (existing) {
+      existing.quantity = (existing.quantity || 1) + (guestItem.quantity || 1);
+    } else {
+      userCart.push(guestItem);
+    }
+  });
+  req.user.cart = userCart;
+  saveUsers();
+  res.json({ success: true, message: "Cart synced successfully.", data: { user: toPublicUser(req.user) } });
+});
+
+router.post("/favorites/sync", requireAuth, (req, res, next) => {
+  const { favorites } = req.body;
+  if (!Array.isArray(favorites)) {
+    return next(createError("Favorites array is required.", 400));
+  }
+  const userFavs = req.user.favorites || [];
+  favorites.forEach(guestFav => {
+    const exists = userFavs.some(item => String(item.id) === String(guestFav.id));
+    if (!exists) {
+      userFavs.push(guestFav);
+    }
+  });
+  req.user.favorites = userFavs;
+  saveUsers();
+  res.json({ success: true, message: "Favorites synced successfully.", data: { user: toPublicUser(req.user) } });
+});
 
 router.post("/recently-viewed", requireAuth, (req, res) => {
   const item = req.body.gift || req.body;

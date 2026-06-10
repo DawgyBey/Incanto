@@ -27,11 +27,11 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://maps.googleapis.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "http://localhost:5000", "http://127.0.0.1:5000"],
+        connectSrc: ["'self'", "http://localhost:5000", "http://127.0.0.1:5000", "https://nominatim.openstreetmap.org", "https://maps.googleapis.com"],
         frameSrc: ["'self'", "https://accounts.google.com"],
       },
     },
