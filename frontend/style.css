@@ -4460,3 +4460,147 @@ body::before {
     width: 100%;
   }
 }
+
+/* ─── GREETING POPUP ────────────────────── */
+.greeting-popup {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100000;
+  background: rgba(23, 23, 23, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(250, 208, 122, 0.25);
+  border-radius: var(--radius-lg, 12px);
+  padding: 16px 20px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: #fff;
+  width: 320px;
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+.greeting-popup.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.greeting-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+.greeting-emoji {
+  font-size: 1.8rem;
+  animation: wave 1.5s ease infinite;
+  display: inline-block;
+}
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(15deg); }
+}
+.greeting-text {
+  flex: 1;
+}
+.greeting-text h4 {
+  margin: 0 0 2px 0;
+  font-family: var(--font-display, inherit);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--gold, #fad07a);
+}
+.greeting-text p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted, #a0a0a0);
+}
+.greeting-close {
+  background: none;
+  border: none;
+  color: var(--text-muted, #a0a0a0);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  margin-left: 10px;
+  align-self: flex-start;
+  transition: color var(--transition, 0.2s);
+}
+.greeting-close:hover {
+  color: #fff;
+}
+
+/* ─── GOOGLE PLACES AUTOCOMPLETE THEME ──── */
+.pac-container {
+  background: rgba(23, 23, 23, 0.97) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(250, 208, 122, 0.2) !important;
+  border-radius: var(--radius-md, 8px) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  margin-top: 4px;
+  font-family: var(--font-body, 'DM Sans', sans-serif);
+  z-index: 100001 !important;
+}
+.pac-container::after {
+  display: none !important;
+}
+.pac-item {
+  padding: 10px 14px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: var(--text-secondary, #a0a0a0) !important;
+  font-size: 0.88rem !important;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.pac-item:first-child {
+  border-top: none !important;
+}
+.pac-item:hover,
+.pac-item-selected {
+  background: rgba(250, 208, 122, 0.1) !important;
+}
+.pac-item-query {
+  color: var(--text-primary, #f0f0f0) !important;
+  font-weight: 600;
+}
+.pac-icon {
+  filter: invert(0.7) sepia(0.3) hue-rotate(10deg) brightness(1.2);
+}
+.pac-matched {
+  color: var(--gold, #fad07a) !important;
+  font-weight: 700;
+}
+
+/* ─── ORDER ADDRESS IN PURCHASES ────────── */
+.order-address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0 0;
+  margin-top: 8px;
+  border-top: 1px solid var(--border, rgba(255,255,255,0.08));
+  font-size: 0.84rem;
+  color: var(--text-muted, #888);
+  line-height: 1.4;
+}
+.order-address span {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.error-input {
+  border-color: #d98697 !important;
+  box-shadow: 0 0 0 3px rgba(217, 134, 151, 0.2) !important;
+}
+
+.error-msg {
+  color: #d98697;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  display: block;
+}

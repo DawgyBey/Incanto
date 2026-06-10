@@ -11,6 +11,9 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
+    <script>
+      window.GOOGLE_MAPS_API_KEY = ''; // Set your Google Maps API key here
+    </script>
   </head>
 
   <body>
@@ -25,6 +28,7 @@
           <li><a href="#hero">Home</a></li>
           <li><a href="#finder">Finder</a></li>
           <li><a href="#trending">Trending</a></li>
+          <li><a href="#" class="nav-link nav-fav-link" id="navSavedItems">Saved Items <span class="nav-badge" id="navFavCount">0</span></a></li>
           <li><a href="#cart" class="nav-link nav-cart-link">Cart <span class="nav-badge" id="navCartCount">0</span></a></li>
           <li><a href="#orders">My Purchases</a></li>
           <li><a href="#about">About</a></li>
@@ -61,6 +65,7 @@
       <a href="#hero" class="mobile-link">Home</a>
       <a href="#finder" class="mobile-link">Finder</a>
       <a href="#trending" class="mobile-link">Trending</a>
+      <a href="#" class="mobile-link" id="mobileSavedItems">Saved Items <span class="nav-badge" id="mobileFavCount">0</span></a>
       <a href="#cart" class="mobile-link">Cart</a>
       <a href="#orders" class="mobile-link">My Purchases</a>
       <a href="#about" class="mobile-link">About</a>
@@ -709,6 +714,12 @@
             <p class="section-sub">
               Track all completed orders and review past purchases.
             </p>
+          </div>
+
+          <div class="purchase-history-actions" style="margin-bottom: 24px; text-align: center;">
+            <button class="btn-primary" id="btnPurchaseRecs" type="button" style="display: none;">
+              Get Recommendations based on purchases
+            </button>
           </div>
 
           <div class="orders-page" id="ordersList"></div>
@@ -1514,9 +1525,10 @@
                 <div class="form-group">
                   <label for="personalBirthday">Birthday</label>
                   <input
-                    type="date"
+                    type="text"
                     id="personalBirthday"
                     autocomplete="bday"
+                    placeholder="DD/MM/YYYY"
                   />
                 </div>
                 <div class="form-group">

@@ -143,7 +143,8 @@ const state = {
   pendingCheckoutItems: [],
   voucher: { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' },
   isAuthenticated: window.IncantoAuth?.isAuthenticated() || false,
-  user: window.IncantoAuth?.getUser() || null
+  user: window.IncantoAuth?.getUser() || null,
+  preLoginAction: null
 };
 
 const recipientOptionsByOccasion = {
@@ -204,6 +205,94 @@ const escapeHtml = (value) =>
     '"': '&quot;',
     "'": '&#039;',
   }[char]));
+
+function isValidBirthdate(dateStr) {
+  const match = String(dateStr || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!match) return false;
+  const day = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10);
+  const year = parseInt(match[3], 10);
+  
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > 31) return false;
+  
+  const daysInMonth = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (day > daysInMonth[month - 1]) return false;
+  
+  const birthDate = new Date(year, month - 1, day);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (birthDate > today) return false;
+  return true;
+}
+
+function isValidPhone(phoneStr) {
+  const clean = String(phoneStr || '').trim();
+  if (!/^\d+$/.test(clean)) return false;
+  return clean.length >= 10 && clean.length <= 12;
+}
+
+function isValidLuhn(cardNumber) {
+  const clean = String(cardNumber || '').replace(/\D/g, '');
+  if (!clean || clean.length < 12) return false;
+  let sum = 0;
+  let shouldDouble = false;
+  for (let i = clean.length - 1; i >= 0; i--) {
+    let digit = parseInt(clean.charAt(i), 10);
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+  return sum % 10 === 0;
+}
+
+function getCardType(cardNumber) {
+  const clean = String(cardNumber || '').replace(/\D/g, '');
+  if (/^3[47]/.test(clean)) return 'amex';
+  if (/^4/.test(clean)) return 'visa';
+  if (/^(5[1-5]|222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[0-1]\d|2720)/.test(clean)) return 'mastercard';
+  if (/^(6011|622(12[6-9]|1[3-9]\d|[2-8]\d{2}|9[0-1]\d|92[0-5])|64[4-9]|65)/.test(clean)) return 'discover';
+  return 'unknown';
+}
+
+function isValidCvc(cvc, cardType) {
+  const clean = String(cvc || '').trim();
+  if (!/^\d+$/.test(clean)) return false;
+  if (cardType === 'amex') return clean.length === 4;
+  return clean.length === 3;
+}
+
+function setInputError(el, message) {
+  if (!el) return;
+  el.classList.add('error-input');
+  let parent = el.parentNode;
+  if (el.parentNode.classList.contains('address-input-wrapper')) {
+    parent = el.parentNode.parentNode;
+  }
+  let errorEl = parent.querySelector('.error-msg');
+  if (!errorEl) {
+    errorEl = document.createElement('span');
+    errorEl.className = 'error-msg';
+    parent.appendChild(errorEl);
+  }
+  errorEl.textContent = message;
+}
+
+function clearInputError(el) {
+  if (!el) return;
+  el.classList.remove('error-input');
+  let parent = el.parentNode;
+  if (el.parentNode.classList.contains('address-input-wrapper')) {
+    parent = el.parentNode.parentNode;
+  }
+  const errorEl = parent.querySelector('.error-msg');
+  if (errorEl) {
+    errorEl.remove();
+  }
+}
 
 function parsePriceLabel(priceLabel) {
   if (!priceLabel) return null;
@@ -305,8 +394,9 @@ async function apiFetch(path, options = {}) {
 
 const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
-function requireLoginForAction(action = 'continue') {
+function requireLoginForAction(action = 'continue', context = null) {
   if (state.isAuthenticated) return true;
+  state.preLoginAction = { action, context };
   const messages = {
     cart: 'Please log in to add gifts to your cart. Your cart stays private to your account.',
     buy: 'Please log in before buying. Purchases are saved only to your account.',
@@ -882,7 +972,7 @@ function createGiftCard(gift, idx = 0) {
 }
 
 function showPurchaseConfirmation(gift) {
-  if (!requireLoginForAction('buy')) return;
+  if (!requireLoginForAction('buy', gift)) return;
   state.pendingPurchaseGift = gift;
   state.pendingCheckoutItems = [normalizeGiftForStorage(gift)];
   const emoji = $('#purchaseGiftEmoji');
@@ -1233,9 +1323,43 @@ async function handlePaymentSubmit(event) {
     const cardExpiry = $('#cardExpiry')?.value.trim();
     const cardCvc = $('#cardCvc')?.value.trim();
     console.log('Card validation:', { cardName: !!cardName, cardNumber: cardNumber.length, cardExpiry: !!cardExpiry, cardCvc: !!cardCvc });
-    if (!cardName || cardNumber.length < 12 || !cardExpiry || cardCvc.length < 3) {
-      console.log('❌ Card details incomplete');
-      showToast('Please enter complete card details.');
+    
+    if (!cardName) {
+      showToast('Please enter the cardholder name.');
+      return;
+    }
+    if (cardNumber.length < 12 || !/^\d+$/.test(cardNumber)) {
+      showToast('Please enter a valid card number (12-16 digits).');
+      return;
+    }
+    if (!cardExpiry) {
+      showToast('Please enter the card expiry date.');
+      return;
+    }
+
+    // Expiry validation - cannot be past than present time
+    const expiryRegex = /^(0[1-9]|1[0-2])\/?([0-9]{2})$/;
+    const match = cardExpiry.match(expiryRegex);
+    if (!match) {
+      showToast('Please enter card expiry in MM/YY format.');
+      return;
+    }
+
+    const expMonth = parseInt(match[1], 10);
+    const expYear = parseInt(match[2], 10) + 2000;
+
+    // Compare with current local time (June 2026)
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // 1-indexed
+
+    if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+      showToast('Credit card expiry cannot be in the past.');
+      return;
+    }
+
+    if (!cardCvc || cardCvc.length < 3 || !/^\d+$/.test(cardCvc)) {
+      showToast('Please enter a valid 3 or 4 digit CVC.');
       return;
     }
   }
@@ -1575,7 +1699,7 @@ function normalizeGiftForStorage(gift) {
 }
 
 async function addToCart(gift) {
-  if (!requireLoginForAction('cart')) return;
+  if (!requireLoginForAction('cart', gift)) return;
   const normalizedGift = normalizeGiftForStorage(gift);
   const existing = state.cart.find(item => String(item.id) === String(gift.id));
   if (existing) {
@@ -1795,6 +1919,7 @@ function renderOrdersPage() {
         `).join('')}
       </div>
       <div class="shop-total">${order.total ? `Rs. ${Number(order.total).toLocaleString('en-IN')}` : 'Total unavailable'}</div>
+      ${order.shippingAddress ? `<div class="order-address"><span>📍</span> ${escapeHtml(order.shippingAddress)}</div>` : ''}
     `;
     list.appendChild(card);
   });
@@ -2129,6 +2254,120 @@ function showToast(message, duration = 2800) {
   toastTimer = window.setTimeout(() => toast.classList.remove('show'), duration);
 }
 
+/* ─── GREETING POPUP FUNCTIONS ───────────── */
+let greetingTimer = null;
+function ensureGreetingPopup() {
+  let popup = $('#greetingPopup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'greetingPopup';
+    popup.className = 'greeting-popup';
+    popup.innerHTML = `
+      <div class="greeting-content">
+        <span class="greeting-emoji">✨</span>
+        <div class="greeting-text">
+          <h4 id="greetingTitle">Hello!</h4>
+          <p id="greetingMessage">Welcome back to INCANTO.</p>
+        </div>
+        <button class="greeting-close" id="greetingCloseBtn">&times;</button>
+      </div>
+    `;
+    document.body.appendChild(popup);
+    popup.querySelector('#greetingCloseBtn').addEventListener('click', hideGreetingPopup);
+  }
+  return popup;
+}
+
+function showGreetingPopup(username) {
+  ensureGreetingPopup();
+  const title = $('#greetingTitle');
+  const msg = $('#greetingMessage');
+  const popup = $('#greetingPopup');
+  
+  if (title) title.textContent = `Hello, ${username}!`;
+  if (msg) msg.textContent = 'Welcome back to INCANTO.';
+  
+  popup.classList.add('show');
+  window.clearTimeout(greetingTimer);
+  greetingTimer = window.setTimeout(hideGreetingPopup, 4500);
+}
+
+function hideGreetingPopup() {
+  const popup = $('#greetingPopup');
+  if (popup) popup.classList.remove('show');
+}
+
+/* ─── GOOGLE MAPS PLACES AUTOCOMPLETE ───── */
+let placesAutocomplete = null;
+
+function initGooglePlacesAutocomplete() {
+  const addressInput = $('#deliveryAddress');
+  if (!addressInput) return;
+
+  const apiKey = window.GOOGLE_MAPS_API_KEY;
+  if (!apiKey) {
+    console.log('Google Maps API key not set – address autocomplete disabled, using manual input.');
+    return;
+  }
+
+  // Avoid loading twice
+  if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+    attachAutocomplete(addressInput);
+    return;
+  }
+
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=_onGoogleMapsReady`;
+  script.async = true;
+  script.defer = true;
+  script.onerror = () => {
+    console.warn('Google Maps API failed to load – address autocomplete unavailable.');
+    showToast('Map autocomplete unavailable. You can still type your address manually.');
+  };
+
+  window._onGoogleMapsReady = () => {
+    attachAutocomplete(addressInput);
+  };
+
+  document.head.appendChild(script);
+}
+
+function attachAutocomplete(inputEl) {
+  if (!window.google?.maps?.places) return;
+
+  try {
+    placesAutocomplete = new google.maps.places.Autocomplete(inputEl, {
+      types: ['address'],
+      fields: ['formatted_address', 'geometry', 'name', 'address_components'],
+    });
+
+    placesAutocomplete.addListener('place_changed', () => {
+      const place = placesAutocomplete.getPlace();
+      if (place?.formatted_address) {
+        inputEl.value = place.formatted_address;
+        inputEl.dataset.fullAddress = place.formatted_address;
+
+        // Extract components for richer data
+        const components = place.address_components || [];
+        const get = (type) => components.find(c => c.types.includes(type))?.long_name || '';
+        inputEl.dataset.city = get('locality') || get('administrative_area_level_2');
+        inputEl.dataset.state = get('administrative_area_level_1');
+        inputEl.dataset.country = get('country');
+        inputEl.dataset.postalCode = get('postal_code');
+      }
+    });
+
+    // Prevent form submit on Enter from autocomplete selection
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && document.querySelector('.pac-container:not([style*="display: none"])')) {
+        e.preventDefault();
+      }
+    });
+  } catch (err) {
+    console.warn('Places Autocomplete init error:', err);
+  }
+}
+
 /* ─── ROUTING ────────────────────────────── */
 function showAuthModal(mode = 'login', message = '') {
   setAuthMode(mode);
@@ -2190,11 +2429,18 @@ function updateAuthUI() {
     writeScopedArray('cart', state.cart);
     writeScopedArray('recentlyViewed', state.recentlyViewed);
     writeScopedArray('orders', state.orders);
+
+    // Greet user on first load of the session
+    if (state.user?.username && !sessionStorage.getItem('incanto_greeted')) {
+      showGreetingPopup(state.user.username);
+      sessionStorage.setItem('incanto_greeted', 'true');
+    }
   } else {
     state.favorites = [];
     state.cart = [];
     state.recentlyViewed = [];
     state.orders = [];
+    sessionStorage.removeItem('incanto_greeted'); // Reset greeting status on logout
   }
 
   if ($('#loginBtn')) $('#loginBtn').style.display = state.isAuthenticated ? 'none' : 'inline-flex';
@@ -2233,6 +2479,28 @@ async function handleAuthSubmit(formType, event) {
     }
     hideAuthModal();
     updateAuthUI();
+
+    // Trigger greeting popup immediately after successful login
+    if (state.user?.username) {
+      showGreetingPopup(state.user.username);
+      sessionStorage.setItem('incanto_greeted', 'true');
+    }
+
+    // Resume pre-login actions if any
+    if (state.preLoginAction) {
+      const { action, context } = state.preLoginAction;
+      state.preLoginAction = null; // Clear action
+      
+      if (action === 'cart' && context) {
+        addToCart(context);
+      } else if (action === 'buy' && context) {
+        showPurchaseConfirmation(context);
+      } else if (action === 'checkout') {
+        showCartPurchaseConfirmation();
+      } else if (action === 'route' && context?.hash) {
+        window.location.hash = context.hash;
+      }
+    }
   } catch (err) {
     showToast(err.message || 'Authentication failed.');
   } finally {
@@ -2246,6 +2514,38 @@ async function savePersonalInfo(event) {
   if (!state.isAuthenticated) {
     showAuthModal('login');
     return;
+  }
+
+  const phone = $('#personalPhone')?.value.trim();
+  const birthday = $('#personalBirthday')?.value.trim();
+
+  // Strict Phone Validation
+  if (phone) {
+    if (!/^\d+$/.test(phone)) {
+      showToast('Phone number must contain only digits.');
+      return;
+    }
+    if (phone.length < 9 || phone.length > 10) {
+      showToast('Phone number must be 9 or 10 digits.');
+      return;
+    }
+  }
+
+  // Strict Birthday Validation - cannot be in future
+  if (birthday) {
+    const birthdayDate = new Date(birthday);
+    const today = new Date();
+    if (isNaN(birthdayDate.getTime())) {
+      showToast('Please enter a valid birthday.');
+      return;
+    }
+    // Set hours to 0 to compare dates accurately
+    birthdayDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    if (birthdayDate > today) {
+      showToast('Birthday date cannot be in the future.');
+      return;
+    }
   }
 
   const { ok, data } = await apiFetch('/users/personal-info', {
@@ -2323,6 +2623,14 @@ function initAuth() {
 }
 
 function handleRouting() {
+  const hash = window.location.hash || '#home';
+  const targetId = hash.replace('#', '');
+  
+  // Save session state path + hash
+  const page = window.location.pathname.split('/').pop() || 'index.html';
+  localStorage.setItem('incanto_last_page', page);
+  localStorage.setItem('incanto_last_hash', hash);
+
   if (IS_PAYMENT_PAGE) {
     window.scrollTo({ top: 0 });
     $('#mobileMenu')?.classList.remove('open');
@@ -2330,13 +2638,12 @@ function handleRouting() {
     $('#hamburger')?.setAttribute('aria-label', 'Open menu');
     return;
   }
-  const hash = window.location.hash || '#home';
-  const targetId = hash.replace('#', '');
   if (targetId === 'payment' && !IS_PAYMENT_PAGE) {
     window.location.href = 'payment.html';
     return;
   }
   if (['profile', 'cart', 'orders', 'purchase', 'purchase-final', 'payment'].includes(targetId) && !state.isAuthenticated) {
+    state.preLoginAction = { action: 'route', context: { hash } };
     showAuthModal('login', 'Please log in to view your private account area.');
     showToast('Please log in to continue.');
     window.location.hash = '#home';
@@ -2420,6 +2727,49 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('change', () => setPaymentMethod(input.value));
   });
   setPaymentMethod('card');
+
+  // Strict constraints formatting & filtering event listeners
+  $('#personalPhone')?.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+  });
+  $('#personalBirthday')?.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9\-\/]/g, '');
+  });
+  const todayStr = new Date().toISOString().split('T')[0];
+  $('#personalBirthday')?.setAttribute('max', todayStr);
+
+  $('#cardNumber')?.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 16);
+  });
+  $('#cardExpiry')?.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 2) {
+      value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    e.target.value = value.substring(0, 5);
+  });
+  $('#cardCvc')?.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+  });
+
+  // Restore session state
+  const lastPage = localStorage.getItem('incanto_last_page');
+  const lastHash = localStorage.getItem('incanto_last_hash');
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const currentHash = window.location.hash;
+
+  if (lastPage && (currentPage === 'index.html' || currentPage === '')) {
+    if (!currentHash || currentHash === '#home') {
+      if (lastPage !== 'index.html' && lastPage !== '') {
+        window.location.href = lastPage + (lastHash || '');
+        return;
+      } else if (lastHash && lastHash !== '#home') {
+        window.location.hash = lastHash;
+      }
+    }
+  }
+
   hydrateCheckoutPage();
+  initGooglePlacesAutocomplete();
   handleRouting();
 });
