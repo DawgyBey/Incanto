@@ -4593,6 +4593,41 @@ body::before {
   flex-shrink: 0;
 }
 
+.transaction-summary {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0 24px;
+  text-align: left;
+}
+
+.transaction-summary div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 248, 238, 0.045);
+}
+
+.transaction-summary span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.transaction-summary strong {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  text-align: right;
+  word-break: break-word;
+}
+
+.transaction-summary--overlay {
+  min-width: min(420px, 82vw);
+  margin-bottom: 0;
+}
+
 .error-input {
   border-color: #d98697 !important;
   box-shadow: 0 0 0 3px rgba(217, 134, 151, 0.2) !important;
@@ -4603,4 +4638,30 @@ body::before {
   font-size: 0.8rem;
   margin-top: 4px;
   display: block;
+}
+
+.address-input-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.address-input-wrapper input {
+  flex: 1;
+  min-width: 0;
+}
+
+.address-input-wrapper button,
+.order-recommend-btn {
+  white-space: nowrap;
+}
+
+.order-recommend-btn {
+  margin-top: 14px;
+}
+
+@media (max-width: 640px) {
+  .address-input-wrapper {
+    flex-direction: column;
+  }
 }

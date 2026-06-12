@@ -5,7 +5,56 @@ import { dirname, join } from "path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const giftsPath = join(__dirname, "data/gifts.json");
 const data = JSON.parse(readFileSync(giftsPath, "utf8"));
-const gifts = Array.isArray(data) ? data : data.gifts || data.nepal_gift_database || [];
+const rawGifts = Array.isArray(data) ? data : data.gifts || data.nepal_gift_database || [];
+
+const normalizeList = (value) => {
+  if (Array.isArray(value)) return value.map((item) => String(item || "").trim()).filter(Boolean);
+  return String(value || "")
+    .split(/[,;&]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
+const toPriceRange = (rawRange, price) => {
+  const range = String(rawRange || "").trim();
+  if (["Budget", "Mid Range", "Premium"].includes(range)) return range;
+  if (price <= 2500) return "Budget";
+  if (price <= 7000) return "Mid Range";
+  return "Premium";
+};
+
+const toDarazSearchLink = (rawLink, name) => {
+  const link = String(rawLink || "").trim();
+  if (link.startsWith("https://www.daraz.com.np/catalog/?q=")) return link;
+  return `https://www.daraz.com.np/catalog/?q=${encodeURIComponent(name)}`;
+};
+
+const normalizeGift = (gift) => {
+  const itemName = String(gift.item_name || gift["Item Name"] || gift.name || "").trim();
+  const price = Number(gift.price_npr ?? gift["Price (NPR)"] ?? gift.price);
+  return {
+    id: gift.id ?? gift["#"],
+    item_name: itemName,
+    category: String(gift.category || gift.Category || "").trim(),
+    recipient: normalizeList(gift.recipient || gift.Recipient || gift.recipients),
+    price_npr: price,
+    occasion: normalizeList(gift.occasion || gift.Occasion || gift.occasions),
+    description: String(gift.description || gift.Description || "").trim(),
+    availability: String(gift.availability || gift.Availability || "").trim(),
+    tags: normalizeList(gift.tags || gift.Tags),
+    image_url: String(gift.image_url || gift.imageUrl || "/images/fallback-gift.jpg").trim(),
+    daraz_search_link: toDarazSearchLink(gift.daraz_search_link || gift["Daraz Search Link"] || gift.link, itemName),
+    price_range: toPriceRange(gift.price_range || gift["Price Range"], price),
+    gender_suitability: normalizeList(gift.gender_suitability || gift["Gender Suitability"] || "unisex"),
+    age_group: normalizeList(gift.age_group || gift["Age Group"] || "adult"),
+    gift_score: Number(gift.gift_score ?? gift["Gift Score"] ?? 7),
+    is_local_nepali_gift: typeof gift.is_local_nepali_gift === "boolean"
+      ? gift.is_local_nepali_gift
+      : String(gift.availability || gift.Availability || "").toLowerCase().includes("local"),
+  };
+};
+
+const gifts = rawGifts.map(normalizeGift);
 
 const requiredFields = [
   "id",

@@ -83,6 +83,7 @@ const USER_SCOPED_KEYS = {
   cart: 'incanto_cart',
   orders: 'incanto_orders',
 };
+const GUEST_SESSION_KEY = 'incanto_guest_session_id';
 
 const legacyStorageKeys = Object.values(USER_SCOPED_KEYS);
 
@@ -90,14 +91,37 @@ function getActiveUserId() {
   return window.IncantoAuth?.getUser()?.id || null;
 }
 
+function getGuestSessionId() {
+  let id = localStorage.getItem(GUEST_SESSION_KEY);
+  if (!id) {
+    id = (window.crypto?.randomUUID?.() || `guest-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    localStorage.setItem(GUEST_SESSION_KEY, id);
+  }
+  return id;
+}
+
+function getSessionOwnerId() {
+  return getActiveUserId() || getGuestSessionId();
+}
+
 function getScopedStorageKey(key) {
-  const userId = getActiveUserId();
-  return userId ? `${USER_SCOPED_KEYS[key]}_${userId}` : null;
+  const ownerId = getSessionOwnerId();
+  return ownerId ? `${USER_SCOPED_KEYS[key]}_${ownerId}` : null;
+}
+
+function getGuestScopedStorageKey(key) {
+  const guestId = localStorage.getItem(GUEST_SESSION_KEY);
+  return guestId ? `${USER_SCOPED_KEYS[key]}_${guestId}` : null;
 }
 
 function getScopedPendingCheckoutKey() {
-  const userId = getActiveUserId();
-  return userId ? `${PENDING_CHECKOUT_KEY_PREFIX}_${userId}` : null;
+  const ownerId = getSessionOwnerId();
+  return ownerId ? `${PENDING_CHECKOUT_KEY_PREFIX}_${ownerId}` : null;
+}
+
+function getGuestPendingCheckoutKey() {
+  const guestId = localStorage.getItem(GUEST_SESSION_KEY);
+  return guestId ? `${PENDING_CHECKOUT_KEY_PREFIX}_${guestId}` : null;
 }
 
 function readScopedArray(key) {
@@ -438,6 +462,90 @@ function clearPendingCheckout() {
   if (storageKey) sessionStorage.removeItem(storageKey);
 }
 
+function readGuestArray(key) {
+  const storageKey = getGuestScopedStorageKey(key);
+  if (!storageKey) return [];
+  try {
+    return JSON.parse(localStorage.getItem(storageKey) || '[]');
+  } catch (_err) {
+    return [];
+  }
+}
+
+function clearGuestSessionState() {
+  Object.keys(USER_SCOPED_KEYS).forEach((key) => {
+    const storageKey = getGuestScopedStorageKey(key);
+    if (storageKey) localStorage.removeItem(storageKey);
+  });
+  const pendingKey = getGuestPendingCheckoutKey();
+  if (pendingKey) sessionStorage.removeItem(pendingKey);
+  localStorage.removeItem(GUEST_SESSION_KEY);
+}
+
+function mergeUniqueById(existing, incoming, quantityMode = 'replace') {
+  const merged = Array.isArray(existing) ? [...existing] : [];
+  (Array.isArray(incoming) ? incoming : []).forEach((item) => {
+    if (!item?.id) return;
+    const found = merged.find((current) => String(current.id) === String(item.id));
+    if (found) {
+      if (quantityMode === 'sum') {
+        found.quantity = (Number(found.quantity) || 1) + (Number(item.quantity) || 1);
+      }
+    } else {
+      merged.unshift(item);
+    }
+  });
+  return merged;
+}
+
+async function mergeGuestSessionAfterAuth() {
+  if (!state.isAuthenticated && !window.IncantoAuth?.isAuthenticated()) return;
+  const guestCart = readGuestArray('cart');
+  const guestFavorites = readGuestArray('favorites');
+  const guestRecent = readGuestArray('recentlyViewed');
+  const guestPendingKey = getGuestPendingCheckoutKey();
+  let guestPending = null;
+  try {
+    guestPending = guestPendingKey ? JSON.parse(sessionStorage.getItem(guestPendingKey) || 'null') : null;
+  } catch (_err) {
+    guestPending = null;
+  }
+
+  if (!guestCart.length && !guestFavorites.length && !guestRecent.length && !guestPending?.gift) return;
+
+  try {
+    const { ok, data } = await apiFetch('/users/session/merge', {
+      method: 'POST',
+      body: JSON.stringify({
+        cart: guestCart,
+        favorites: guestFavorites,
+        recentlyViewed: guestRecent,
+      }),
+    });
+    if (ok && data?.data?.user) {
+      updateStoredUser(data.data.user);
+    } else {
+      state.cart = mergeUniqueById(state.user?.cart || state.cart, guestCart, 'sum');
+      state.favorites = mergeUniqueById(state.user?.favorites || state.favorites, guestFavorites);
+      state.recentlyViewed = mergeUniqueById(state.user?.recentlyViewed || state.recentlyViewed, guestRecent).slice(0, 6);
+    }
+  } catch (_err) {
+    state.cart = mergeUniqueById(state.user?.cart || state.cart, guestCart, 'sum');
+    state.favorites = mergeUniqueById(state.user?.favorites || state.favorites, guestFavorites);
+    state.recentlyViewed = mergeUniqueById(state.user?.recentlyViewed || state.recentlyViewed, guestRecent).slice(0, 6);
+  }
+
+  if (guestPending?.gift) {
+    state.pendingPurchaseGift = guestPending.gift;
+    state.pendingCheckoutItems = Array.isArray(guestPending.items) ? guestPending.items : [normalizeGiftForStorage(guestPending.gift)];
+    state.voucher = guestPending.voucher || state.voucher;
+    rememberPendingCheckout();
+  }
+
+  clearGuestSessionState();
+  updateAuthUI();
+}
+
 /* ─── GENERATE RESULTS ───────────────────── */
 async function generateResults() {
   if (state.isFindingGifts) return;
@@ -656,7 +764,6 @@ window.IncantoFindGifts = (event) => {
   event?.preventDefault?.();
   event?.stopPropagation?.();
   generateResults().catch((err) => {
-    console.error('Gift finder failed:', err);
     showToast('Something went wrong while finding gifts. Please try again.');
   });
   return false;
@@ -1266,8 +1373,9 @@ function initStaticTrendingCards() {
 
 function cancelPurchase() {
   state.pendingPurchaseGift = null;
-  state.pendingCheckoutItems = [];
-  clearPendingCheckout();
+    state.pendingCheckoutItems = [];
+    state.currentOrderRequestId = null;
+    clearPendingCheckout();
   $('#paymentForm')?.reset();
   setPaymentMethod('card');
   window.location.href = IS_PAYMENT_PAGE ? 'index.html#home' : '#home';
@@ -1287,22 +1395,17 @@ function backToPurchase() {
 }
 
 async function handlePaymentSubmit(event) {
-  console.log('🔴 PAYMENT SUBMIT HANDLER CALLED');
   event.preventDefault();
   event.stopPropagation();
   if (!requireLoginForAction('buy')) {
-    console.log('❌ User not logged in');
     return;
   }
   if (state.isProcessingPayment) {
-    console.log('❌ Already processing payment');
     return;
   }
   
   const gift = state.pendingPurchaseGift;
-  console.log('Gift:', gift);
   if (!gift) {
-    console.log('❌ No gift selected');
     showToast('Choose a gift before payment.');
     window.location.hash = '#home';
     return;
@@ -1322,8 +1425,6 @@ async function handlePaymentSubmit(event) {
     const cardNumber = $('#cardNumber')?.value.replace(/\s+/g, '');
     const cardExpiry = $('#cardExpiry')?.value.trim();
     const cardCvc = $('#cardCvc')?.value.trim();
-    console.log('Card validation:', { cardName: !!cardName, cardNumber: cardNumber.length, cardExpiry: !!cardExpiry, cardCvc: !!cardCvc });
-    
     if (!cardName) {
       showToast('Please enter the cardholder name.');
       return;
@@ -1365,34 +1466,28 @@ async function handlePaymentSubmit(event) {
   }
 
   if (!address) {
-    console.log('❌ No delivery address');
     showToast('Please enter a delivery address.');
     return;
   }
 
-  console.log('✅ All validations passed, starting payment processing');
   setPaymentProcessing(true, 'Verifying details...');
   try {
     showToast('Processing your purchase for this account...');
     await wait(450);
     setPaymentProcessing(true, 'Saving order...');
     addToRecentlyViewed(gift, { sync: false });
-    console.log('💾 Calling saveOrder...');
     const savedOrder = await saveOrder(gift);
-    console.log('💾 Order saved:', savedOrder);
     await wait(350);
     const purchasedCount = state.pendingCheckoutItems.length || 1;
     setPaymentProcessing(false);
-    console.log('🎉 About to show payment success page with order:', savedOrder);
     showPaymentSuccessPage(savedOrder, purchasedCount);
-    console.log('✅ After showing payment success page');
     state.pendingPurchaseGift = null;
     state.pendingCheckoutItems = [];
+    state.currentOrderRequestId = null;
     clearPendingCheckout();
     $('#paymentForm')?.reset();
     setPaymentMethod('card');
   } catch (error) {
-    console.error('❌ Payment error:', error);
     setPaymentProcessing(false);
   }
 }
@@ -1404,8 +1499,12 @@ async function saveOrder(gift) {
   const subTotal = items.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 1)), 0);
   const discount = state.voucher?.amount || 0;
   const total = Math.max(0, subTotal - discount);
+  state.currentOrderRequestId = state.currentOrderRequestId || `INC-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const transactionId = `TXN-${Date.now()}-${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
   const order = {
-    id: `INC-${Date.now()}`,
+    id: state.currentOrderRequestId,
+    clientRequestId: state.currentOrderRequestId,
+    transactionId,
     placedAt: new Date().toISOString(),
     status: 'Confirmed',
     paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card',
@@ -1416,7 +1515,12 @@ async function saveOrder(gift) {
     shippingAddress: $('#deliveryAddress')?.value.trim() || '',
   };
 
-  state.orders.unshift(order);
+  const existingLocalOrderIndex = state.orders.findIndex(saved => saved.clientRequestId === order.clientRequestId || saved.id === order.id);
+  if (existingLocalOrderIndex > -1) {
+    state.orders[existingLocalOrderIndex] = order;
+  } else {
+    state.orders.unshift(order);
+  }
   writeScopedArray('orders', state.orders);
 
   if (state.isAuthenticated) {
@@ -1426,7 +1530,9 @@ async function saveOrder(gift) {
         body: JSON.stringify({ order }),
       });
       if (ok && data?.data?.order) {
-        state.orders[0] = data.data.order;
+        const savedIndex = state.orders.findIndex(saved => saved.clientRequestId === data.data.order.clientRequestId || saved.id === data.data.order.id);
+        if (savedIndex > -1) state.orders[savedIndex] = data.data.order;
+        else state.orders.unshift(data.data.order);
         writeScopedArray('orders', state.orders);
         updateStoredUser(data.data.user);
         state.cart = Array.isArray(state.user?.cart) ? state.user.cart : state.cart;
@@ -1441,7 +1547,7 @@ async function saveOrder(gift) {
   writeScopedArray('cart', state.cart);
   updateCartUI();
   renderOrdersPage();
-  return state.orders[0] || order;
+  return state.orders.find(saved => saved.clientRequestId === order.clientRequestId || saved.id === order.id) || order;
 }
 
 window.IncantoSubmitPayment = (event) => {
@@ -1498,6 +1604,19 @@ function updatePaymentProcess(message, isActive = false) {
   if (text) text.textContent = message;
 }
 
+function updateTransactionSummary(order) {
+  const transactionId = order?.transactionId || `TXN-${String(order?.id || Date.now()).replace(/^INC-/, '')}`;
+  const method = String(order?.paymentMethod || 'card').replace(/^\w/, (letter) => letter.toUpperCase());
+  const status = order?.status === 'Confirmed' ? 'Paid' : (order?.status || 'Paid');
+
+  if ($('#transactionId')) $('#transactionId').textContent = transactionId;
+  if ($('#transactionMethod')) $('#transactionMethod').textContent = method;
+  if ($('#transactionStatus')) $('#transactionStatus').textContent = status;
+  if ($('#overlayTransactionId')) $('#overlayTransactionId').textContent = transactionId;
+  if ($('#overlayTransactionMethod')) $('#overlayTransactionMethod').textContent = method;
+  if ($('#overlayTransactionStatus')) $('#overlayTransactionStatus').textContent = status;
+}
+
 function closePurchaseSuccessPopup() {
   $('#purchaseSuccessModal')?.classList.remove('open');
   $('#purchaseSuccessModal')?.setAttribute('aria-hidden', 'true');
@@ -1545,41 +1664,27 @@ function handlePaymentSuccessContinue() {
 }
 
 function showPaymentSuccessPage(order, itemCount) {
-  console.log('=== SHOWING PAYMENT SUCCESS PAGE ===');
-  console.log('Order:', order);
-  console.log('Item Count:', itemCount);
+  updateTransactionSummary(order);
   
   const overlay = $('#paymentSuccessOverlay');
-  console.log('Overlay element:', overlay);
   
   if (!overlay) {
-    console.error('🚨 CRITICAL: Overlay element #paymentSuccessOverlay not found in DOM');
     showToast('Payment successful! Overlay not found.');
     return;
   }
 
-  console.log('✅ Overlay element found');
-  console.log('Current classes before:', overlay.className);
   
   // Remove and re-add class
   overlay.classList.remove('active');
-  console.log('Removed active class');
   
   // Force reflow
   const reflow = overlay.offsetHeight;
-  console.log('Reflow triggered:', reflow);
   
   overlay.classList.add('active');
-  console.log('Added active class');
-  console.log('Current classes after:', overlay.className);
-  console.log('Computed display:', window.getComputedStyle(overlay).display);
-  console.log('Computed visibility:', window.getComputedStyle(overlay).visibility);
-  console.log('Computed z-index:', window.getComputedStyle(overlay).zIndex);
 
   // Store order data
   overlay.dataset.order = JSON.stringify(order);
   overlay.dataset.itemCount = itemCount;
-  console.log('✅ Order data stored');
 
   showToast(`Purchase complete. ${itemCount} item${itemCount === 1 ? '' : 's'} saved to My Purchases.`);
 }
@@ -1615,6 +1720,10 @@ function showPurchaseSuccessModal(order, itemCount) {
   }
   if ($('#purchaseSuccessOrderId')) $('#purchaseSuccessOrderId').textContent = `Order ${order?.id || 'INC-'}`;
   if ($('#purchaseSuccessTotal')) $('#purchaseSuccessTotal').textContent = `Rs. ${total.toLocaleString('en-IN')}`;
+  updateTransactionSummary(order);
+  if ($('#transactionId')) $('#transactionId').textContent = order?.transactionId || `TXN-${String(order?.id || Date.now()).replace(/^INC-/, '')}`;
+  if ($('#transactionMethod')) $('#transactionMethod').textContent = String(order?.paymentMethod || 'card').replace(/^\w/, (letter) => letter.toUpperCase());
+  if ($('#transactionStatus')) $('#transactionStatus').textContent = order?.status === 'Confirmed' ? 'Paid' : (order?.status || 'Paid');
 
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
@@ -2306,7 +2415,6 @@ function initGooglePlacesAutocomplete() {
 
   const apiKey = window.GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
-    console.log('Google Maps API key not set – address autocomplete disabled, using manual input.');
     return;
   }
 
@@ -2369,6 +2477,348 @@ function attachAutocomplete(inputEl) {
 }
 
 /* ─── ROUTING ────────────────────────────── */
+async function reverseGeocode(latitude, longitude) {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}`;
+  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  if (!res.ok) throw new Error('Address lookup failed.');
+  const data = await res.json();
+  return data.display_name || '';
+}
+
+function initCurrentLocationButton() {
+  const btn = $('#useCurrentLocationBtn');
+  const addressInput = $('#deliveryAddress');
+  if (!btn || !addressInput) return;
+
+  btn.addEventListener('click', () => {
+    clearInputError(addressInput);
+    if (!navigator.geolocation) {
+      setInputError(addressInput, 'Current location is not supported in this browser. Enter your address manually.');
+      showToast('Current location is not supported. Please enter your address manually.');
+      return;
+    }
+
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Locating...';
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      try {
+        const { latitude, longitude } = position.coords;
+        const address = await reverseGeocode(latitude, longitude);
+        if (!address) throw new Error('No address found.');
+        addressInput.value = address;
+        addressInput.dataset.latitude = String(latitude);
+        addressInput.dataset.longitude = String(longitude);
+        clearInputError(addressInput);
+        showToast('Current location added. Please review the address before payment.');
+      } catch (_err) {
+        setInputError(addressInput, 'Could not convert your location to an address. Please type it manually.');
+        showToast('Could not load your address. Please enter it manually.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }, () => {
+      btn.disabled = false;
+      btn.textContent = originalText;
+      setInputError(addressInput, 'Location permission was denied. Enter your delivery address manually.');
+      showToast('Location permission denied. Please enter your address manually.');
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 });
+  });
+}
+
+function initFormValidationGuidance() {
+  document.addEventListener('invalid', (event) => {
+    const el = event.target;
+    if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement)) return;
+    const message = el.validationMessage || 'Please check this field.';
+    setInputError(el, message);
+    showToast(message);
+  }, true);
+
+  document.addEventListener('input', (event) => {
+    const el = event.target;
+    if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement)) return;
+    if (el.checkValidity()) clearInputError(el);
+  }, true);
+}
+
+/* Corrected session-aware cart and saved-item actions. These override the early
+   declarations above without changing unrelated rendering behavior. */
+function updateFavoritesUI() {
+  const bar = $('#favoritesBar');
+  const count = $('#favCount');
+  const navCount = $('#navFavCount');
+  const mobileCount = $('#mobileFavCount');
+  if (navCount) navCount.textContent = state.favorites.length;
+  if (mobileCount) mobileCount.textContent = state.favorites.length;
+  if (!bar || !count) return;
+  if (state.favorites.length > 0) {
+    bar.style.display = 'flex';
+    count.textContent = state.favorites.length;
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function toggleFavorite(gift, btn) {
+  const normalized = normalizeGiftForStorage(gift);
+  const idx = state.favorites.findIndex(f => String(f.id) === String(normalized.id));
+  if (idx > -1) {
+    state.favorites.splice(idx, 1);
+    btn?.classList.remove('saved');
+    if (btn) btn.textContent = 'Save';
+    showToast(`Removed "${normalized.name}" from saved items.`);
+  } else {
+    state.favorites.push(normalized);
+    btn?.classList.add('saved');
+    if (btn) btn.textContent = 'Saved';
+    showToast(`Saved "${normalized.name}".`);
+  }
+  writeScopedArray('favorites', state.favorites);
+  updateFavoritesUI();
+
+  if (state.isAuthenticated) {
+    const method = idx > -1 ? 'DELETE' : 'POST';
+    const path = idx > -1 ? `/users/favorites/${encodeURIComponent(normalized.id)}` : '/users/favorites';
+    apiFetch(path, {
+      method,
+      body: method === 'POST' ? JSON.stringify({ gift: normalized }) : undefined,
+    }).then(({ ok, data }) => {
+      if (ok && data?.data?.user) {
+        updateStoredUser(data.data.user);
+        state.favorites = Array.isArray(state.user.favorites) ? state.user.favorites : state.favorites;
+        writeScopedArray('favorites', state.favorites);
+        updateFavoritesUI();
+      }
+    }).catch(() => {});
+  }
+}
+
+async function addToCart(gift) {
+  const normalizedGift = normalizeGiftForStorage(gift);
+  const existing = state.cart.find(item => String(item.id) === String(normalizedGift.id));
+  if (existing) {
+    existing.quantity = (Number(existing.quantity) || 1) + 1;
+  } else {
+    state.cart.unshift({ ...normalizedGift, quantity: 1, addedAt: new Date().toISOString() });
+  }
+  writeScopedArray('cart', state.cart);
+  updateCartUI();
+  showToast(existing
+    ? `"${normalizedGift.name}" quantity updated in your cart.`
+    : `"${normalizedGift.name}" added to your cart.`);
+
+  if (!state.isAuthenticated) return;
+
+  try {
+    const { ok, data } = await apiFetch('/users/cart', {
+      method: 'POST',
+      body: JSON.stringify({ gift: normalizedGift }),
+    });
+    if (ok && data?.data?.user) {
+      updateStoredUser(data.data.user);
+      state.cart = Array.isArray(state.user.cart) ? state.user.cart : state.cart;
+      writeScopedArray('cart', state.cart);
+      updateCartUI();
+    }
+  } catch (_err) {
+    showToast('Saved locally for this account. API sync will need the backend online.');
+  }
+}
+
+function openFavoritesModal() {
+  const body = $('#modalBody');
+  if (!body) return;
+  body.innerHTML = '';
+  if (state.favorites.length === 0) {
+    body.innerHTML = '<div class="modal-empty">No saved gifts yet. Start exploring.</div>';
+  } else {
+    state.favorites.forEach(fav => {
+      const item = document.createElement('div');
+      item.className = 'modal-gift-item';
+      item.innerHTML = `
+        <div class="modal-gift-emoji">${escapeHtml(fav.emoji || 'Gift')}</div>
+        <div class="modal-gift-info"><strong>${escapeHtml(fav.name)}</strong><span>${escapeHtml(fav.priceLabel || 'Price unavailable')}</span></div>
+        <button class="btn-secondary modal-cart" type="button" style="font-size:.78rem;padding:8px 14px;">Move to cart</button>
+        <button class="btn-secondary modal-remove" type="button" style="font-size:.78rem;padding:8px 14px;">Remove</button>
+        <button class="btn-buy modal-buy" type="button" style="font-size:.78rem;padding:8px 14px;">Buy</button>
+      `;
+      item.querySelector('.modal-cart')?.addEventListener('click', async () => {
+        await addToCart(fav);
+        toggleFavorite(fav, null);
+        openFavoritesModal();
+      });
+      item.querySelector('.modal-remove')?.addEventListener('click', () => {
+        toggleFavorite(fav, null);
+        openFavoritesModal();
+      });
+      item.querySelector('.modal-buy')?.addEventListener('click', () => {
+        $('#favsModal')?.classList.remove('open');
+        showPurchaseConfirmation({
+          ...fav,
+          reason: fav.reason || 'Saved from your favorite gifts.',
+          link: fav.link || '#',
+        });
+      });
+      body.appendChild(item);
+    });
+  }
+  $('#favsModal')?.classList.add('open');
+}
+
+async function handlePaymentSubmit(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  if (!requireLoginForAction('buy')) return;
+  if (state.isProcessingPayment) return;
+
+  const gift = state.pendingPurchaseGift;
+  if (!gift) {
+    showToast('Choose a gift before payment.');
+    window.location.hash = '#home';
+    return;
+  }
+
+  const method = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card';
+  const addressEl = $('#deliveryAddress');
+  const address = addressEl?.value.trim();
+  const voucherCode = $('#voucherCode')?.value.trim();
+  ['#cardName', '#cardNumber', '#cardExpiry', '#cardCvc', '#deliveryAddress'].forEach(selector => clearInputError($(selector)));
+
+  if (voucherCode) applyVoucher(voucherCode);
+
+  if (method === 'card') {
+    const cardName = $('#cardName')?.value.trim();
+    const cardNumber = $('#cardNumber')?.value.replace(/\s+/g, '');
+    const cardExpiry = $('#cardExpiry')?.value.trim();
+    const cardCvc = $('#cardCvc')?.value.trim();
+    const cardType = getCardType(cardNumber);
+
+    if (!cardName) {
+      setInputError($('#cardName'), 'Enter the name shown on the card.');
+      showToast('Please enter the cardholder name.');
+      return;
+    }
+    if (!/^\d{12,19}$/.test(cardNumber) || !isValidLuhn(cardNumber)) {
+      setInputError($('#cardNumber'), 'Enter a valid card number. Digits only; it must pass Luhn validation.');
+      showToast('Please enter a valid credit card number.');
+      return;
+    }
+    const match = cardExpiry.match(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/);
+    if (!match) {
+      setInputError($('#cardExpiry'), 'Use MM/YY format, for example 09/28.');
+      showToast('Please enter card expiry in MM/YY format.');
+      return;
+    }
+    const expMonth = parseInt(match[1], 10);
+    const expYear = parseInt(match[2], 10) + 2000;
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+      setInputError($('#cardExpiry'), 'Expiry date cannot be in the past.');
+      showToast('Credit card expiry cannot be in the past.');
+      return;
+    }
+    if (!isValidCvc(cardCvc, cardType)) {
+      const message = cardType === 'amex' ? 'American Express CVC must be 4 digits.' : 'CVC must be exactly 3 digits for this card type.';
+      setInputError($('#cardCvc'), message);
+      showToast(message);
+      return;
+    }
+  }
+
+  if (!address || address.length < 8) {
+    setInputError(addressEl, 'Enter a complete delivery address or use current location.');
+    showToast('Please enter a complete delivery address.');
+    return;
+  }
+
+  setPaymentProcessing(true, 'Verifying details...');
+  try {
+    showToast('Processing your purchase for this account...');
+    await wait(450);
+    setPaymentProcessing(true, 'Saving order...');
+    addToRecentlyViewed(gift, { sync: false });
+    const savedOrder = await saveOrder(gift);
+    await wait(350);
+    const purchasedCount = state.pendingCheckoutItems.length || 1;
+    setPaymentProcessing(false);
+    showPaymentSuccessPage(savedOrder, purchasedCount);
+    state.pendingPurchaseGift = null;
+    state.pendingCheckoutItems = [];
+    state.currentOrderRequestId = null;
+    clearPendingCheckout();
+    $('#paymentForm')?.reset();
+    setPaymentMethod('card');
+  } catch (error) {
+    showToast('Payment could not be completed. Please try again.');
+    setPaymentProcessing(false);
+  }
+}
+
+function recommendFromOrder(order) {
+  const items = Array.isArray(order?.items) ? order.items : [];
+  if (!items.length) {
+    showToast('No purchased items found for recommendations.');
+    return;
+  }
+  const categories = items.map(item => item.category).filter(Boolean);
+  const names = items.map(item => item.name).filter(Boolean).join(', ');
+  const tags = items.flatMap(item => normalizeGiftList([item.category, item.name, item.description])).filter(Boolean);
+  const queryTags = [...new Set(tags)].slice(0, 5);
+  state.inputs.interests = queryTags.length ? queryTags : categories;
+  state.inputs.minBudget = 0;
+  state.inputs.budget = Math.max(2500, ...items.map(item => Number(item.price) || 0));
+  state.inputs.occasion = state.inputs.occasion || 'justbecause';
+  window.location.href = IS_PAYMENT_PAGE ? 'index.html#finder' : '#finder';
+  handleRouting();
+  showToast(`Finding ideas inspired by ${names || 'your purchase history'}.`);
+  window.setTimeout(() => generateResults(), 250);
+}
+
+function renderOrdersPage() {
+  const list = $('#ordersList');
+  if (!list) return;
+
+  if (state.orders.length === 0) {
+    list.innerHTML = '<div class="shop-empty">No purchases yet. Completed checkouts will appear here.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  state.orders.forEach(order => {
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    const date = new Date(order.placedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    const items = order.items || [];
+    card.innerHTML = `
+      <div class="order-head">
+        <div>
+          <span>${escapeHtml(order.id)}</span>
+          <h3>${items.length} item${items.length === 1 ? '' : 's'} bought</h3>
+        </div>
+        <strong>${escapeHtml(order.status || 'Confirmed')}</strong>
+      </div>
+      <div class="order-meta">${escapeHtml(date)} - ${escapeHtml(order.paymentMethod || 'payment')}</div>
+      <div class="order-items">
+        ${items.map(item => `
+          <div class="order-item">
+            <span>${escapeHtml(item.emoji || 'Gift')}</span>
+            <div><strong>${escapeHtml(item.name || 'Gift item')}</strong><small>${escapeHtml(item.priceLabel || 'Price unavailable')} - Qty ${item.quantity || 1}</small></div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="shop-total">${order.total ? `Rs. ${Number(order.total).toLocaleString('en-IN')}` : 'Total unavailable'}</div>
+      ${order.shippingAddress ? `<div class="order-address"><span>Location</span> ${escapeHtml(order.shippingAddress)}</div>` : ''}
+      <button class="btn-secondary order-recommend-btn" type="button">Recommend similar gifts</button>
+    `;
+    card.querySelector('.order-recommend-btn')?.addEventListener('click', () => recommendFromOrder(order));
+    list.appendChild(card);
+  });
+}
+
 function showAuthModal(mode = 'login', message = '') {
   setAuthMode(mode);
   const messageEl = $('#authModalMessage');
@@ -2422,10 +2872,11 @@ function updateAuthUI() {
   state.user = window.IncantoAuth?.getUser() || null;
 
   if (state.isAuthenticated) {
-    state.favorites = readScopedArray('favorites');
+    state.favorites = Array.isArray(state.user?.favorites) ? state.user.favorites : readScopedArray('favorites');
     state.cart = Array.isArray(state.user?.cart) ? state.user.cart : [];
     state.recentlyViewed = Array.isArray(state.user?.recentlyViewed) ? state.user.recentlyViewed : [];
     state.orders = Array.isArray(state.user?.orders) ? state.user.orders : [];
+    writeScopedArray('favorites', state.favorites);
     writeScopedArray('cart', state.cart);
     writeScopedArray('recentlyViewed', state.recentlyViewed);
     writeScopedArray('orders', state.orders);
@@ -2445,8 +2896,14 @@ function updateAuthUI() {
 
   if ($('#loginBtn')) $('#loginBtn').style.display = state.isAuthenticated ? 'none' : 'inline-flex';
   if ($('#mobileLoginBtn')) $('#mobileLoginBtn').style.display = state.isAuthenticated ? 'none' : 'block';
-  if ($('#profileBtn')) $('#profileBtn').style.display = state.isAuthenticated ? 'inline-flex' : 'none';
-  if ($('#mobileProfileBtn')) $('#mobileProfileBtn').style.display = state.isAuthenticated ? 'block' : 'none';
+  if ($('#profileBtn')) {
+    $('#profileBtn').style.display = state.isAuthenticated ? 'inline-flex' : 'none';
+    $('#profileBtn').textContent = state.user?.username ? `Hi, ${state.user.username}` : 'Profile';
+  }
+  if ($('#mobileProfileBtn')) {
+    $('#mobileProfileBtn').style.display = state.isAuthenticated ? 'block' : 'none';
+    $('#mobileProfileBtn').textContent = state.user?.username ? `Hi, ${state.user.username}` : 'Profile';
+  }
   if ($('#logoutBtn')) $('#logoutBtn').style.display = state.isAuthenticated ? 'inline-flex' : 'none';
   updateProfileUI();
   updateFavoritesUI();
@@ -2479,6 +2936,7 @@ async function handleAuthSubmit(formType, event) {
     }
     hideAuthModal();
     updateAuthUI();
+    await mergeGuestSessionAfterAuth();
 
     // Trigger greeting popup immediately after successful login
     if (state.user?.username) {
@@ -2518,32 +2976,25 @@ async function savePersonalInfo(event) {
 
   const phone = $('#personalPhone')?.value.trim();
   const birthday = $('#personalBirthday')?.value.trim();
+  clearInputError($('#personalPhone'));
+  clearInputError($('#personalBirthday'));
 
-  // Strict Phone Validation
   if (phone) {
-    if (!/^\d+$/.test(phone)) {
-      showToast('Phone number must contain only digits.');
-      return;
-    }
-    if (phone.length < 9 || phone.length > 10) {
-      showToast('Phone number must be 9 or 10 digits.');
+    if (!isValidPhone(phone)) {
+      const message = /^\d+$/.test(phone)
+        ? 'Phone number must be between 10 and 12 digits.'
+        : 'Phone number must contain only digits, with no spaces or symbols.';
+      setInputError($('#personalPhone'), message);
+      showToast(message);
       return;
     }
   }
 
-  // Strict Birthday Validation - cannot be in future
   if (birthday) {
-    const birthdayDate = new Date(birthday);
-    const today = new Date();
-    if (isNaN(birthdayDate.getTime())) {
-      showToast('Please enter a valid birthday.');
-      return;
-    }
-    // Set hours to 0 to compare dates accurately
-    birthdayDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-    if (birthdayDate > today) {
-      showToast('Birthday date cannot be in the future.');
+    if (!isValidBirthdate(birthday)) {
+      const message = 'Birthday must be a real past date in DD/MM/YYYY format.';
+      setInputError($('#personalBirthday'), message);
+      showToast(message);
       return;
     }
   }
@@ -2587,6 +3038,11 @@ function initGoogleSignIn() {
         await window.IncantoAuth.loginWithGoogle(response.credential);
         hideAuthModal();
         updateAuthUI();
+        await mergeGuestSessionAfterAuth();
+        if (state.user?.username) {
+          showGreetingPopup(state.user.username);
+          sessionStorage.setItem('incanto_greeted', 'true');
+        }
         showToast('Signed in with Google.');
       } catch (err) {
         showToast(err.message || 'Google sign-in failed.');
@@ -2730,10 +3186,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Strict constraints formatting & filtering event listeners
   $('#personalPhone')?.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 12);
+    if (e.target.value && !isValidPhone(e.target.value)) {
+      setInputError(e.target, 'Use 10 to 12 digits only.');
+    } else {
+      clearInputError(e.target);
+    }
   });
   $('#personalBirthday')?.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/[^0-9\-\/]/g, '');
+    let value = e.target.value.replace(/\D/g, '').substring(0, 8);
+    if (value.length > 4) value = `${value.substring(0, 2)}/${value.substring(2, 4)}/${value.substring(4)}`;
+    else if (value.length > 2) value = `${value.substring(0, 2)}/${value.substring(2)}`;
+    e.target.value = value;
+    if (value.length === 10 && !isValidBirthdate(value)) {
+      setInputError(e.target, 'Use a real past date in DD/MM/YYYY format.');
+    } else {
+      clearInputError(e.target);
+    }
   });
   const todayStr = new Date().toISOString().split('T')[0];
   $('#personalBirthday')?.setAttribute('max', todayStr);
@@ -2771,5 +3240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   hydrateCheckoutPage();
   initGooglePlacesAutocomplete();
+  initCurrentLocationButton();
+  initFormValidationGuidance();
   handleRouting();
 });

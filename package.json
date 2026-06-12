@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm --prefix backend start",
     "dev": "npm --prefix backend run dev",
+    "test": "npm --prefix backend test",
     "build": "npm --prefix backend run build",
     "validate:gifts": "npm --prefix backend run validate:gifts"
   },

@@ -29,6 +29,37 @@ const saveUsers = () => {
 
 const users = readUsers();
 
+const sanitizeString = (value, maxLength = 500) =>
+  String(value || "").replace(/[<>]/g, "").trim().slice(0, maxLength);
+
+const normalizeGiftItem = (item = {}) => ({
+  id: sanitizeString(item.id, 80) || crypto.randomUUID(),
+  name: sanitizeString(item.name || "Gift item", 180),
+  description: sanitizeString(item.description, 500),
+  category: sanitizeString(item.category || "Gift", 80),
+  emoji: sanitizeString(item.emoji || "Gift", 30),
+  price: Number(item.price) || null,
+  priceLabel: sanitizeString(item.priceLabel || "Price unavailable", 80),
+  reason: sanitizeString(item.reason, 500),
+  link: sanitizeString(item.link || "#", 500),
+  quantity: Math.max(1, Math.min(99, Number(item.quantity) || 1)),
+});
+
+const mergeUniqueItems = (current = [], incoming = [], { sumQuantity = false, limit = 100 } = {}) => {
+  const merged = Array.isArray(current) ? [...current] : [];
+  (Array.isArray(incoming) ? incoming : []).forEach((rawItem) => {
+    if (!rawItem?.id && !rawItem?.name) return;
+    const item = normalizeGiftItem(rawItem);
+    const existing = merged.find((gift) => String(gift.id) === String(item.id));
+    if (existing) {
+      if (sumQuantity) existing.quantity = Math.min(99, (Number(existing.quantity) || 1) + item.quantity);
+    } else {
+      merged.unshift(item);
+    }
+  });
+  return merged.slice(0, limit);
+};
+
 const ensureUserProfileFields = (user) => {
   let changed = false;
   if (!user.preferences) {
@@ -53,6 +84,10 @@ const ensureUserProfileFields = (user) => {
   }
   if (!Array.isArray(user.favorites)) {
     user.favorites = [];
+    changed = true;
+  }
+  if (!Array.isArray(user.processedOrderKeys)) {
+    user.processedOrderKeys = [];
     changed = true;
   }
   return changed;
@@ -198,6 +233,8 @@ router.post("/register", (req, res, next) => {
       recentlyViewed: [],
       cart: [],
       orders: [],
+      favorites: [],
+      processedOrderKeys: [],
       createdAt: new Date().toISOString(),
     };
 
@@ -253,6 +290,8 @@ router.post("/google", (req, res, next) => {
         recentlyViewed: [],
         cart: [],
         orders: [],
+        favorites: [],
+        processedOrderKeys: [],
         createdAt: new Date().toISOString(),
       };
       users.push(user);
@@ -262,6 +301,8 @@ router.post("/google", (req, res, next) => {
       user.provider = user.provider === "password" ? "password+google" : user.provider;
       user.cart = user.cart || [];
       user.orders = user.orders || [];
+      user.favorites = user.favorites || [];
+      user.processedOrderKeys = user.processedOrderKeys || [];
       saveUsers();
     }
 
@@ -454,6 +495,27 @@ router.post("/favorites/sync", requireAuth, (req, res, next) => {
   res.json({ success: true, message: "Favorites synced successfully.", data: { user: toPublicUser(req.user) } });
 });
 
+router.post("/session/merge", requireAuth, (req, res, next) => {
+  try {
+    const cart = Array.isArray(req.body.cart) ? req.body.cart : [];
+    const favorites = Array.isArray(req.body.favorites) ? req.body.favorites : [];
+    const recentlyViewed = Array.isArray(req.body.recentlyViewed) ? req.body.recentlyViewed : [];
+
+    req.user.cart = mergeUniqueItems(req.user.cart || [], cart, { sumQuantity: true, limit: 100 });
+    req.user.favorites = mergeUniqueItems(req.user.favorites || [], favorites, { limit: 100 });
+    req.user.recentlyViewed = mergeUniqueItems(req.user.recentlyViewed || [], recentlyViewed, { limit: 6 });
+    saveUsers();
+
+    res.json({
+      success: true,
+      message: "Guest session merged into your account.",
+      data: { user: toPublicUser(req.user) },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post("/recently-viewed", requireAuth, (req, res) => {
   const item = req.body.gift || req.body;
   if (!item?.id || !item?.name) {
@@ -544,6 +606,47 @@ router.get("/orders", requireAuth, (req, res) => {
       user: toPublicUser(req.user),
     },
   });
+});
+
+router.post("/orders", requireAuth, (req, res) => {
+  const order = req.body.order || req.body;
+  if (!order || !Array.isArray(order.items) || order.items.length === 0) {
+    return res.status(400).json({ success: false, message: "Order data is required." });
+  }
+
+  req.user.orders = req.user.orders || [];
+  req.user.processedOrderKeys = req.user.processedOrderKeys || [];
+  const clientRequestId = sanitizeString(order.clientRequestId || order.id, 120);
+  const existingOrder = clientRequestId
+    ? req.user.orders.find((savedOrder) => savedOrder.clientRequestId === clientRequestId || savedOrder.id === clientRequestId)
+    : null;
+  if (existingOrder) {
+    return res.json({ success: true, data: { order: existingOrder, user: toPublicUser(req.user) } });
+  }
+
+  const normalizedOrder = {
+    id: sanitizeString(order.id || `INC-${Date.now()}`, 120),
+    clientRequestId,
+    placedAt: order.placedAt || new Date().toISOString(),
+    status: sanitizeString(order.status || "Confirmed", 40),
+    paymentMethod: sanitizeString(order.paymentMethod || "card", 40),
+    voucher: order.voucher ? sanitizeString(order.voucher, 80) : null,
+    discount: Number(order.discount) || 0,
+    items: order.items.map(normalizeGiftItem),
+    total: Number(order.total) || 0,
+    shippingAddress: sanitizeString(order.shippingAddress || "", 500),
+  };
+
+  req.user.orders.unshift(normalizedOrder);
+  if (clientRequestId) req.user.processedOrderKeys.unshift(clientRequestId);
+  req.user.processedOrderKeys = req.user.processedOrderKeys.slice(0, 100);
+  const orderedIds = new Set(normalizedOrder.items.map((item) => String(item.id)));
+  req.user.cart = (req.user.cart || []).filter(
+    (item) => !orderedIds.has(String(item.id))
+  );
+  saveUsers();
+
+  res.json({ success: true, data: { order: normalizedOrder, user: toPublicUser(req.user) } });
 });
 
 router.post("/orders", requireAuth, (req, res) => {

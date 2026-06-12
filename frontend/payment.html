@@ -237,6 +237,20 @@
         </div>
         <h1>Payment Successful</h1>
         <p>Your order has been confirmed</p>
+        <div class="transaction-summary transaction-summary--overlay" aria-live="polite">
+          <div>
+            <span>Transaction ID</span>
+            <strong id="overlayTransactionId">TXN-</strong>
+          </div>
+          <div>
+            <span>Payment Method</span>
+            <strong id="overlayTransactionMethod">Card</strong>
+          </div>
+          <div>
+            <span>Status</span>
+            <strong id="overlayTransactionStatus">Paid</strong>
+          </div>
+        </div>
         <button class="btn-primary" id="paymentSuccessContinueBtn" type="button" style="margin-top: 28px;">
           Continue
         </button>
@@ -254,6 +268,20 @@
         <div class="purchase-success-meta">
           <span id="purchaseSuccessOrderId">Order INC-</span>
           <strong id="purchaseSuccessTotal">Rs. 0</strong>
+        </div>
+        <div class="transaction-summary" id="transactionSummary" aria-live="polite">
+          <div>
+            <span>Transaction ID</span>
+            <strong id="transactionId">TXN-</strong>
+          </div>
+          <div>
+            <span>Payment Method</span>
+            <strong id="transactionMethod">Card</strong>
+          </div>
+          <div>
+            <span>Status</span>
+            <strong id="transactionStatus">Paid</strong>
+          </div>
         </div>
         <button class="btn-primary" id="purchaseSuccessClose" type="button">
           View My Purchases
