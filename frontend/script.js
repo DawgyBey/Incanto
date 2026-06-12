@@ -8,6 +8,7 @@ const API_BASE = window.INCANTO_API_BASE
     : `${window.location.origin}/api/v1`);
 const IS_PAYMENT_PAGE = window.location.pathname.endsWith('/payment.html');
 const PENDING_CHECKOUT_KEY_PREFIX = 'incanto_pending_checkout';
+const PAYMENT_DRAFT_KEY_PREFIX = 'incanto_payment_draft';
 
 /* ─── MOCK FALLBACK DATA ─────────────────── */
 const GIFT_DATABASE = [
@@ -119,6 +120,11 @@ function getScopedPendingCheckoutKey() {
   return ownerId ? `${PENDING_CHECKOUT_KEY_PREFIX}_${ownerId}` : null;
 }
 
+function getScopedPaymentDraftKey() {
+  const ownerId = getSessionOwnerId();
+  return ownerId ? `${PAYMENT_DRAFT_KEY_PREFIX}_${ownerId}` : null;
+}
+
 function getGuestPendingCheckoutKey() {
   const guestId = localStorage.getItem(GUEST_SESSION_KEY);
   return guestId ? `${PENDING_CHECKOUT_KEY_PREFIX}_${guestId}` : null;
@@ -143,6 +149,7 @@ function writeScopedArray(key, value) {
 function clearLegacySharedStorage() {
   legacyStorageKeys.forEach((key) => localStorage.removeItem(key));
   sessionStorage.removeItem(PENDING_CHECKOUT_KEY_PREFIX);
+  localStorage.removeItem(PENDING_CHECKOUT_KEY_PREFIX);
 }
 
 function updateStoredUser(user) {
@@ -237,6 +244,7 @@ function isValidBirthdate(dateStr) {
   const month = parseInt(match[2], 10);
   const year = parseInt(match[3], 10);
   
+  if (year < 1900) return false;
   if (month < 1 || month > 12) return false;
   if (day < 1 || day > 31) return false;
   
@@ -287,6 +295,35 @@ function isValidCvc(cvc, cardType) {
   if (!/^\d+$/.test(clean)) return false;
   if (cardType === 'amex') return clean.length === 4;
   return clean.length === 3;
+}
+
+function formatCardNumber(value) {
+  return String(value || '').replace(/\D/g, '').slice(0, 19).replace(/(.{4})/g, '$1 ').trim();
+}
+
+function getCardTypeLabel(cardType) {
+  return ({
+    amex: 'American Express',
+    visa: 'Visa',
+    mastercard: 'Mastercard',
+    discover: 'Discover',
+    unknown: 'Unknown card type',
+  })[cardType] || 'Unknown card type';
+}
+
+function updateCardTypeLabel() {
+  const cardNumber = $('#cardNumber')?.value || '';
+  const digits = cardNumber.replace(/\D/g, '');
+  const label = $('#cardTypeLabel');
+  if (!label) return;
+  if (!digits) {
+    label.textContent = 'Card type will appear here.';
+    label.classList.remove('is-known');
+    return;
+  }
+  const cardType = getCardType(digits);
+  label.textContent = getCardTypeLabel(cardType);
+  label.classList.toggle('is-known', cardType !== 'unknown');
 }
 
 function setInputError(el, message) {
@@ -435,10 +472,12 @@ function rememberPendingCheckout() {
   if (!state.pendingPurchaseGift) return;
   const storageKey = getScopedPendingCheckoutKey();
   if (!storageKey) return;
-  sessionStorage.setItem(storageKey, JSON.stringify({
+  localStorage.setItem(storageKey, JSON.stringify({
     gift: state.pendingPurchaseGift,
     items: state.pendingCheckoutItems,
     voucher: state.voucher,
+    orderRequestId: state.currentOrderRequestId || null,
+    savedAt: new Date().toISOString(),
   }));
 }
 
@@ -446,11 +485,12 @@ function restorePendingCheckout() {
   const storageKey = getScopedPendingCheckoutKey();
   if (!storageKey) return false;
   try {
-    const saved = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
+    const saved = JSON.parse(localStorage.getItem(storageKey) || sessionStorage.getItem(storageKey) || 'null');
     if (!saved?.gift) return false;
     state.pendingPurchaseGift = saved.gift;
     state.pendingCheckoutItems = Array.isArray(saved.items) ? saved.items : [normalizeGiftForStorage(saved.gift)];
     state.voucher = saved.voucher || { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' };
+    state.currentOrderRequestId = saved.orderRequestId || state.currentOrderRequestId || null;
     return true;
   } catch (_err) {
     return false;
@@ -460,6 +500,44 @@ function restorePendingCheckout() {
 function clearPendingCheckout() {
   const storageKey = getScopedPendingCheckoutKey();
   if (storageKey) sessionStorage.removeItem(storageKey);
+  if (storageKey) localStorage.removeItem(storageKey);
+  const draftKey = getScopedPaymentDraftKey();
+  if (draftKey) localStorage.removeItem(draftKey);
+}
+
+function rememberPaymentDraft() {
+  if (!IS_PAYMENT_PAGE) return;
+  const storageKey = getScopedPaymentDraftKey();
+  if (!storageKey) return;
+  const draft = {
+    deliveryAddress: $('#deliveryAddress')?.value || '',
+    voucherCode: $('#voucherCode')?.value || '',
+    cardName: $('#cardName')?.value || '',
+    cardNumber: $('#cardNumber')?.value || '',
+    cardExpiry: $('#cardExpiry')?.value || '',
+    paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card',
+    savedAt: new Date().toISOString(),
+  };
+  localStorage.setItem(storageKey, JSON.stringify(draft));
+}
+
+function restorePaymentDraft() {
+  if (!IS_PAYMENT_PAGE) return;
+  const storageKey = getScopedPaymentDraftKey();
+  if (!storageKey) return;
+  try {
+    const draft = JSON.parse(localStorage.getItem(storageKey) || 'null');
+    if (!draft) return;
+    if ($('#deliveryAddress')) $('#deliveryAddress').value = draft.deliveryAddress || '';
+    if ($('#voucherCode')) $('#voucherCode').value = draft.voucherCode || '';
+    if ($('#cardName')) $('#cardName').value = draft.cardName || '';
+    if ($('#cardNumber')) $('#cardNumber').value = formatCardNumber(draft.cardNumber || '');
+    if ($('#cardExpiry')) $('#cardExpiry').value = draft.cardExpiry || '';
+    if (draft.paymentMethod) setPaymentMethod(draft.paymentMethod);
+    updateCardTypeLabel();
+  } catch (_err) {
+    localStorage.removeItem(storageKey);
+  }
 }
 
 function readGuestArray(key) {
@@ -479,6 +557,7 @@ function clearGuestSessionState() {
   });
   const pendingKey = getGuestPendingCheckoutKey();
   if (pendingKey) sessionStorage.removeItem(pendingKey);
+  if (pendingKey) localStorage.removeItem(pendingKey);
   localStorage.removeItem(GUEST_SESSION_KEY);
 }
 
@@ -506,7 +585,7 @@ async function mergeGuestSessionAfterAuth() {
   const guestPendingKey = getGuestPendingCheckoutKey();
   let guestPending = null;
   try {
-    guestPending = guestPendingKey ? JSON.parse(sessionStorage.getItem(guestPendingKey) || 'null') : null;
+    guestPending = guestPendingKey ? JSON.parse(localStorage.getItem(guestPendingKey) || sessionStorage.getItem(guestPendingKey) || 'null') : null;
   } catch (_err) {
     guestPending = null;
   }
@@ -1263,7 +1342,9 @@ function showPaymentPage(gift) {
   if (isCartCheckout && state.pendingCheckoutItems.length === 0) {
     state.pendingCheckoutItems = state.cart.map(normalizeGiftForStorage);
   }
-  state.voucher = { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' };
+  if (!state.voucher?.code && !state.voucher?.amount) {
+    state.voucher = { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' };
+  }
   rememberPendingCheckout();
   if (!IS_PAYMENT_PAGE) {
     window.location.href = 'payment.html';
@@ -1271,7 +1352,7 @@ function showPaymentPage(gift) {
   }
   showToast('Payment form ready. Your checkout is private to this account.');
   updatePaymentProcess('Ready for secure demo payment.', false);
-  if ($('#voucherCode')) $('#voucherCode').value = '';
+  if ($('#voucherCode')) $('#voucherCode').value = state.voucher?.code || '';
   $('#paymentGiftEmoji').textContent = gift.emoji || '🎁';
   if ($('#paymentGiftName')) $('#paymentGiftName').textContent = gift.name || 'Gift item';
   if ($('#paymentGiftReason')) $('#paymentGiftReason').textContent = gift.reason || 'Ready for checkout.';
@@ -1480,7 +1561,7 @@ async function handlePaymentSubmit(event) {
     await wait(350);
     const purchasedCount = state.pendingCheckoutItems.length || 1;
     setPaymentProcessing(false);
-    showPaymentSuccessPage(savedOrder, purchasedCount);
+    showPurchaseSuccessModal(savedOrder, purchasedCount);
     state.pendingPurchaseGift = null;
     state.pendingCheckoutItems = [];
     state.currentOrderRequestId = null;
@@ -1488,6 +1569,7 @@ async function handlePaymentSubmit(event) {
     $('#paymentForm')?.reset();
     setPaymentMethod('card');
   } catch (error) {
+    showToast(error.message || 'Payment could not be confirmed. Please check the backend and try again.');
     setPaymentProcessing(false);
   }
 }
@@ -1515,31 +1597,22 @@ async function saveOrder(gift) {
     shippingAddress: $('#deliveryAddress')?.value.trim() || '',
   };
 
-  const existingLocalOrderIndex = state.orders.findIndex(saved => saved.clientRequestId === order.clientRequestId || saved.id === order.id);
-  if (existingLocalOrderIndex > -1) {
-    state.orders[existingLocalOrderIndex] = order;
-  } else {
-    state.orders.unshift(order);
-  }
-  writeScopedArray('orders', state.orders);
-
   if (state.isAuthenticated) {
-    try {
-      const { ok, data } = await apiFetch('/users/orders', {
-        method: 'POST',
-        body: JSON.stringify({ order }),
-      });
-      if (ok && data?.data?.order) {
-        const savedIndex = state.orders.findIndex(saved => saved.clientRequestId === data.data.order.clientRequestId || saved.id === data.data.order.id);
-        if (savedIndex > -1) state.orders[savedIndex] = data.data.order;
-        else state.orders.unshift(data.data.order);
-        writeScopedArray('orders', state.orders);
-        updateStoredUser(data.data.user);
-        state.cart = Array.isArray(state.user?.cart) ? state.user.cart : state.cart;
-      }
-    } catch (_err) {
-      showToast('Order saved locally for this account. API sync will need the backend online.');
+    const { ok, data } = await apiFetch('/users/orders', {
+      method: 'POST',
+      body: JSON.stringify({ order }),
+    });
+    if (!ok || !data?.data?.order) {
+      throw new Error(data?.message || 'Could not confirm payment. Please try again.');
     }
+    const savedIndex = state.orders.findIndex(saved => saved.clientRequestId === data.data.order.clientRequestId || saved.id === data.data.order.id);
+    if (savedIndex > -1) state.orders[savedIndex] = data.data.order;
+    else state.orders.unshift(data.data.order);
+    writeScopedArray('orders', state.orders);
+    updateStoredUser(data.data.user);
+    state.cart = Array.isArray(state.user?.cart) ? state.user.cart : state.cart;
+  } else {
+    throw new Error('Please log in before confirming payment.');
   }
 
   const orderedIds = new Set(items.map(item => String(item.id)));
@@ -1572,8 +1645,15 @@ function setPaymentMethod(method) {
   const cardFields = ['#cardName', '#cardNumber', '#cardExpiry', '#cardCvc'];
   cardFields.forEach(selector => {
     const field = $(selector);
-    if (field) field.disabled = method !== 'card';
+    if (!field) return;
+    const disabled = method !== 'card';
+    field.disabled = disabled;
+    field.required = !disabled;
+    field.dataset.paymentDisabled = disabled ? 'true' : 'false';
+    field.closest('.payment-group')?.classList.toggle('payment-card-disabled', disabled);
+    if (disabled) clearInputError(field);
   });
+  rememberPaymentDraft();
 }
 
 function setPaymentProcessing(isProcessing, label = 'Processing...') {
@@ -1617,10 +1697,72 @@ function updateTransactionSummary(order) {
   if ($('#overlayTransactionStatus')) $('#overlayTransactionStatus').textContent = status;
 }
 
+function ensurePaymentSuccessContinueButton() {
+  const content = $('#paymentSuccessOverlay .payment-success-content');
+  if (!content) return null;
+  let button = $('#paymentSuccessContinueBtn');
+  if (!button) {
+    button = document.createElement('button');
+    button.className = 'btn-primary';
+    button.id = 'paymentSuccessContinueBtn';
+    button.type = 'button';
+    button.textContent = 'Continue';
+    content.appendChild(button);
+  }
+  button.removeEventListener('click', handlePaymentSuccessContinue);
+  button.addEventListener('click', handlePaymentSuccessContinue);
+  return button;
+}
+
 function closePurchaseSuccessPopup() {
   $('#purchaseSuccessModal')?.classList.remove('open');
   $('#purchaseSuccessModal')?.setAttribute('aria-hidden', 'true');
   window.location.href = IS_PAYMENT_PAGE ? 'index.html#orders' : '#orders';
+}
+
+function ensurePurchaseSuccessModal() {
+  let modal = $('#purchaseSuccessModal');
+  if (modal) return modal;
+
+  modal = document.createElement('div');
+  modal.className = 'purchase-success-modal';
+  modal.id = 'purchaseSuccessModal';
+  modal.setAttribute('aria-hidden', 'true');
+  modal.innerHTML = `
+    <div class="purchase-success-card" role="dialog" aria-modal="true" aria-labelledby="purchaseSuccessTitle">
+      <div class="purchase-success-icon">✓</div>
+      <p class="purchase-success-kicker">Payment Confirmed</p>
+      <h2 id="purchaseSuccessTitle">Your order is confirmed</h2>
+      <p id="purchaseSuccessMessage">We saved this purchase to your account.</p>
+      <div class="purchase-success-meta">
+        <span id="purchaseSuccessOrderId">Order INC-</span>
+        <strong id="purchaseSuccessTotal">Rs. 0</strong>
+      </div>
+      <div class="transaction-summary" id="transactionSummary" aria-live="polite">
+        <div>
+          <span>Transaction ID</span>
+          <strong id="transactionId">TXN-</strong>
+        </div>
+        <div>
+          <span>Payment Method</span>
+          <strong id="transactionMethod">Card</strong>
+        </div>
+        <div>
+          <span>Status</span>
+          <strong id="transactionStatus">Paid</strong>
+        </div>
+      </div>
+      <button class="btn-primary" id="purchaseSuccessClose" type="button">
+        View My Purchases
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) closePurchaseSuccessPopup();
+  });
+  $('#purchaseSuccessClose')?.addEventListener('click', closePurchaseSuccessPopup);
+  return modal;
 }
 
 function handlePaymentSuccessContinue() {
@@ -1633,6 +1775,7 @@ function handlePaymentSuccessContinue() {
     
     // Close overlay
     overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
     
     // If on payment page, show success page. Otherwise show modal on main page
     if (IS_PAYMENT_PAGE) {
@@ -1673,7 +1816,8 @@ function showPaymentSuccessPage(order, itemCount) {
     return;
   }
 
-  
+  const continueButton = ensurePaymentSuccessContinueButton();
+
   // Remove and re-add class
   overlay.classList.remove('active');
   
@@ -1681,10 +1825,12 @@ function showPaymentSuccessPage(order, itemCount) {
   const reflow = overlay.offsetHeight;
   
   overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
 
   // Store order data
   overlay.dataset.order = JSON.stringify(order);
   overlay.dataset.itemCount = itemCount;
+  continueButton?.focus();
 
   showToast(`Purchase complete. ${itemCount} item${itemCount === 1 ? '' : 's'} saved to My Purchases.`);
 }
@@ -1693,7 +1839,9 @@ function showPurchaseSuccessPopup(order, itemCount) {
   // Show payment success overlay with Continue button
   const overlay = $('#paymentSuccessOverlay');
   if (overlay) {
+    ensurePaymentSuccessContinueButton();
     overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
     // Store order data for when Continue is clicked
     overlay.dataset.order = JSON.stringify(order);
     overlay.dataset.itemCount = itemCount;
@@ -1705,11 +1853,7 @@ function showPurchaseSuccessPopup(order, itemCount) {
 
 function showPurchaseSuccessModal(order, itemCount) {
   updatePaymentProcess('Order confirmed and saved to your account.', false);
-  const modal = $('#purchaseSuccessModal');
-  if (!modal) {
-    window.location.href = IS_PAYMENT_PAGE ? 'index.html#orders' : '#orders';
-    return;
-  }
+  const modal = ensurePurchaseSuccessModal();
 
   const orderTotal = Number(order?.total);
   const total = Number.isFinite(orderTotal) ? orderTotal : getPendingTotal();
@@ -1727,6 +1871,7 @@ function showPurchaseSuccessModal(order, itemCount) {
 
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
+  $('#purchaseSuccessClose')?.focus();
 }
 
 /* ─── FAVORITES ──────────────────────────── */
@@ -2141,7 +2286,7 @@ function initFinder() {
 
   $('#restartBtn').addEventListener('click', restartFinder);
   $('#loadMoreBtn').addEventListener('click', loadMoreGifts);
-  $('#viewFavsBtn').addEventListener('click', openFavoritesModal);
+  $('#viewFavsBtn').addEventListener('click', showSavedItemsPage);
   $('#modalClose').addEventListener('click', () => $('#favsModal').classList.remove('open'));
   $('#favsModal').addEventListener('click', (e) => { if (e.target === $('#favsModal')) $('#favsModal').classList.remove('open'); });
 }
@@ -2552,6 +2697,7 @@ function updateFavoritesUI() {
   const mobileCount = $('#mobileFavCount');
   if (navCount) navCount.textContent = state.favorites.length;
   if (mobileCount) mobileCount.textContent = state.favorites.length;
+  renderSavedItemsPage();
   if (!bar || !count) return;
   if (state.favorites.length > 0) {
     bar.style.display = 'flex';
@@ -2559,6 +2705,67 @@ function updateFavoritesUI() {
   } else {
     bar.style.display = 'none';
   }
+}
+
+function showSavedItemsPage() {
+  renderSavedItemsPage();
+  window.location.hash = '#saved';
+  handleRouting();
+}
+
+function renderSavedItemsPage() {
+  const list = $('#savedPageList');
+  const count = $('#savedPageCount');
+  if (!list || !count) return;
+
+  count.textContent = state.favorites.length;
+
+  if (state.favorites.length === 0) {
+    list.innerHTML = `
+      <div class="shop-empty saved-empty">
+        <h3>No saved items yet.</h3>
+        <p>Save gifts from recommendations or trending items and they will appear here.</p>
+        <a class="btn-primary" href="#finder">Find Gifts</a>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = '';
+  state.favorites.forEach(fav => {
+    const row = document.createElement('div');
+    row.className = 'shop-row saved-row';
+    row.innerHTML = `
+      <div class="shop-emoji">${escapeHtml(fav.emoji || 'Gift')}</div>
+      <div class="shop-info">
+        <h3>${escapeHtml(fav.name || 'Saved gift')}</h3>
+        <p>${escapeHtml(fav.description || fav.reason || 'Saved to your wishlist.')}</p>
+        <strong>${escapeHtml(fav.priceLabel || 'Price unavailable')}</strong>
+      </div>
+      <div class="shop-controls">
+        <button class="btn-secondary" type="button" data-action="cart">Move to Cart</button>
+        <button class="btn-buy" type="button" data-action="buy">Buy</button>
+        <button class="cart-remove" type="button" data-action="remove">Remove</button>
+      </div>
+    `;
+    row.querySelector('[data-action="cart"]')?.addEventListener('click', async () => {
+      await addToCart(fav);
+      toggleFavorite(fav, null);
+      renderSavedItemsPage();
+    });
+    row.querySelector('[data-action="buy"]')?.addEventListener('click', () => {
+      showPurchaseConfirmation({
+        ...fav,
+        reason: fav.reason || 'Saved from your wishlist.',
+        link: fav.link || '#',
+      });
+    });
+    row.querySelector('[data-action="remove"]')?.addEventListener('click', () => {
+      toggleFavorite(fav, null);
+      renderSavedItemsPage();
+    });
+    list.appendChild(row);
+  });
 }
 
 function toggleFavorite(gift, btn) {
@@ -2687,6 +2894,7 @@ async function handlePaymentSubmit(event) {
   ['#cardName', '#cardNumber', '#cardExpiry', '#cardCvc', '#deliveryAddress'].forEach(selector => clearInputError($(selector)));
 
   if (voucherCode) applyVoucher(voucherCode);
+  rememberPaymentDraft();
 
   if (method === 'card') {
     const cardName = $('#cardName')?.value.trim();
@@ -2737,6 +2945,8 @@ async function handlePaymentSubmit(event) {
 
   setPaymentProcessing(true, 'Verifying details...');
   try {
+    rememberPendingCheckout();
+    rememberPaymentDraft();
     showToast('Processing your purchase for this account...');
     await wait(450);
     setPaymentProcessing(true, 'Saving order...');
@@ -2745,7 +2955,7 @@ async function handlePaymentSubmit(event) {
     await wait(350);
     const purchasedCount = state.pendingCheckoutItems.length || 1;
     setPaymentProcessing(false);
-    showPaymentSuccessPage(savedOrder, purchasedCount);
+    showPurchaseSuccessModal(savedOrder, purchasedCount);
     state.pendingPurchaseGift = null;
     state.pendingCheckoutItems = [];
     state.currentOrderRequestId = null;
@@ -2753,7 +2963,7 @@ async function handlePaymentSubmit(event) {
     $('#paymentForm')?.reset();
     setPaymentMethod('card');
   } catch (error) {
-    showToast('Payment could not be completed. Please try again.');
+    showToast(error.message || 'Payment could not be confirmed. Please check the backend and try again.');
     setPaymentProcessing(false);
   }
 }
@@ -2910,6 +3120,7 @@ function updateAuthUI() {
   updateCartUI();
   renderRecentlyViewed();
   renderOrdersPage();
+  renderSavedItemsPage();
 }
 
 async function handleAuthSubmit(formType, event) {
@@ -3105,7 +3316,7 @@ function handleRouting() {
     window.location.hash = '#home';
     return;
   }
-  const nestedShopViews = ['cart', 'payment', 'orders'];
+  const nestedShopViews = ['saved', 'cart', 'payment', 'orders'];
   const isNestedShopView = nestedShopViews.includes(targetId);
   const isHomeView = ['home','hero','how','finder','results','about'].includes(targetId);
   $('#home')?.classList.toggle('subpage-active', isNestedShopView);
@@ -3115,6 +3326,7 @@ function handleRouting() {
     sec.classList.toggle('active', shouldShowHome || shouldShowTarget);
   });
   if (!document.querySelector('.view-section.active')) $('#home')?.classList.add('active');
+  if (targetId === 'saved') renderSavedItemsPage();
   if (targetId === 'cart') renderCartPage();
   if (targetId === 'orders') renderOrdersPage();
   if (isHomeView && targetId !== 'home') {
@@ -3132,6 +3344,10 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     $('#favsModal').classList.remove('open');
     hideAuthModal();
+    if ($('#paymentSuccessOverlay')?.classList.contains('active')) {
+      handlePaymentSuccessContinue();
+      return;
+    }
     if ($('#purchaseSuccessModal')?.classList.contains('open')) {
       closePurchaseSuccessPopup();
       return;
@@ -3208,7 +3424,15 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#personalBirthday')?.setAttribute('max', todayStr);
 
   $('#cardNumber')?.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 16);
+    e.target.value = formatCardNumber(e.target.value);
+    updateCardTypeLabel();
+    rememberPaymentDraft();
+    const digits = e.target.value.replace(/\D/g, '');
+    if (digits.length >= 12 && !isValidLuhn(digits)) {
+      setInputError(e.target, 'Card number does not pass validation.');
+    } else {
+      clearInputError(e.target);
+    }
   });
   $('#cardExpiry')?.addEventListener('input', (e) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -3216,9 +3440,14 @@ document.addEventListener('DOMContentLoaded', () => {
       value = value.substring(0, 2) + '/' + value.substring(2, 4);
     }
     e.target.value = value.substring(0, 5);
+    rememberPaymentDraft();
   });
   $('#cardCvc')?.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+    rememberPaymentDraft();
+  });
+  ['#deliveryAddress', '#voucherCode', '#cardName'].forEach((selector) => {
+    $(selector)?.addEventListener('input', rememberPaymentDraft);
   });
 
   // Restore session state
@@ -3239,6 +3468,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   hydrateCheckoutPage();
+  restorePaymentDraft();
   initGooglePlacesAutocomplete();
   initCurrentLocationButton();
   initFormValidationGuidance();

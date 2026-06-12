@@ -27,7 +27,7 @@
           <li><a href="index.html#hero">Home</a></li>
           <li><a href="index.html#finder">Finder</a></li>
           <li><a href="index.html#trending">Trending</a></li>
-          <li><a href="#" class="nav-link nav-fav-link" id="navSavedItems">Saved Items <span class="nav-badge" id="navFavCount">0</span></a></li>
+          <li><a href="index.html#saved" class="nav-link nav-fav-link" id="navSavedItems">Saved Items <span class="nav-badge" id="navFavCount">0</span></a></li>
           <li><a href="index.html#cart" class="nav-link nav-cart-link">Cart <span class="nav-badge" id="navCartCount">0</span></a></li>
           <li><a href="index.html#orders">My Purchases</a></li>
           <li><a href="index.html#about">About</a></li>
@@ -63,7 +63,7 @@
       <a href="index.html#hero" class="mobile-link">Home</a>
       <a href="index.html#finder" class="mobile-link">Finder</a>
       <a href="index.html#trending" class="mobile-link">Trending</a>
-      <a href="#" class="mobile-link" id="mobileSavedItems">Saved Items <span class="nav-badge" id="mobileFavCount">0</span></a>
+      <a href="index.html#saved" class="mobile-link" id="mobileSavedItems">Saved Items <span class="nav-badge" id="mobileFavCount">0</span></a>
       <a href="index.html#cart" class="mobile-link">Cart</a>
       <a href="index.html#orders" class="mobile-link">My Purchases</a>
       <a href="index.html#about" class="mobile-link">About</a>
@@ -105,9 +105,9 @@
             <form id="paymentForm" class="payment-form">
               <div class="payment-group">
                 <label for="deliveryAddress">Delivery address</label>
-                <div class="address-input-wrapper" style="display: flex; gap: 8px;">
-                  <input id="deliveryAddress" placeholder="Enter shipping address" required style="flex: 1;" />
-                  <button type="button" class="btn-location" id="useLocationBtn" title="Use current location" style="background: rgba(255, 248, 238, 0.08); border: 1px solid rgba(255, 248, 238, 0.15); border-radius: var(--radius-md, 8px); color: var(--text-primary); font-family: inherit; font-size: 0.85rem; padding: 0 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; white-space: nowrap; transition: background 0.2s, border-color 0.2s;">
+                <div class="address-input-wrapper">
+                  <input id="deliveryAddress" name="deliveryAddress" autocomplete="shipping street-address" placeholder="Enter shipping address" required />
+                  <button type="button" class="btn-location" id="useCurrentLocationBtn" title="Use current location">
                     📍 Current Location
                   </button>
                 </div>
@@ -143,21 +143,22 @@
 
               <div class="payment-group">
                 <label for="cardName">Cardholder name</label>
-                <input id="cardName" autocomplete="cc-name" placeholder="Demo cardholder" required />
+                <input id="cardName" name="cardName" autocomplete="cc-name" placeholder="Demo cardholder" required />
               </div>
 
               <div class="payment-row">
                 <div class="payment-group">
                   <label for="cardNumber">Card number</label>
-                  <input id="cardNumber" autocomplete="cc-number" placeholder="4242 4242 4242 4242" required />
+                  <input id="cardNumber" name="cardNumber" autocomplete="cc-number" inputmode="numeric" maxlength="23" placeholder="4242 4242 4242 4242" required />
+                  <span class="card-type" id="cardTypeLabel" aria-live="polite">Card type will appear here.</span>
                 </div>
                 <div class="payment-group">
                   <label for="cardExpiry">Expiry</label>
-                  <input id="cardExpiry" autocomplete="cc-exp" placeholder="MM/YY" required />
+                  <input id="cardExpiry" name="cardExpiry" autocomplete="cc-exp" inputmode="numeric" maxlength="5" placeholder="MM/YY" required />
                 </div>
                 <div class="payment-group">
                   <label for="cardCvc">CVC</label>
-                  <input id="cardCvc" autocomplete="cc-csc" placeholder="123" required />
+                  <input id="cardCvc" name="cardCvc" autocomplete="cc-csc" inputmode="numeric" maxlength="4" placeholder="123" required />
                 </div>
               </div>
 

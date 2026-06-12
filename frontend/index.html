@@ -28,7 +28,7 @@
           <li><a href="#hero">Home</a></li>
           <li><a href="#finder">Finder</a></li>
           <li><a href="#trending">Trending</a></li>
-          <li><a href="#" class="nav-link nav-fav-link" id="navSavedItems">Saved Items <span class="nav-badge" id="navFavCount">0</span></a></li>
+          <li><a href="#saved" class="nav-link nav-fav-link" id="navSavedItems">Saved Items <span class="nav-badge" id="navFavCount">0</span></a></li>
           <li><a href="#cart" class="nav-link nav-cart-link">Cart <span class="nav-badge" id="navCartCount">0</span></a></li>
           <li><a href="#orders">My Purchases</a></li>
           <li><a href="#about">About</a></li>
@@ -65,7 +65,7 @@
       <a href="#hero" class="mobile-link">Home</a>
       <a href="#finder" class="mobile-link">Finder</a>
       <a href="#trending" class="mobile-link">Trending</a>
-      <a href="#" class="mobile-link" id="mobileSavedItems">Saved Items <span class="nav-badge" id="mobileFavCount">0</span></a>
+      <a href="#saved" class="mobile-link" id="mobileSavedItems">Saved Items <span class="nav-badge" id="mobileFavCount">0</span></a>
       <a href="#cart" class="mobile-link">Cart</a>
       <a href="#orders" class="mobile-link">My Purchases</a>
       <a href="#about" class="mobile-link">About</a>
@@ -573,6 +573,27 @@
       </section>
 
       <!-- ══════════════════════════════════════════ CART -->
+      <section id="saved" class="page-section view-section">
+        <div class="container">
+          <div class="section-header reveal">
+            <p class="section-eyebrow">Saved Items</p>
+            <h2 class="section-title">Wishlist</h2>
+            <p class="section-sub">
+              Review gifts you saved, move favorites to cart, or continue to checkout.
+            </p>
+          </div>
+
+          <div class="cart-page-summary saved-page-summary">
+            <div class="cart-summary">
+              <strong id="savedPageCount">0</strong> saved item(s)
+            </div>
+            <a class="btn-secondary" href="#finder">Find More Gifts</a>
+          </div>
+
+          <div class="cart-page-list" id="savedPageList"></div>
+        </div>
+      </section>
+
       <section id="cart" class="page-section view-section">
         <div class="container">
           <div class="section-header reveal">
@@ -1703,6 +1724,9 @@
             <strong id="overlayTransactionStatus">Paid</strong>
           </div>
         </div>
+        <button class="btn-primary" id="paymentSuccessContinueBtn" type="button">
+          Continue
+        </button>
       </div>
     </div>
 

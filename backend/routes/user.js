@@ -32,6 +32,26 @@ const users = readUsers();
 const sanitizeString = (value, maxLength = 500) =>
   String(value || "").replace(/[<>]/g, "").trim().slice(0, maxLength);
 
+const isValidBirthday = (birthday) => {
+  const match = String(birthday || "").match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!match) return false;
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  if (year < 1900 || month < 1 || month > 12 || day < 1) return false;
+  const birthDate = new Date(year, month - 1, day);
+  if (
+    birthDate.getFullYear() !== year ||
+    birthDate.getMonth() !== month - 1 ||
+    birthDate.getDate() !== day
+  ) {
+    return false;
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return birthDate <= today;
+};
+
 const normalizeGiftItem = (item = {}) => ({
   id: sanitizeString(item.id, 80) || crypto.randomUUID(),
   name: sanitizeString(item.name || "Gift item", 180),
@@ -201,7 +221,7 @@ const issueAuthResponse = (res, user, status = 200) => {
 
 router.post("/register", (req, res, next) => {
   try {
-    const username = String(req.body.username || "").trim();
+    const username = sanitizeString(req.body.username, 80);
     const email = String(req.body.email || "").trim().toLowerCase();
     const password = String(req.body.password || "");
 
@@ -373,52 +393,19 @@ const savePersonalInfo = (req, res, next) => {
   }
 
   if (birthday) {
-    const match = birthday.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-    if (!match) {
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(birthday)) {
       return next(createError("Birthday must be in DD/MM/YYYY format.", 400));
     }
-    const day = parseInt(match[1], 10);
-    const month = parseInt(match[2], 10);
-    const year = parseInt(match[3], 10);
-
-    if (month < 1 || month > 12) {
-      return next(createError("Invalid birthday month.", 400));
-    }
-    if (day < 1 || day > 31) {
-      return next(createError("Invalid birthday day.", 400));
-    }
-
-    const daysInMonth = [
-      31,
-      (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28,
-      31,
-      30,
-      31,
-      30,
-      31,
-      31,
-      30,
-      31,
-      30,
-      31
-    ];
-    if (day > daysInMonth[month - 1]) {
-      return next(createError("Invalid day for the specified month.", 400));
-    }
-
-    const birthDate = new Date(year, month - 1, day);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (birthDate > today) {
-      return next(createError("Birthday cannot be a future date.", 400));
+    if (!isValidBirthday(birthday)) {
+      return next(createError("Birthday must be a real past date.", 400));
     }
   }
 
   req.user.personalInfo = {
-    fullName,
+    fullName: sanitizeString(fullName, 160),
     phone,
     birthday,
-    location,
+    location: sanitizeString(location, 240),
     updatedAt: new Date().toISOString(),
   };
   saveUsers();
@@ -449,6 +436,8 @@ router.post("/favorites", requireAuth, (req, res, next) => {
     });
     saveUsers();
   }
+  req.user.favorites = req.user.favorites.map(normalizeGiftItem);
+  saveUsers();
   res.json({ success: true, message: "Added to favorites", data: { user: toPublicUser(req.user) } });
 });
 
@@ -504,6 +493,7 @@ router.post("/session/merge", requireAuth, (req, res, next) => {
     req.user.cart = mergeUniqueItems(req.user.cart || [], cart, { sumQuantity: true, limit: 100 });
     req.user.favorites = mergeUniqueItems(req.user.favorites || [], favorites, { limit: 100 });
     req.user.recentlyViewed = mergeUniqueItems(req.user.recentlyViewed || [], recentlyViewed, { limit: 6 });
+    req.user.favorites = req.user.favorites.map(normalizeGiftItem);
     saveUsers();
 
     res.json({
@@ -649,43 +639,5 @@ router.post("/orders", requireAuth, (req, res) => {
   res.json({ success: true, data: { order: normalizedOrder, user: toPublicUser(req.user) } });
 });
 
-router.post("/orders", requireAuth, (req, res) => {
-  const order = req.body.order || req.body;
-  if (!order || !Array.isArray(order.items) || order.items.length === 0) {
-    return res.status(400).json({ success: false, message: "Order data is required." });
-  }
-
-  const normalizedOrder = {
-    id: String(order.id || `INC-${Date.now()}`),
-    placedAt: order.placedAt || new Date().toISOString(),
-    status: order.status || "Confirmed",
-    paymentMethod: order.paymentMethod || "card",
-    voucher: order.voucher || null,
-    discount: Number(order.discount) || 0,
-    items: order.items.map((item) => ({
-      id: item.id,
-      name: String(item.name || "Gift item"),
-      description: String(item.description || ""),
-      category: String(item.category || "Gift"),
-      emoji: String(item.emoji || "🎁"),
-      price: Number(item.price) || 0,
-      priceLabel: String(item.priceLabel || "Price unavailable"),
-      quantity: Number(item.quantity) || 1,
-      link: String(item.link || "#"),
-    })),
-    total: Number(order.total) || 0,
-    shippingAddress: String(order.shippingAddress || ""),
-  };
-
-  req.user.orders = req.user.orders || [];
-  req.user.orders.unshift(normalizedOrder);
-  const orderedIds = new Set(normalizedOrder.items.map((item) => String(item.id)));
-  req.user.cart = (req.user.cart || []).filter(
-    (item) => !orderedIds.has(String(item.id))
-  );
-  saveUsers();
-
-  res.json({ success: true, data: { order: normalizedOrder, user: toPublicUser(req.user) } });
-});
-
 export default router;
+

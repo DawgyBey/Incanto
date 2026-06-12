@@ -99,8 +99,6 @@ app.use((_req, res) => {
 app.use(errorHandler);
 
 // Server start
-app.listen(config.port, () => {
-  console.log(`Incanto API running on port ${config.port} (${config.nodeEnv})`);
-});
+app.listen(config.port);
 
 export default app;
