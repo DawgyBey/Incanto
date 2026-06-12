@@ -4,7 +4,7 @@
 const API_BASE = window.INCANTO_API_BASE
   || (window.location.protocol === 'file:'
     || (['localhost', '127.0.0.1'].includes(window.location.hostname) && window.location.port && window.location.port !== '5000')
-    ? 'http://localhost:5000/api/v1'
+    ? 'http://127.0.0.1:5000/api/v1'
     : `${window.location.origin}/api/v1`);
 const IS_PAYMENT_PAGE = window.location.pathname.endsWith('/payment.html');
 const PENDING_CHECKOUT_KEY_PREFIX = 'incanto_pending_checkout';
@@ -448,7 +448,12 @@ async function apiFetch(path, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   const token = window.IncantoAuth?.getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  } catch (_err) {
+    throw new Error('Could not reach the Incanto backend at 127.0.0.1:5000. Start the backend, then try payment again.');
+  }
   const data = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, data };
 }
@@ -516,6 +521,7 @@ function rememberPaymentDraft() {
     cardNumber: $('#cardNumber')?.value || '',
     cardExpiry: $('#cardExpiry')?.value || '',
     paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card',
+    walletProvider: document.querySelector('input[name="walletProvider"]:checked')?.value || 'paypal',
     savedAt: new Date().toISOString(),
   };
   localStorage.setItem(storageKey, JSON.stringify(draft));
@@ -534,6 +540,8 @@ function restorePaymentDraft() {
     if ($('#cardNumber')) $('#cardNumber').value = formatCardNumber(draft.cardNumber || '');
     if ($('#cardExpiry')) $('#cardExpiry').value = draft.cardExpiry || '';
     if (draft.paymentMethod) setPaymentMethod(draft.paymentMethod);
+    if (draft.walletProvider) setWalletProvider(draft.walletProvider);
+    previewVoucher(draft.voucherCode || '');
     updateCardTypeLabel();
   } catch (_err) {
     localStorage.removeItem(storageKey);
@@ -1332,6 +1340,57 @@ function applyVoucher(code) {
   return state.voucher;
 }
 
+function previewVoucher(code) {
+  const normalized = String(code || '').trim().toUpperCase();
+  const raw = getPendingTotal();
+  if (!normalized) {
+    state.voucher = { code: '', amount: 0, message: 'Try INCANTO10 for 10% off.' };
+    updatePaymentTotal();
+    rememberPaymentDraft();
+    return state.voucher;
+  }
+
+  const promo = DEMO_VOUCHERS[normalized];
+  if (!promo) {
+    state.voucher = { code: normalized, amount: 0, message: 'Invalid voucher. Try INCANTO10 or GIFT50.' };
+  } else {
+    const amount = promo.maxAmount ? Math.min(raw * promo.discount, promo.maxAmount) : raw * promo.discount;
+    state.voucher = {
+      code: normalized,
+      amount: Math.round(amount),
+      message: `Voucher applied: ${promo.label} (-Rs. ${Math.round(amount).toLocaleString('en-IN')})`,
+    };
+  }
+  updatePaymentTotal();
+  rememberPaymentDraft();
+  return state.voucher;
+}
+
+function getWalletProviderLabel(value = document.querySelector('input[name="walletProvider"]:checked')?.value) {
+  return ({
+    paypal: 'PayPal',
+    khalti: 'Khalti',
+    esewa: 'eSewa',
+    imepay: 'IME Pay',
+  })[value] || 'Wallet';
+}
+
+function getSelectedPaymentMethodLabel() {
+  const method = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card';
+  if (method === 'wallet') return getWalletProviderLabel();
+  return method;
+}
+
+function setWalletProvider(provider) {
+  $$('.wallet-option').forEach(label => {
+    const input = label.querySelector('input');
+    const isActive = input?.value === provider;
+    label.classList.toggle('active', isActive);
+    if (input) input.checked = isActive;
+  });
+  rememberPaymentDraft();
+}
+
 function showPaymentPage(gift) {
   if (!requireLoginForAction('buy')) return;
   state.pendingPurchaseGift = gift;
@@ -1589,7 +1648,7 @@ async function saveOrder(gift) {
     transactionId,
     placedAt: new Date().toISOString(),
     status: 'Confirmed',
-    paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card',
+    paymentMethod: getSelectedPaymentMethodLabel(),
     voucher: state.voucher?.code || null,
     discount,
     items,
@@ -1642,6 +1701,11 @@ function setPaymentMethod(method) {
     label.classList.toggle('active', isActive);
     if (input) input.checked = isActive;
   });
+  const walletOptions = $('#walletOptions');
+  if (walletOptions) {
+    walletOptions.classList.toggle('active', method === 'wallet');
+    walletOptions.setAttribute('aria-hidden', method === 'wallet' ? 'false' : 'true');
+  }
   const cardFields = ['#cardName', '#cardNumber', '#cardExpiry', '#cardCvc'];
   cardFields.forEach(selector => {
     const field = $(selector);
@@ -1715,8 +1779,15 @@ function ensurePaymentSuccessContinueButton() {
 }
 
 function closePurchaseSuccessPopup() {
-  $('#purchaseSuccessModal')?.classList.remove('open');
-  $('#purchaseSuccessModal')?.setAttribute('aria-hidden', 'true');
+  const modal = $('#purchaseSuccessModal');
+  modal?.classList.remove('open');
+  modal?.setAttribute('aria-hidden', 'true');
+  if (modal) {
+    modal.style.display = '';
+    modal.style.visibility = '';
+    modal.style.opacity = '';
+    modal.style.zIndex = '';
+  }
   window.location.href = IS_PAYMENT_PAGE ? 'index.html#orders' : '#orders';
 }
 
@@ -1853,6 +1924,12 @@ function showPurchaseSuccessPopup(order, itemCount) {
 
 function showPurchaseSuccessModal(order, itemCount) {
   updatePaymentProcess('Order confirmed and saved to your account.', false);
+  const overlay = $('#paymentSuccessOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
   const modal = ensurePurchaseSuccessModal();
 
   const orderTotal = Number(order?.total);
@@ -1871,6 +1948,10 @@ function showPurchaseSuccessModal(order, itemCount) {
 
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
+  modal.style.display = 'flex';
+  modal.style.visibility = 'visible';
+  modal.style.opacity = '1';
+  modal.style.zIndex = '100002';
   $('#purchaseSuccessClose')?.focus();
 }
 
@@ -3446,8 +3527,14 @@ document.addEventListener('DOMContentLoaded', () => {
     e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
     rememberPaymentDraft();
   });
-  ['#deliveryAddress', '#voucherCode', '#cardName'].forEach((selector) => {
+  $('#voucherCode')?.addEventListener('input', (event) => {
+    previewVoucher(event.target.value);
+  });
+  ['#deliveryAddress', '#cardName'].forEach((selector) => {
     $(selector)?.addEventListener('input', rememberPaymentDraft);
+  });
+  $$('input[name="walletProvider"]').forEach(input => {
+    input.addEventListener('change', () => setWalletProvider(input.value));
   });
 
   // Restore session state

@@ -4,7 +4,7 @@ const IncantoAuth = (() => {
   const AUTH_API_BASE = window.INCANTO_API_BASE
     || (window.location.protocol === 'file:'
       || (['localhost', '127.0.0.1'].includes(window.location.hostname) && window.location.port && window.location.port !== '5000')
-      ? 'http://localhost:5000/api/v1'
+      ? 'http://127.0.0.1:5000/api/v1'
       : `${window.location.origin}/api/v1`);
   const AUTH_TOKEN_KEY = 'incanto_auth_token';
   const AUTH_USER_KEY = 'incanto_user';

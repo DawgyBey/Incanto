@@ -3517,6 +3517,47 @@ ul { list-style: none; }
   background: rgba(250, 208, 122, 0.08);
 }
 
+.wallet-options {
+  display: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(255, 248, 238, 0.12);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 248, 238, 0.035);
+}
+
+.wallet-options.active {
+  display: grid;
+}
+
+.wallet-option {
+  position: relative;
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 248, 238, 0.045);
+  color: var(--text-secondary);
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+
+.wallet-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wallet-option.active {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  background: rgba(215, 180, 106, 0.12);
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -3830,6 +3871,7 @@ ul { list-style: none; }
   }
 
   .payment-methods,
+  .wallet-options,
   .form-grid {
     grid-template-columns: 1fr;
   }
