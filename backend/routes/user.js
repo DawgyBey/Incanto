@@ -12,11 +12,19 @@ const TOKEN_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const USERS_FILE = path.join(__dirname, "../data/users.json");
+let shouldRewriteUsersFile = false;
 
 const readUsers = () => {
   try {
     if (!fs.existsSync(USERS_FILE)) return [];
-    return JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+    const parsed = JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed && typeof parsed === "object") {
+      shouldRewriteUsersFile = true;
+      return [parsed];
+    }
+    shouldRewriteUsersFile = true;
+    return [];
   } catch (_err) {
     return [];
   }
@@ -113,7 +121,7 @@ const ensureUserProfileFields = (user) => {
   return changed;
 };
 
-if (users.some(ensureUserProfileFields)) {
+if (shouldRewriteUsersFile || users.some(ensureUserProfileFields)) {
   saveUsers();
 }
 
@@ -617,6 +625,7 @@ router.post("/orders", requireAuth, (req, res) => {
   const normalizedOrder = {
     id: sanitizeString(order.id || `INC-${Date.now()}`, 120),
     clientRequestId,
+    transactionId: sanitizeString(order.transactionId || `TXN-${Date.now()}`, 120),
     placedAt: order.placedAt || new Date().toISOString(),
     status: sanitizeString(order.status || "Confirmed", 40),
     paymentMethod: sanitizeString(order.paymentMethod || "card", 40),
